@@ -1,7 +1,6 @@
 import { PaperSDKError, PaperSDKErrorCode } from "../interfaces/PaperSDKError";
 import { PaperUser } from "../interfaces/PaperUser";
 import React, { useState, useEffect } from "react";
-import { Button, Link } from "@chakra-ui/react";
 import { usePaperSDKContext } from "../Provider";
 
 interface VerifyEmailProps {
@@ -19,7 +18,8 @@ export const VerifyEmail: React.FC<VerifyEmailProps> = ({
   onError,
   children,
 }) => {
-  const [verifyEmailExecuted, setVerifyEmailExecuted] = useState<boolean>();
+  const [verifyEmailExecuted, setVerifyEmailExecuted] =
+    useState<boolean>(false);
   const { chainName } = usePaperSDKContext();
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const VerifyEmail: React.FC<VerifyEmailProps> = ({
         <>
           {emailAddress}
           <iframe
-            src={`https://paper.xyz/sdk/v1/verify-email?email=${encodeURIComponent(
+            src={`http://localhost:3000/sdk/v1/verify-email?email=${encodeURIComponent(
               emailAddress
             )}&chainName=${chainName}`}
             style={{
@@ -73,9 +73,9 @@ export const VerifyEmail: React.FC<VerifyEmailProps> = ({
         </>
       )}
       {children ? (
-        <Link onClick={executeVerifyEmail}>{children}</Link>
+        <a onClick={executeVerifyEmail}>{children}</a>
       ) : (
-        <Button onClick={executeVerifyEmail}>Verify Email</Button>
+        <button onClick={executeVerifyEmail}>Verify Email</button>
       )}
     </>
   );

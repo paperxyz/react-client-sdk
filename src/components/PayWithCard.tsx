@@ -49,9 +49,13 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
   return (
     <>
-      <iframe
-        src={`https://paper.xyz/sdk/v1/pay-with-card?checkoutId=${checkoutId}&recipientWalletAddress=${recipientWalletAddress}&chainName=${chainName}`}
-      ></iframe>
+      {checkoutId && recipientWalletAddress && chainName && (
+        <>
+          <iframe
+            src={`http://localhost:3000/sdk/v1/pay-with-card?checkoutId=${checkoutId}&recipientWalletAddress=${recipientWalletAddress}&chainName=${chainName}`}
+          ></iframe>
+        </>
+      )}
     </>
   );
 };

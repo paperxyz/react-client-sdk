@@ -28,11 +28,10 @@
   },
   "homepage": "https://github.com/paperxyz/paper-client-sdk#readme",
   "dependencies": {
-    "@chakra-ui/react": "^1.8.8",
     "react": "^17.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.7",
+    "@types/react": "^17.0.0",
     "tsup": "^5.12.6",
     "typescript": "^4.6.3"
   },
@@ -43,5 +42,8 @@
     "splitting": false,
     "sourcemap": true,
     "clean": true
+  },
+  "directories": {
+    "example": "examples"
   }
 }

@@ -1,3 +1,6 @@
 export interface PaymentSuccessResult {
-  transactionHash: string;
+  /**
+   * A unique ID for this purchase.
+   */
+  id: string;
 }

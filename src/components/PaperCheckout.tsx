@@ -1,5 +1,4 @@
-import React from "react";
-import "../../styles/PaperCheckout.module.css";
+import React, { useState } from "react";
 
 export enum PaperCheckoutDisplay {
 	POPUP = "POPUP",
@@ -7,7 +6,6 @@ export enum PaperCheckoutDisplay {
 	MODAL = "MODAL",
 	DRAWER = "DRAWER",
 	EMBED = "EMBED",
-	UNIMPLEMENTED = "UNIMPLEMENTED",
 }
 
 interface PaperCheckoutProps {
@@ -28,7 +26,17 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 	const checkoutUrl = `https://paper.xyz/checkout/${checkoutId}`;
 
 	const clickableElement = children || (
-		<button className="cta-button">Buy Now</button>
+		<button
+			style={{
+				backgroundColor: "#cf3781",
+				padding: "8px 20px 8px 20px",
+				borderRadius: "8px",
+				color: "white",
+				fontWeight: "bold",
+			}}
+		>
+			Buy Now
+		</button>
 	);
 
 	switch (display) {
@@ -42,15 +50,15 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 					checkoutUrl,
 					"Paper.xyz Checkout",
 					`toolbar=no,
-        location=no,
-        status=no,
-        menubar=no,
-        scrollbars=yes,
-        resizable=yes,
-        width=${width},
-        height=${height},
-        top=${y},
-        left=${x}`
+          location=no,
+          status=no,
+          menubar=no,
+          scrollbars=yes,
+          resizable=yes,
+          width=${width},
+          height=${height},
+          top=${y},
+          left=${x}`
 				);
 			};
 			return <a onClick={onClick}>{clickableElement}</a>;
@@ -92,6 +100,71 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 	}
 };
 
+const inlineStyles: { [name: string]: any } = {
+	overlay: {
+		position: "fixed",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		margin: 0,
+		zIndex: 1,
+		overflow: "hidden",
+		display: "flex",
+		visibility: "hidden",
+		opacity: 0,
+		transition: "all 0.2s ease",
+	},
+	overlayIsVisible: {
+		visibility: "visible",
+		opacity: 1,
+		backdropFilter: "blur(2px)",
+		background: "#0008",
+	},
+	modalOverlay: {
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	drawerOverlay: {
+		justifyContent: "flex-end",
+	},
+	modalDialog: {
+		position: "relative",
+		overflow: "hidden",
+		borderRadius: "8px",
+		visibility: "hidden",
+		opacity: 0,
+		top: "5%",
+		transition: "all 0.2s ease",
+	},
+	modalDialogIsVisible: {
+		visibility: "visible",
+		opacity: 1,
+		top: 0,
+	},
+	drawerDialog: {
+		position: "relative",
+		visibility: "hidden",
+		opacity: 0,
+		right: "-10%",
+		transition: "all 0.2s ease",
+	},
+	drawerDialogIsVisible: {
+		visibility: "visible",
+		opacity: 1,
+		right: 0,
+	},
+	modalCloseButton: {
+		position: "absolute",
+		top: "0.1em",
+		right: "0.2em",
+		borderRadius: "8px",
+		fontSize: "x-large",
+		padding: "0 0.4em",
+		color: "#888",
+	},
+};
+
 const PaperCheckoutDrawer = ({
 	clickableElement,
 	checkoutUrl,
@@ -101,20 +174,31 @@ const PaperCheckoutDrawer = ({
 	checkoutUrl: string;
 	width: number;
 }) => {
-	const onClick = () => {
-		document.querySelector(".paper-overlay")?.classList.add("is-visible");
-	};
-	const onClickCloseButton = () => {
-		document.querySelector(".paper-overlay")?.classList.remove("is-visible");
-	};
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	return (
 		<>
-			<a onClick={onClick}>{clickableElement}</a>
+			<a onClick={() => setIsOpen(true)}>{clickableElement}</a>
 
-			<div className="paper-overlay paper-drawer">
-				<div className="drawer-dialog">
-					<button onClick={onClickCloseButton} className="modal-close-button">
+			<div
+				className="paper-overlay"
+				style={{
+					...inlineStyles.overlay,
+					...(isOpen ? inlineStyles.overlayIsVisible : {}),
+					...inlineStyles.drawerOverlay,
+				}}
+			>
+				<div
+					className="paper-drawer"
+					style={{
+						...inlineStyles.drawerDialog,
+						...(isOpen ? inlineStyles.drawerDialogIsVisible : {}),
+					}}
+				>
+					<button
+						onClick={() => setIsOpen(false)}
+						style={inlineStyles.modalCloseButton}
+					>
 						&times;
 					</button>
 					<iframe src={checkoutUrl} width={width} height="100%" />
@@ -135,20 +219,31 @@ const PaperCheckoutModal = ({
 	width: number;
 	height: number;
 }) => {
-	const onClick = () => {
-		document.querySelector(".paper-overlay")?.classList.add("is-visible");
-	};
-	const onClickCloseButton = () => {
-		document.querySelector(".paper-overlay")?.classList.remove("is-visible");
-	};
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	return (
 		<>
-			<a onClick={onClick}>{clickableElement}</a>
+			<a onClick={() => setIsOpen(true)}>{clickableElement}</a>
 
-			<div className="paper-overlay paper-modal">
-				<div className="modal-dialog">
-					<button onClick={onClickCloseButton} className="modal-close-button">
+			<div
+				className="paper-overlay"
+				style={{
+					...inlineStyles.overlay,
+					...(isOpen ? inlineStyles.overlayIsVisible : {}),
+					...inlineStyles.modalOverlay,
+				}}
+			>
+				<div
+					className="paper-modal"
+					style={{
+						...inlineStyles.modalDialog,
+						...(isOpen ? inlineStyles.modalDialogIsVisible : {}),
+					}}
+				>
+					<button
+						onClick={() => setIsOpen(false)}
+						style={inlineStyles.modalCloseButton}
+					>
 						&times;
 					</button>
 					<iframe src={checkoutUrl} width={width} height={height} />

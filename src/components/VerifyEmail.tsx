@@ -2,6 +2,7 @@ import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
 import React, { useState, useEffect } from 'react';
 import { usePaperSDKContext } from '../Provider';
+import { PAPER_APP_URL } from '../constants/settings';
 
 interface VerifyEmailProps {
   emailAddress: string;
@@ -61,7 +62,7 @@ export const VerifyEmail: React.FC<VerifyEmailProps> = ({
         <>
           {emailAddress}
           <iframe
-            src={`http://localhost:3000/sdk/v1/verify-email?email=${encodeURIComponent(
+            src={`${PAPER_APP_URL}/sdk/v1/verify-email?email=${encodeURIComponent(
               emailAddress,
             )}&chainName=${chainName}`}
             style={{

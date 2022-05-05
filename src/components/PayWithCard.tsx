@@ -2,6 +2,7 @@ import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import React, { useEffect } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
+import { PAPER_APP_URL } from '../constants/settings';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -51,7 +52,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     <>
       {checkoutId && recipientWalletAddress && chainName && (
         <iframe
-          src={`http://localhost:3000/sdk/v1/pay-with-card?checkoutId=${checkoutId}&recipientWalletAddress=${recipientWalletAddress}&chainName=${chainName}`}
+          src={`${PAPER_APP_URL}/sdk/v1/pay-with-card?checkoutId=${checkoutId}&recipientWalletAddress=${recipientWalletAddress}&chainName=${chainName}`}
           width='100%'
           height='100%'
         ></iframe>

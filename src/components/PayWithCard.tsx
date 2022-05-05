@@ -38,7 +38,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           onCancel();
         }
       } else if (data.eventType === 'payWithCardSuccess') {
-        onSuccess({ id: 'TODO' });
+        onSuccess({ id: data.id });
       }
     };
 

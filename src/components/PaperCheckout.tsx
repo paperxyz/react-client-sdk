@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 
 export enum PaperCheckoutDisplay {
+  /**
+   * Open the checkout in a new popup centered over the parent window.
+   */
   POPUP = 'POPUP',
+
+  /**
+   * Open the checkout in a new browser tab.
+   */
   NEW_TAB = 'NEW_TAB',
+
+  /**
+   * Open the checkout in a modal on the parent page with a darkened background.
+   *
+   * NOTE: Pay with Crypto is disabled in this view.
+   */
   MODAL = 'MODAL',
+
+  /**
+   * Open the checkout in a drawer on the right side of the parent page with a darkened background.
+   *
+   * NOTE: Pay with Crypto is disabled in this view.
+   */
   DRAWER = 'DRAWER',
+
+  /**
+   * Embed the checkout directly on the parent page.
+   *
+   * NOTE: Pay with Crypto is disabled in this view.
+   */
   EMBED = 'EMBED',
 }
 
@@ -33,10 +58,47 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     width: 400,
     height: 800,
   },
+  onPaymentSuccess,
+  onTransferSuccess,
   children,
 }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data;
+
+      switch (data.eventType) {
+        case 'paymentSuccess':
+          if (onPaymentSuccess) {
+            onPaymentSuccess({ id: data.id });
+          }
+          break;
+
+        case 'transferSuccess':
+          if (onTransferSuccess) {
+            // @ts-ignore
+            onTransferSuccess({
+              id: data.id,
+              // ...
+            });
+          }
+          break;
+
+        case 'modalClosed':
+          setIsOpen(false);
+          break;
+
+        default:
+        // Ignore unrecognized event
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+  }, []);
+
   const checkoutUrl = new URL(`https://paper.xyz/checkout/${checkoutId}`);
-  checkoutUrl.searchParams.append('fromSDK', 'true');
+  checkoutUrl.searchParams.append('display', display);
   if (options.appName) {
     checkoutUrl.searchParams.append('app_name', options.appName);
   }
@@ -106,6 +168,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
           checkoutUrl={checkoutUrl.href}
           width={options.width}
           height={options.height}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       );
     }
@@ -116,6 +180,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
           clickableElement={clickableElement}
           checkoutUrl={checkoutUrl.href}
           width={options.width}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       );
     }
@@ -199,13 +265,15 @@ const PaperCheckoutDrawer = ({
   clickableElement,
   checkoutUrl,
   width,
+  isOpen,
+  setIsOpen,
 }: {
   clickableElement: React.ReactNode;
   checkoutUrl: string;
   width: number;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   return (
     <>
       <a onClick={() => setIsOpen(true)}>{clickableElement}</a>
@@ -243,14 +311,16 @@ const PaperCheckoutModal = ({
   checkoutUrl,
   width,
   height,
+  isOpen,
+  setIsOpen,
 }: {
   clickableElement: React.ReactNode;
   checkoutUrl: string;
   width: number;
   height: number;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   return (
     <>
       <a onClick={() => setIsOpen(true)}>{clickableElement}</a>

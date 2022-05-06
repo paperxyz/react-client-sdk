@@ -9,6 +9,9 @@
     <a href="https://discord.com/invite/nqHxSafC"><img alt="Join our Discord!" src="https://img.shields.io/discord/936354866358546453.svg?color=7289da&label=discord&logo=discord&style=flat"/></a>
 </p>
 
+[Paper](https://paper.xyz) is a developer-first NFT checkout solution that
+easily onboards users without wallets or cryptocurrencies.
+
 ## [Documentation](https://docs.paper.xyz/react-sdk-experimental/overview)
 
 ## Installation

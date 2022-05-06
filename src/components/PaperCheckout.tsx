@@ -41,6 +41,11 @@ export interface PaperCheckoutProps {
   options?: {
     width: number;
     height: number;
+    colorPrimary: string;
+    colorBackground: string;
+    colorText: string;
+    borderRadius: number;
+    fontFamily: string;
     quantity?: number;
     appName?: string;
     recipientWalletAddress?: string;
@@ -57,6 +62,11 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   options = {
     width: 400,
     height: 800,
+    colorPrimary: '#cf3781',
+    colorBackground: '#ffffff',
+    colorText: '#1a202c',
+    borderRadius: 12,
+    fontFamily: 'Open Sans',
   },
   onPaymentSuccess,
   onTransferSuccess,
@@ -99,6 +109,29 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 
   const checkoutUrl = new URL(`https://paper.xyz/checkout/${checkoutId}`);
   checkoutUrl.searchParams.append('display', display);
+
+  if (options.colorPrimary) {
+    checkoutUrl.searchParams.append('color_primary', options.colorPrimary);
+  }
+  if (options.colorBackground) {
+    checkoutUrl.searchParams.append(
+      'color_background',
+      options.colorBackground,
+    );
+  }
+  if (options.colorText) {
+    checkoutUrl.searchParams.append('color_text', options.colorText);
+  }
+  if (options.borderRadius) {
+    checkoutUrl.searchParams.append(
+      'border_radius',
+      options.borderRadius.toString(),
+    );
+  }
+  if (options.fontFamily) {
+    checkoutUrl.searchParams.append('font_family', options.fontFamily);
+  }
+
   if (options.appName) {
     checkoutUrl.searchParams.append('app_name', options.appName);
   }
@@ -187,7 +220,13 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     }
 
     case PaperCheckoutDisplay.EMBED: {
-      return <iframe src={checkoutUrl.href} width='100%' height='100%' />;
+      return (
+        <iframe
+          src={checkoutUrl.href}
+          width={options.width}
+          height={options.height}
+        />
+      );
     }
 
     default:

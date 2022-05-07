@@ -114,29 +114,26 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   checkoutUrl.searchParams.append('display', display);
 
   if (options.colorPrimary) {
-    checkoutUrl.searchParams.append('color_primary', options.colorPrimary);
+    checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
   }
   if (options.colorBackground) {
-    checkoutUrl.searchParams.append(
-      'color_background',
-      options.colorBackground,
-    );
+    checkoutUrl.searchParams.append('colorBackground', options.colorBackground);
   }
   if (options.colorText) {
-    checkoutUrl.searchParams.append('color_text', options.colorText);
+    checkoutUrl.searchParams.append('colorText', options.colorText);
   }
   if (options.borderRadius !== undefined) {
     checkoutUrl.searchParams.append(
-      'border_radius',
+      'borderRadius',
       options.borderRadius.toString(),
     );
   }
   if (options.fontFamily) {
-    checkoutUrl.searchParams.append('font_family', options.fontFamily);
+    checkoutUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
   if (appName) {
-    checkoutUrl.searchParams.append('app_name', appName);
+    checkoutUrl.searchParams.append('appName', appName);
   }
   if (recipientWalletAddress) {
     checkoutUrl.searchParams.append('wallet', recipientWalletAddress);

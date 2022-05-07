@@ -98,25 +98,25 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     payWithCardUrl.searchParams.append('quantity', quantity.toString());
   }
   if (options.colorPrimary) {
-    payWithCardUrl.searchParams.append('color_primary', options.colorPrimary);
+    payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);
   }
   if (options.colorBackground) {
     payWithCardUrl.searchParams.append(
-      'color_background',
+      'colorBackground',
       options.colorBackground,
     );
   }
   if (options.colorText) {
-    payWithCardUrl.searchParams.append('color_text', options.colorText);
+    payWithCardUrl.searchParams.append('colorText', options.colorText);
   }
   if (options.borderRadius !== undefined) {
     payWithCardUrl.searchParams.append(
-      'border_radius',
+      'borderRadius',
       options.borderRadius.toString(),
     );
   }
   if (options.fontFamily) {
-    payWithCardUrl.searchParams.append('font_family', options.fontFamily);
+    payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
   return (

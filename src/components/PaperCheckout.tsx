@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 
@@ -16,21 +17,21 @@ export enum PaperCheckoutDisplay {
   /**
    * Open the checkout in a modal on the parent page with a darkened background.
    *
-   * NOTE: Pay with Crypto is disabled in this view.
+   * NOTE: Pay with Crypto is disabled in this display mode.
    */
   MODAL = 'MODAL',
 
   /**
    * Open the checkout in a drawer on the right side of the parent page with a darkened background.
    *
-   * NOTE: Pay with Crypto is disabled in this view.
+   * NOTE: Pay with Crypto is disabled in this display mode.
    */
   DRAWER = 'DRAWER',
 
   /**
    * Embed the checkout directly on the parent page.
    *
-   * NOTE: Pay with Crypto is disabled in this view.
+   * NOTE: Pay with Crypto is disabled in this display mode.
    */
   EMBED = 'EMBED',
 }
@@ -38,6 +39,12 @@ export enum PaperCheckoutDisplay {
 export interface PaperCheckoutProps {
   checkoutId: string;
   display?: PaperCheckoutDisplay;
+  recipientWalletAddress?: string;
+  email?: string;
+  quantity?: number;
+  appName?: string;
+  onPaymentSuccess?: (result: PaymentSuccessResult) => void;
+  onTransferSuccess?: (result: TransferSuccessResult) => void;
   options?: {
     width: number;
     height: number;
@@ -46,27 +53,21 @@ export interface PaperCheckoutProps {
     colorText: string;
     borderRadius: number;
     fontFamily: string;
-    quantity?: number;
-    appName?: string;
-    recipientWalletAddress?: string;
-    email?: string;
   };
-  onPaymentSuccess?: (result: PaymentSuccessResult) => void;
-  onTransferSuccess?: (result: TransferSuccessResult) => void;
   children?: React.ReactNode;
 }
 
 export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   checkoutId,
   display = PaperCheckoutDisplay.POPUP,
+  recipientWalletAddress,
+  email,
+  quantity,
+  appName,
   options = {
     width: 400,
     height: 800,
-    colorPrimary: '#cf3781',
-    colorBackground: '#ffffff',
-    colorText: '#1a202c',
-    borderRadius: 12,
-    fontFamily: 'Open Sans',
+    ...DEFAULT_BRAND_OPTIONS,
   },
   onPaymentSuccess,
   onTransferSuccess,
@@ -74,6 +75,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  // Handle message events from iframe.
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const data = event.data;
@@ -107,42 +109,40 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     window.addEventListener('message', handleMessage);
   }, []);
 
-  const checkoutUrl = new URL(`https://paper.xyz/checkout/${checkoutId}`);
+  // Build iframe URL with query params.
+  const checkoutUrl = new URL(`/checkout/${checkoutId}`, PAPER_APP_URL);
   checkoutUrl.searchParams.append('display', display);
 
   if (options.colorPrimary) {
-    checkoutUrl.searchParams.append('color_primary', options.colorPrimary);
+    checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
   }
   if (options.colorBackground) {
-    checkoutUrl.searchParams.append(
-      'color_background',
-      options.colorBackground,
-    );
+    checkoutUrl.searchParams.append('colorBackground', options.colorBackground);
   }
   if (options.colorText) {
-    checkoutUrl.searchParams.append('color_text', options.colorText);
+    checkoutUrl.searchParams.append('colorText', options.colorText);
   }
-  if (options.borderRadius) {
+  if (options.borderRadius !== undefined) {
     checkoutUrl.searchParams.append(
-      'border_radius',
+      'borderRadius',
       options.borderRadius.toString(),
     );
   }
   if (options.fontFamily) {
-    checkoutUrl.searchParams.append('font_family', options.fontFamily);
+    checkoutUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
-  if (options.appName) {
-    checkoutUrl.searchParams.append('app_name', options.appName);
+  if (appName) {
+    checkoutUrl.searchParams.append('appName', appName);
   }
-  if (options.recipientWalletAddress) {
-    checkoutUrl.searchParams.append('wallet', options.recipientWalletAddress);
+  if (recipientWalletAddress) {
+    checkoutUrl.searchParams.append('wallet', recipientWalletAddress);
   }
-  if (options.email) {
-    checkoutUrl.searchParams.append('username', options.email);
+  if (email) {
+    checkoutUrl.searchParams.append('username', email);
   }
-  if (options.quantity) {
-    checkoutUrl.searchParams.append('quantity', options.quantity.toString());
+  if (quantity) {
+    checkoutUrl.searchParams.append('quantity', quantity.toString());
   }
 
   const clickableElement = children || (

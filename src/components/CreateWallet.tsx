@@ -39,7 +39,10 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
       } else if (data.eventType === 'verifyEmailError') {
         console.error('Error in Paper SDK VerifyEmail', data.error);
         if (onError) {
-          onError({ code: PaperSDKErrorCode.EmailNotVerified });
+          onError({
+            code: PaperSDKErrorCode.EmailNotVerified,
+            error: data.error,
+          });
         }
       } else if (data.eventType === 'verifyEmailSuccess') {
         onSuccess({

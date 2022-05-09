@@ -47,7 +47,10 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         case 'payWithCardError':
           console.error('Error in Paper SDK PayWithCard', data.error);
           if (onError) {
-            onError({ code: data.errorCode as PaperSDKErrorCode });
+            onError({
+              code: data.errorCode as PaperSDKErrorCode,
+              error: data.error,
+            });
           }
           break;
 

@@ -145,6 +145,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     checkoutUrl.searchParams.append('quantity', quantity.toString());
   }
 
+  checkoutUrl.searchParams.append('date', Date.now().toString());
+
   const clickableElement = children || (
     <button
       style={{

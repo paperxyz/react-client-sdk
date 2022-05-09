@@ -8,7 +8,7 @@ import { usePaperSDKContext } from '../Provider';
 interface PayWithCardProps {
   checkoutId: string;
   recipientWalletAddress: string;
-  email?: string;
+  emailAddress: string;
   quantity?: number;
   options?: {
     colorPrimary?: string;
@@ -26,7 +26,7 @@ interface PayWithCardProps {
 export const PayWithCard: React.FC<PayWithCardProps> = ({
   checkoutId,
   recipientWalletAddress,
-  email,
+  emailAddress,
   quantity,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
@@ -91,8 +91,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     recipientWalletAddress,
   );
   payWithCardUrl.searchParams.append('chainName', chainName);
-  if (email) {
-    payWithCardUrl.searchParams.append('email', email);
+  if (emailAddress) {
+    payWithCardUrl.searchParams.append('emailAddress', emailAddress);
   }
   if (quantity) {
     payWithCardUrl.searchParams.append('quantity', quantity.toString());
@@ -118,6 +118,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   if (options.fontFamily) {
     payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
   }
+
+  payWithCardUrl.searchParams.append('date', Date.now().toString());
 
   return (
     <iframe

@@ -1,6 +1,6 @@
-import { PaperSDKError, PaperSDKErrorCode } from "../interfaces/PaperSDKError";
-import React, { useEffect } from "react";
-import { usePaperSDKContext } from "../Provider";
+import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
+import React, { useEffect } from 'react';
+import { usePaperSDKContext } from '../Provider';
 
 interface AddPaymentMethodProps {
   onSuccess: () => void;
@@ -18,19 +18,19 @@ export const AddPaymentMethod: React.FC<AddPaymentMethodProps> = ({
       // if (event.origin !== "https://paper.xyz") return;
 
       const data = event.data;
-      console.log("data is ", data);
+      console.log('data is ', data);
 
-      if (data.eventType === "addPaymentMethodError") {
-        console.error("Error in Paper SDK AddPaymentMethod", data.error);
+      if (data.eventType === 'addPaymentMethodError') {
+        console.error('Error in Paper SDK AddPaymentMethod', data.error);
         if (onError) {
           onError({ code: data.errorCode as PaperSDKErrorCode });
         }
-      } else if (data.eventType === "addPaymentMethodSuccess") {
+      } else if (data.eventType === 'addPaymentMethodSuccess') {
         onSuccess();
       }
     };
 
-    window.addEventListener("message", handleMessage);
+    window.addEventListener('message', handleMessage);
   }, []);
 
   return (

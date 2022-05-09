@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { usePaperSDKContext } from '../Provider';
 import { PAPER_APP_URL } from '../constants/settings';
 
-interface VerifyEmailProps {
+interface CreateWalletProps {
   emailAddress: string;
   onSuccess: (user: PaperUser) => void;
   onEmailVerificationInitiated?: () => void;
@@ -12,7 +12,7 @@ interface VerifyEmailProps {
   children?: React.ReactNode;
 }
 
-export const VerifyEmail: React.FC<VerifyEmailProps> = ({
+export const CreateWallet: React.FC<CreateWalletProps> = ({
   emailAddress,
   onSuccess,
   onEmailVerificationInitiated,
@@ -64,7 +64,7 @@ export const VerifyEmail: React.FC<VerifyEmailProps> = ({
           <iframe
             src={`${PAPER_APP_URL}/sdk/v1/verify-email?email=${encodeURIComponent(
               emailAddress,
-            )}&chainName=${chainName}`}
+            )}&chainName=${chainName}&date=${Date.now().toString()}`}
             style={{
               width: '0px',
               height: '0px',

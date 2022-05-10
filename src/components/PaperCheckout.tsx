@@ -40,7 +40,7 @@ export interface PaperCheckoutProps {
   checkoutId: string;
   display?: PaperCheckoutDisplay;
   recipientWalletAddress?: string;
-  email?: string;
+  emailAddress?: string;
   quantity?: number;
   appName?: string;
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
@@ -61,7 +61,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   checkoutId,
   display = PaperCheckoutDisplay.POPUP,
   recipientWalletAddress,
-  email,
+  emailAddress,
   quantity,
   appName,
   options = {
@@ -138,8 +138,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (recipientWalletAddress) {
     checkoutUrl.searchParams.append('wallet', recipientWalletAddress);
   }
-  if (email) {
-    checkoutUrl.searchParams.append('username', email);
+  if (emailAddress) {
+    checkoutUrl.searchParams.append('username', emailAddress);
   }
   if (quantity) {
     checkoutUrl.searchParams.append('quantity', quantity.toString());

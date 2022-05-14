@@ -13,9 +13,9 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:lib": "tsup --env.NODE_ENV production --minify --format esm,cjs",
-    "build": "yarn build:lib && yarn generate-types",
-    "generate-types": "tsc"
+    "build:lib": "tsup --env.NODE_ENV production --minify --format esm,cjs --watch",
+    "build": "concurrently \"yarn build:lib\" \"yarn generate-types\"",
+    "generate-types": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
+    "concurrently": "^7.1.0",
     "tsup": "^5.12.6",
     "typescript": "^4.6.3"
   },

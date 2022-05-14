@@ -107,6 +107,9 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     };
 
     window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   // Build iframe URL with query params.

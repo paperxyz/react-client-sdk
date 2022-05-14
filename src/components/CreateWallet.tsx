@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
-import React, { useState, useEffect } from 'react';
 import { usePaperSDKContext } from '../Provider';
-import { PAPER_APP_URL } from '../constants/settings';
 
 interface CreateWalletProps {
   emailAddress: string;
@@ -53,6 +53,9 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
     };
 
     window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const executeVerifyEmail = () => {

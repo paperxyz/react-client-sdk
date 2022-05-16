@@ -3,6 +3,7 @@ import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
 import { usePaperSDKContext } from '../Provider';
+import { Button } from './base/Button';
 
 interface CreateWalletProps {
   emailAddress: string;
@@ -66,7 +67,6 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
     <>
       {emailAddress && verifyEmailExecuted && (
         <>
-          {emailAddress}
           <iframe
             src={`${PAPER_APP_URL}/sdk/v1/verify-email?email=${encodeURIComponent(
               emailAddress,
@@ -82,7 +82,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
       {children ? (
         <a onClick={executeVerifyEmail}>{children}</a>
       ) : (
-        <button onClick={executeVerifyEmail}>Verify Email</button>
+        <Button onClick={executeVerifyEmail}>Verify Email</Button>
       )}
     </>
   );

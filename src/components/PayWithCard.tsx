@@ -41,6 +41,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Handle message events from iframe.
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (!event.origin.startsWith('https://paper.xyz')) {
+        return;
+      }
       const data = event.data;
 
       switch (data.eventType) {

@@ -133,6 +133,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       width='100%'
       height='100%'
       allowTransparency
+      sandbox='allow-popups'
     />
   );
 };

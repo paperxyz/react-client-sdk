@@ -49,8 +49,8 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
         case LOGIN_WITH_PAPER_EVENT_TYPE.USER_LOGIN_FAILED:
           if (onError) {
             onError({
-              code: PaperSDKErrorCode.UserClosedWindow,
-              error: new Error(PaperSDKErrorCode.UserClosedWindow),
+              code: PaperSDKErrorCode.UserLoginFailed,
+              error: new Error(PaperSDKErrorCode.UserLoginFailed),
             });
           }
           break;
@@ -68,13 +68,14 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
   url.searchParams.append('chainName', chainName);
   url.searchParams.append('clientId', clientId);
   const clickLoginButton = () => {
-    openCenteredPopup({
+    const loginWindow = openCenteredPopup({
       url: url.href,
       windowName: 'PaperLogin',
       win: window,
       w: 400,
       h: 600,
     });
+    loginWindow?.focus();
   };
 
   return (

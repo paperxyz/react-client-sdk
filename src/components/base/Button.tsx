@@ -6,7 +6,7 @@ export const Button = styled.button`
   align-items: center;
   background-color: #01212b;
   color: #fff;
-  padding: 0.8rem 1.7rem;
+  padding: 13px 35px;
   border-radius: 10px;
   transition: all 0.1s ease-in-out;
   &:hover {

@@ -1,31 +1,35 @@
 import React, { useEffect } from 'react';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
-import { PaperUser } from '../interfaces/PaperUser';
 import { openCenteredPopup } from '../lib/utils';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './base/Button';
 
 interface LoginWithPaperProps {
-  onSuccess?: (user: PaperUser) => void;
+  onSuccess?: (code: string) => void;
   onError?: (error: PaperSDKError) => void;
+  onWindowClose?: () => void;
   children?: ({
     clickLoginButton,
   }: {
     clickLoginButton: () => void;
   }) => React.ReactNode | React.ReactNode;
+  className?: string;
 }
 
 const enum LOGIN_WITH_PAPER_EVENT_TYPE {
   USER_LOGIN_SUCCESS = 'userLoginSuccess',
   USER_LOGIN_FAILED = 'userLoginFailed',
+  USER_CLOSE_LOGIN_PAGE = 'userCloseLoginPage',
 }
 
 export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
   onSuccess,
   onError,
+  onWindowClose,
+  className,
   children,
 }) => {
-  const { chainName } = usePaperSDKContext();
+  const { chainName, clientId } = usePaperSDKContext();
   const isChildrenFunction = typeof children === 'function';
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -33,9 +37,15 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       switch (data.eventType) {
         case LOGIN_WITH_PAPER_EVENT_TYPE.USER_LOGIN_SUCCESS:
           if (onSuccess) {
-            onSuccess(data.values);
+            onSuccess(data.values.accessCode);
           }
           break;
+        case LOGIN_WITH_PAPER_EVENT_TYPE.USER_CLOSE_LOGIN_PAGE: {
+          if (onWindowClose) {
+            onWindowClose();
+          }
+          break;
+        }
         case LOGIN_WITH_PAPER_EVENT_TYPE.USER_LOGIN_FAILED:
           if (onError) {
             onError({
@@ -56,6 +66,7 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
   }, []);
   const url = new URL('http://localhost:3001/sdk/v1/login-with-paper');
   url.searchParams.append('chainName', chainName);
+  url.searchParams.append('clientId', clientId);
   const clickLoginButton = () => {
     openCenteredPopup({
       url: url.href,
@@ -73,7 +84,7 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       ) : children ? (
         <a onClick={clickLoginButton}>{children} </a>
       ) : (
-        <Button onClick={clickLoginButton}>
+        <Button onClick={clickLoginButton} className={className}>
           <span style={{ marginRight: '10px' }}>Login With Paper</span>
           <svg
             width='15'

@@ -5,33 +5,36 @@ import React, {
   useContext,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
 type SupportedChainName =
-  | "Polygon"
-  | "Mumbai"
-  | "Ethereum"
-  | "Rinkeby"
-  | "Solana"
-  | "SolanaDevnet"
-  | "Avalanche";
+  | 'Polygon'
+  | 'Mumbai'
+  | 'Ethereum'
+  | 'Rinkeby'
+  | 'Solana'
+  | 'SolanaDevnet'
+  | 'Avalanche';
 
 interface SDKContext {
   chainName: SupportedChainName;
   setChainName: Dispatch<SetStateAction<SupportedChainName>>;
+  clientId: string;
 }
-
-const PaperSDKContext = createContext<SDKContext>({
-  chainName: "Polygon",
-  setChainName: () => {},
-});
 
 export interface PaperProviderProps {
   chainName: SupportedChainName;
+  clientId: string;
 }
+const PaperSDKContext = createContext<SDKContext>({
+  chainName: 'Polygon',
+  setChainName: () => {},
+  clientId: '',
+});
 
 export const PaperSDKProvider = ({
   chainName,
+  clientId,
   children,
 }: React.PropsWithChildren<PaperProviderProps>) => {
   const [chainName_, setChainName] = useState<SupportedChainName>(chainName);
@@ -40,8 +43,9 @@ export const PaperSDKProvider = ({
     () => ({
       chainName: chainName_,
       setChainName,
+      clientId,
     }),
-    [chainName_, setChainName]
+    [chainName_, setChainName],
   );
 
   return (

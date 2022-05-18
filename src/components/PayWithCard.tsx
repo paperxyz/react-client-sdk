@@ -154,6 +154,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     };
 
     window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   // Build iframe URL with query params.

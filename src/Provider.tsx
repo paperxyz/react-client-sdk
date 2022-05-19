@@ -4,7 +4,7 @@ import React, {
   SetStateAction,
   useContext,
   useMemo,
-  useState,
+  useState
 } from 'react';
 
 type SupportedChainName =
@@ -24,7 +24,7 @@ interface SDKContext {
 
 export interface PaperProviderProps {
   chainName: SupportedChainName;
-  clientId: string;
+  clientId?: string;
 }
 const PaperSDKContext = createContext<SDKContext>({
   chainName: 'Polygon',
@@ -43,7 +43,7 @@ export const PaperSDKProvider = ({
     () => ({
       chainName: chainName_,
       setChainName,
-      clientId,
+      clientId: clientId || '',
     }),
     [chainName_, setChainName],
   );

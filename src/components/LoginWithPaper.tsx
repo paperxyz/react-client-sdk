@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { openCenteredPopup } from '../lib/utils';
 import { usePaperSDKContext } from '../Provider';
@@ -9,9 +10,9 @@ interface LoginWithPaperProps {
   onError?: (error: PaperSDKError) => void;
   onWindowClose?: () => void;
   children?: ({
-    clickLoginButton,
+    onClick,
   }: {
-    clickLoginButton: () => void;
+    onClick: () => void;
   }) => React.ReactNode | React.ReactNode;
   className?: string;
 }
@@ -64,10 +65,10 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  const url = new URL('http://localhost:3001/sdk/v1/login-with-paper');
+  const url = new URL('/sdk/v1/login-with-paper', PAPER_APP_URL);
   url.searchParams.append('chainName', chainName);
   url.searchParams.append('clientId', clientId);
-  const clickLoginButton = () => {
+  const onClick = () => {
     const loginWindow = openCenteredPopup({
       url: url.href,
       windowName: 'PaperLogin',
@@ -81,12 +82,12 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
   return (
     <>
       {children && isChildrenFunction ? (
-        children({ clickLoginButton })
+        children({ onClick })
       ) : children ? (
-        <a onClick={clickLoginButton}>{children} </a>
+        <a onClick={onClick}>{children} </a>
       ) : (
-        <Button onClick={clickLoginButton} className={className}>
-          <span style={{ marginRight: '10px' }}>Login With Paper</span>
+        <Button onClick={onClick} className={className}>
+          <span style={{ marginRight: '10px' }}>Log In With Paper</span>
           <svg
             width='15'
             height='30'

@@ -1,31 +1,36 @@
 import React, { useEffect } from 'react';
+import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
-import { PaperUser } from '../interfaces/PaperUser';
 import { openCenteredPopup } from '../lib/utils';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './base/Button';
 
 interface LoginWithPaperProps {
-  onSuccess?: (user: PaperUser) => void;
+  onSuccess?: (code: string) => void;
   onError?: (error: PaperSDKError) => void;
+  onWindowClose?: () => void;
   children?: ({
-    clickLoginButton,
+    onClick,
   }: {
-    clickLoginButton: () => void;
+    onClick: () => void;
   }) => React.ReactNode | React.ReactNode;
+  className?: string;
 }
 
 const enum LOGIN_WITH_PAPER_EVENT_TYPE {
   USER_LOGIN_SUCCESS = 'userLoginSuccess',
   USER_LOGIN_FAILED = 'userLoginFailed',
+  USER_CLOSE_LOGIN_PAGE = 'userCloseLoginPage',
 }
 
 export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
   onSuccess,
   onError,
+  onWindowClose,
+  className,
   children,
 }) => {
-  const { chainName } = usePaperSDKContext();
+  const { chainName, clientId } = usePaperSDKContext();
   const isChildrenFunction = typeof children === 'function';
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -33,14 +38,20 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       switch (data.eventType) {
         case LOGIN_WITH_PAPER_EVENT_TYPE.USER_LOGIN_SUCCESS:
           if (onSuccess) {
-            onSuccess(data.values);
+            onSuccess(data.values.accessCode);
           }
           break;
+        case LOGIN_WITH_PAPER_EVENT_TYPE.USER_CLOSE_LOGIN_PAGE: {
+          if (onWindowClose) {
+            onWindowClose();
+          }
+          break;
+        }
         case LOGIN_WITH_PAPER_EVENT_TYPE.USER_LOGIN_FAILED:
           if (onError) {
             onError({
-              code: PaperSDKErrorCode.UserClosedWindow,
-              error: new Error(PaperSDKErrorCode.UserClosedWindow),
+              code: PaperSDKErrorCode.UserLoginFailed,
+              error: new Error(PaperSDKErrorCode.UserLoginFailed),
             });
           }
           break;
@@ -54,27 +65,32 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  const url = new URL('http://localhost:3001/sdk/v1/login-with-paper');
+  const url = new URL('/sdk/v1/login-with-paper', PAPER_APP_URL);
   url.searchParams.append('chainName', chainName);
-  const clickLoginButton = () => {
-    openCenteredPopup({
+  url.searchParams.append('clientId', clientId);
+  const onClick = () => {
+    const loginWindow = openCenteredPopup({
       url: url.href,
       windowName: 'PaperLogin',
       win: window,
       w: 400,
       h: 600,
     });
+<<<<<<< HEAD
+=======
+    loginWindow?.focus();
+>>>>>>> b9346957764c66b1e1c1f2247aa9ee1001f9b895
   };
 
   return (
     <>
       {children && isChildrenFunction ? (
-        children({ clickLoginButton })
+        children({ onClick })
       ) : children ? (
-        <a onClick={clickLoginButton}>{children} </a>
+        <a onClick={onClick}>{children} </a>
       ) : (
-        <Button onClick={clickLoginButton}>
-          <span style={{ marginRight: '10px' }}>Login With Paper</span>
+        <Button onClick={onClick} className={className}>
+          <span style={{ marginRight: '10px' }}>Log In With Paper</span>
           <svg
             width='15'
             height='30'

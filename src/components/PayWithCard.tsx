@@ -5,6 +5,39 @@ import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 
+export const openCenteredPopup = ({
+  url,
+  title = 'Paper Checkout',
+  width,
+  height,
+}: {
+  url: string;
+  title?: string;
+  width: number;
+  height: number;
+}): void => {
+  if (!window?.top) {
+    return;
+  }
+
+  const y = window.top.outerHeight / 2 + window.top.screenY - height / 2;
+  const x = window.top.outerWidth / 2 + window.top.screenX - width / 2;
+  window.open(
+    url,
+    title,
+    `toolbar=no,
+    location=no,
+    status=no,
+    menubar=no,
+    scrollbars=yes,
+    resizable=yes,
+    width=${width},
+    height=${height},
+    top=${y},
+    left=${x}`,
+  );
+};
+
 interface PayWithCardProps {
   checkoutId: string;
   recipientWalletAddress: string;
@@ -38,10 +71,16 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 }) => {
   const { chainName } = usePaperSDKContext();
 
-  // Handle message events from iframe.
+  // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (!event.origin.startsWith(PAPER_APP_URL)) {
+        return;
+      }
       const data = event.data;
+      const payWithCardIframe = document.getElementById(
+        'payWithCardIframe',
+      ) as HTMLIFrameElement;
 
       switch (data.eventType) {
         case 'payWithCardError':
@@ -52,6 +91,12 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               error: data.error,
             });
           }
+          payWithCardIframe?.contentWindow?.postMessage(
+            {
+              ...data,
+            },
+            '*',
+          );
           break;
 
         case 'payWithCardCancel':
@@ -59,15 +104,27 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           if (onCancel) {
             onCancel();
           }
+          payWithCardIframe?.contentWindow?.postMessage(
+            {
+              ...data,
+            },
+            '*',
+          );
           break;
 
-        case 'payWithCardPaymentSuccess':
+        case 'paymentSuccess':
           if (onPaymentSuccess) {
             onPaymentSuccess({ id: data.id });
           }
+          payWithCardIframe?.contentWindow?.postMessage(
+            {
+              ...data,
+            },
+            '*',
+          );
           break;
 
-        case 'payWithCardTransferSuccess':
+        case 'transferSuccess':
           if (onTransferSuccess) {
             // @ts-ignore
             onTransferSuccess({
@@ -75,6 +132,20 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               // ...
             });
           }
+          payWithCardIframe?.contentWindow?.postMessage(
+            {
+              ...data,
+            },
+            '*',
+          );
+          break;
+
+        case 'openReviewPaymentPopupWindow':
+          openCenteredPopup({
+            url: data.url,
+            width: data.width,
+            height: data.height,
+          });
           break;
 
         default:
@@ -129,6 +200,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
   return (
     <iframe
+      id='payWithCardIframe'
       src={payWithCardUrl.href}
       width='100%'
       height='100%'

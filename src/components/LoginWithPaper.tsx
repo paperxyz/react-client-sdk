@@ -76,10 +76,7 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
       w: 400,
       h: 600,
     });
-<<<<<<< HEAD
-=======
     loginWindow?.focus();
->>>>>>> b9346957764c66b1e1c1f2247aa9ee1001f9b895
   };
 
   return (

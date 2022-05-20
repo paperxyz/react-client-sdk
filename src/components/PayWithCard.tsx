@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 
+/**
+ * Opens a popup centered on the parent page and returns a reference to the window.
+ * The caller can close the popup with `popupWindow.close()`.
+ * @returns The Window that was popped up
+ */
 export const openCenteredPopup = ({
   url,
   title = 'Paper Checkout',
@@ -15,14 +20,14 @@ export const openCenteredPopup = ({
   title?: string;
   width: number;
   height: number;
-}): void => {
+}): Window | null => {
   if (!window?.top) {
-    return;
+    return null;
   }
 
   const y = window.top.outerHeight / 2 + window.top.screenY - height / 2;
   const x = window.top.outerWidth / 2 + window.top.screenX - width / 2;
-  window.open(
+  return window.open(
     url,
     title,
     `toolbar=no,
@@ -70,6 +75,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onError,
 }) => {
   const { chainName } = usePaperSDKContext();
+  const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
@@ -114,6 +120,10 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
         case 'paymentSuccess':
           if (onPaymentSuccess) {
+            // If onPaymentSuccess is defined, close the popup and assume the caller wants to own the buyer experience after payment.
+            if (reviewPaymentPopupWindowRef.current) {
+              reviewPaymentPopupWindowRef.current.close();
+            }
             onPaymentSuccess({ id: data.id });
           }
           payWithCardIframe?.contentWindow?.postMessage(
@@ -141,7 +151,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           break;
 
         case 'openReviewPaymentPopupWindow':
-          openCenteredPopup({
+          reviewPaymentPopupWindowRef.current = openCenteredPopup({
             url: data.url,
             width: data.width,
             height: data.height,
@@ -196,6 +206,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
+  // Add timestamp to prevent loading a cached page.
   payWithCardUrl.searchParams.append('date', Date.now().toString());
 
   return (

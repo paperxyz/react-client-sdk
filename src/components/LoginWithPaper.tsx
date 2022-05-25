@@ -87,7 +87,9 @@ export const LoginWithPaper: React.FC<LoginWithPaperProps> = ({
         <a onClick={onClick}>{children} </a>
       ) : (
         <Button onClick={onClick} className={className}>
-          <span style={{ marginRight: '10px' }}>Log In With Paper</span>
+          <span style={{ marginRight: '10px' }}>
+            Verify Ownership with Paper
+          </span>
           <svg
             width='15'
             height='30'

@@ -29,7 +29,6 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
       // if (event.origin !== "https://paper.xyz") return;
 
       const data = event.data;
-      console.log('data is ', data);
 
       if (data.eventType === 'verifyEmailEmailVerificationInitiated') {
         if (onEmailVerificationInitiated) {

@@ -1,12 +1,18 @@
+/**
+ * Opens a popup centered on the parent page and returns a reference to the window.
+ * The caller can close the popup with `popupWindow.close()`.
+ * @returns The Window that was popped up
+ */
+
 export function openCenteredPopup({
   url,
-  windowName,
+  windowName = 'Paper Checkout',
   win,
   w,
   h,
 }: {
   url: string;
-  windowName: string;
+  windowName?: string;
   win: Window & typeof globalThis;
   w: number;
   h: number;
@@ -20,6 +26,15 @@ export function openCenteredPopup({
   return win.open(
     url,
     windowName,
-    `toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,copyhistory=no,width=${w},height=${h},top=${y},left=${x}`,
+    `toolbar=no,
+    location=no,
+    status=no,
+    menubar=no,
+    scrollbars=yes,
+    resizable=yes,
+    width=${w},
+    height=${h},
+    top=${y},
+    left=${x}`,
   );
 }

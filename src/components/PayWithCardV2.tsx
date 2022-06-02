@@ -4,13 +4,9 @@ import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils';
-import { usePaperSDKContext } from '../Provider';
 
 interface PayWithCardProps {
-  checkoutId: string;
-  recipientWalletAddress: string;
-  emailAddress: string;
-  quantity?: number;
+  paymentIntentId: string;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -25,10 +21,7 @@ interface PayWithCardProps {
 }
 
 export const PayWithCard: React.FC<PayWithCardProps> = ({
-  checkoutId,
-  recipientWalletAddress,
-  emailAddress,
-  quantity,
+  paymentIntentId,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -37,7 +30,6 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onCancel,
   onError,
 }) => {
-  const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
 
   // Handle message events from the popup. Pass along the message to the iframe as well
@@ -136,18 +128,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Build iframe URL with query params.
   const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
 
-  payWithCardUrl.searchParams.append('checkoutId', checkoutId);
-  payWithCardUrl.searchParams.append(
-    'recipientWalletAddress',
-    recipientWalletAddress,
-  );
-  payWithCardUrl.searchParams.append('chainName', chainName);
-  if (emailAddress) {
-    payWithCardUrl.searchParams.append('emailAddress', emailAddress);
-  }
-  if (quantity) {
-    payWithCardUrl.searchParams.append('quantity', quantity.toString());
-  }
+  payWithCardUrl.searchParams.append('paymentIntentId', paymentIntentId);
+
   if (options.colorPrimary) {
     payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);
   }

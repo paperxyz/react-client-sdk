@@ -42,6 +42,7 @@ export interface PaperCheckoutProps {
   recipientWalletAddress?: string;
   emailAddress?: string;
   quantity?: number;
+  metadata?: Record<string, any>;
   appName?: string;
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
@@ -63,6 +64,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   recipientWalletAddress,
   emailAddress,
   quantity,
+  metadata,
   appName,
   options = {
     width: 400,
@@ -146,6 +148,12 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   }
   if (quantity) {
     checkoutUrl.searchParams.append('quantity', quantity.toString());
+  }
+  if (metadata) {
+    checkoutUrl.searchParams.append(
+      'metadata',
+      encodeURIComponent(JSON.stringify(metadata)),
+    );
   }
 
   checkoutUrl.searchParams.append('date', Date.now().toString());

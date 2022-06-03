@@ -48,6 +48,7 @@ interface PayWithCardProps {
   recipientWalletAddress: string;
   emailAddress: string;
   quantity?: number;
+  metadata?: Record<string, any>;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -66,6 +67,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   recipientWalletAddress,
   emailAddress,
   quantity,
+  metadata,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -183,6 +185,12 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   }
   if (quantity) {
     payWithCardUrl.searchParams.append('quantity', quantity.toString());
+  }
+  if (metadata) {
+    payWithCardUrl.searchParams.append(
+      'metadata',
+      encodeURIComponent(JSON.stringify(metadata)),
+    );
   }
   if (options.colorPrimary) {
     payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);

@@ -23,6 +23,9 @@ const enum VERIFY_OWNERSHIP_WITH_PAPER_EVENT_TYPE {
   USER_CLOSE_LOGIN_PAGE = 'userCloseLoginPage',
 }
 
+/**
+ * @deprecated - Paper currently doesn't plan to further develop the wallet product.
+ */
 export const VerifyOwnershipWithPaper: React.FC<
   VerifyOwnershipWithPaperProps
 > = ({ onSuccess, onError, onWindowClose, className, children }) => {

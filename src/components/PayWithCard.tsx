@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
+import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 
@@ -58,6 +59,7 @@ interface PayWithCardProps {
   };
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
+  onReview?: (result: ReviewResult) => void;
   onCancel?: () => void;
   onError?: (error: PaperSDKError) => void;
 }
@@ -73,6 +75,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   },
   onPaymentSuccess,
   onTransferSuccess,
+  onReview,
   onCancel,
   onError,
 }) => {
@@ -150,6 +153,12 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
             },
             '*',
           );
+          break;
+
+        case 'review':
+          if (onReview) {
+            onReview({ id: data.id });
+          }
           break;
 
         case 'openReviewPaymentPopupWindow':

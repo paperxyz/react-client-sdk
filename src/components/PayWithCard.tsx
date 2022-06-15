@@ -81,6 +81,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 }) => {
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
+  console.log('using test react client sdk');
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {

@@ -1,4 +1,6 @@
-export const PAPER_APP_URL = 'https://paper.xyz';
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// export const PAPER_APP_URL = 'https://paper.xyz';
+export const PAPER_APP_URL = 'http://localhost:3000';
 
 export const DEFAULT_BRAND_OPTIONS = {
   colorPrimary: '#cf3781',

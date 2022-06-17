@@ -44,6 +44,8 @@ export interface PaperCheckoutProps {
   quantity?: number;
   metadata?: Record<string, any>;
   appName?: string;
+  onOpenCheckout?: () => void;
+  onCloseCheckout?: () => void;
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
   options?: {
@@ -71,6 +73,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     height: 800,
     ...DEFAULT_BRAND_OPTIONS,
   },
+  onOpenCheckout,
+  onCloseCheckout,
   onPaymentSuccess,
   onTransferSuccess,
   children,
@@ -100,7 +104,11 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
           break;
 
         case 'modalClosed':
+          // Emitted when the iframe decides to close, such as when the purchase is completed.
           setIsOpen(false);
+          if (onCloseCheckout) {
+            onCloseCheckout();
+          }
           break;
 
         default:
@@ -156,8 +164,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     );
   }
 
-  checkoutUrl.searchParams.append('date', Date.now().toString());
-
+  // Default button if the app doesn't pass one in.
   const clickableElement = children || (
     <button
       style={{
@@ -195,19 +202,39 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
           top=${y},
           left=${x}`,
         );
+
+        if (onOpenCheckout) {
+          onOpenCheckout();
+        }
       };
       return <a onClick={onClick}>{clickableElement}</a>;
     }
 
     case PaperCheckoutDisplay.NEW_TAB: {
-      return (
-        <a onClick={() => window.open(checkoutUrl, '_blank')}>
-          {clickableElement}
-        </a>
-      );
+      const onClick = () => {
+        window.open(checkoutUrl, '_blank');
+        if (onOpenCheckout) {
+          onOpenCheckout();
+        }
+      };
+      return <a onClick={onClick}>{clickableElement}</a>;
     }
 
     case PaperCheckoutDisplay.MODAL: {
+      const onOpen = () => {
+        setIsOpen(true);
+        if (onOpenCheckout) {
+          onOpenCheckout();
+        }
+      };
+
+      const onClose = () => {
+        setIsOpen(false);
+        if (onCloseCheckout) {
+          onCloseCheckout();
+        }
+      };
+
       return (
         <PaperCheckoutModal
           clickableElement={clickableElement}
@@ -215,19 +242,35 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
           width={options.width}
           height={options.height}
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          onOpen={onOpen}
+          onClose={onClose}
         />
       );
     }
 
     case PaperCheckoutDisplay.DRAWER: {
+      const onOpen = () => {
+        setIsOpen(true);
+        if (onOpenCheckout) {
+          onOpenCheckout();
+        }
+      };
+
+      const onClose = () => {
+        setIsOpen(false);
+        if (onCloseCheckout) {
+          onCloseCheckout();
+        }
+      };
+
       return (
         <PaperCheckoutDrawer
           clickableElement={clickableElement}
           checkoutUrl={checkoutUrl.href}
           width={options.width}
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          onOpen={onOpen}
+          onClose={onClose}
         />
       );
     }
@@ -256,7 +299,7 @@ const inlineStyles: { [name: string]: any } = {
     right: 0,
     bottom: 0,
     margin: 0,
-    zIndex: 1,
+    zIndex: 1000,
     overflow: 'hidden',
     display: 'flex',
     visibility: 'hidden',
@@ -284,6 +327,8 @@ const inlineStyles: { [name: string]: any } = {
     opacity: 0,
     top: '5%',
     transition: 'all 0.2s ease',
+    maxWidth: '100vw',
+    // maxHeight: '100vh',
   },
   modalDialogIsVisible: {
     visibility: 'visible',
@@ -318,17 +363,19 @@ const PaperCheckoutDrawer = ({
   checkoutUrl,
   width,
   isOpen,
-  setIsOpen,
+  onOpen,
+  onClose,
 }: {
   clickableElement: React.ReactNode;
   checkoutUrl: string;
   width: number;
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onOpen: () => void;
+  onClose: () => void;
 }) => {
   return (
     <>
-      <a onClick={() => setIsOpen(true)}>{clickableElement}</a>
+      <a onClick={onOpen}>{clickableElement}</a>
 
       <div
         className='paper-overlay'
@@ -343,15 +390,13 @@ const PaperCheckoutDrawer = ({
           style={{
             ...inlineStyles.drawerDialog,
             ...(isOpen ? inlineStyles.drawerDialogIsVisible : {}),
+            width,
           }}
         >
-          <button
-            onClick={() => setIsOpen(false)}
-            style={inlineStyles.modalCloseButton}
-          >
+          <button onClick={onClose} style={inlineStyles.modalCloseButton}>
             &times;
           </button>
-          <iframe src={checkoutUrl} width={width} height='100%' />
+          <iframe src={checkoutUrl} width='100%' height='100%' />
         </div>
       </div>
     </>
@@ -364,18 +409,25 @@ const PaperCheckoutModal = ({
   width,
   height,
   isOpen,
-  setIsOpen,
+  onOpen,
+  onClose,
 }: {
   clickableElement: React.ReactNode;
   checkoutUrl: string;
   width: number;
   height: number;
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onOpen: () => void;
+  onClose: () => void;
 }) => {
+  // Set the max height to the window's inner height.
+  // This method handles mobile browser heights more reliably than 100vh.
+  const [innerHeight, setInnerHeight] = useState<number>(height);
+  useEffect(() => setInnerHeight(window.innerHeight), []);
+
   return (
     <>
-      <a onClick={() => setIsOpen(true)}>{clickableElement}</a>
+      <a onClick={onOpen}>{clickableElement}</a>
 
       <div
         className='paper-overlay'
@@ -390,15 +442,15 @@ const PaperCheckoutModal = ({
           style={{
             ...inlineStyles.modalDialog,
             ...(isOpen ? inlineStyles.modalDialogIsVisible : {}),
+            width,
+            height,
+            maxHeight: innerHeight,
           }}
         >
-          <button
-            onClick={() => setIsOpen(false)}
-            style={inlineStyles.modalCloseButton}
-          >
+          <button onClick={onClose} style={inlineStyles.modalCloseButton}>
             &times;
           </button>
-          <iframe src={checkoutUrl} width={width} height={height} />
+          <iframe src={checkoutUrl} width='100%' height='100%' />
         </div>
       </div>
     </>

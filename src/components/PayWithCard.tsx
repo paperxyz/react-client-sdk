@@ -60,7 +60,7 @@ interface PayWithCardProps {
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
   onReview?: (result: ReviewResult) => void;
-  onCancel?: () => void;
+  onClose?: () => void;
   onError?: (error: PaperSDKError) => void;
 }
 
@@ -76,7 +76,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onPaymentSuccess,
   onTransferSuccess,
   onReview,
-  onCancel,
+  onClose,
   onError,
 }) => {
   const { chainName } = usePaperSDKContext();
@@ -101,19 +101,6 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               code: data.code as PaperSDKErrorCode,
               error: data.error,
             });
-          }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
-          break;
-
-        case 'payWithCardCancel':
-          console.error('Paper SDK PayWithCard cancelled');
-          if (onCancel) {
-            onCancel();
           }
           payWithCardIframe?.contentWindow?.postMessage(
             {
@@ -167,6 +154,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
             width: data.width,
             height: data.height,
           });
+          if (onClose) {
+            addOnCloseListener({
+              window: reviewPaymentPopupWindowRef.current,
+              contentWindow: payWithCardIframe?.contentWindow,
+              onClose,
+              contentWindowData: data,
+            });
+          }
           break;
 
         default:
@@ -235,4 +230,29 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       allowTransparency
     />
   );
+};
+
+const addOnCloseListener = ({
+  window,
+  onClose,
+  contentWindow,
+  contentWindowData,
+}: {
+  window?: any;
+  onClose: () => void;
+  contentWindow?: any;
+  contentWindowData?: any;
+}) => {
+  if (!window) return;
+
+  const CHECK_CLOSED_INTERVAL_MILLISECONDS = 500;
+  const checkWindowClosedInterval = setInterval(function () {
+    if (window.closed) {
+      clearInterval(checkWindowClosedInterval);
+      if (onClose) {
+        onClose();
+      }
+      contentWindow?.postMessage({ ...contentWindowData }, '*');
+    }
+  }, CHECK_CLOSED_INTERVAL_MILLISECONDS);
 };

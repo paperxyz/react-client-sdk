@@ -328,7 +328,6 @@ const inlineStyles: { [name: string]: any } = {
     top: '5%',
     transition: 'all 0.2s ease',
     maxWidth: '100vw',
-    // maxHeight: '100vh',
   },
   modalDialogIsVisible: {
     visibility: 'visible',
@@ -396,7 +395,7 @@ const PaperCheckoutDrawer = ({
           <button onClick={onClose} style={inlineStyles.modalCloseButton}>
             &times;
           </button>
-          <iframe src={checkoutUrl} width='100%' height='100%' />
+          {isOpen && <iframe src={checkoutUrl} width='100%' height='100%' />}
         </div>
       </div>
     </>
@@ -450,7 +449,7 @@ const PaperCheckoutModal = ({
           <button onClick={onClose} style={inlineStyles.modalCloseButton}>
             &times;
           </button>
-          <iframe src={checkoutUrl} width='100%' height='100%' />
+          {isOpen && <iframe src={checkoutUrl} width='100%' height='100%' />}
         </div>
       </div>
     </>

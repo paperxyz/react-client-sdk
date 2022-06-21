@@ -1,20 +1,11 @@
-import styled from 'styled-components';
+import { HTMLAttributes } from 'react';
 
-export const Button = styled.button`
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  background-color: #01212b;
-  color: #fff;
-  padding: 13px 35px;
-  border-radius: 10px;
-  transition: all 0.1s ease-in-out;
-  &:hover {
-    background-color: #013140;
-    transform: scale(1.01);
-  }
-  &:active {
-    background-color: #011e26;
-    transform: scale(1);
-  }
-`;
+export const Button = (props: HTMLAttributes<HTMLButtonElement>) => {
+  return (
+    <button
+      className={`font-bold text-center text-[#ffff] transition-all rounded-lg px-8 py-4 bg-[#01212b] hover:bg-[#013140] hover:scale-[1.01] active:bg-[#011e26] active:scale-100 ${props.className}`}
+    >
+      {props.children}
+    </button>
+  );
+};

@@ -4,7 +4,7 @@ import React, {
   SetStateAction,
   useContext,
   useMemo,
-  useState
+  useState,
 } from 'react';
 
 type SupportedChainName =
@@ -21,31 +21,29 @@ interface SDKContext {
   setChainName: Dispatch<SetStateAction<SupportedChainName>>;
   clientId: string;
 }
-
-export interface PaperProviderProps {
-  chainName: SupportedChainName;
-  clientId?: string;
-}
 const PaperSDKContext = createContext<SDKContext>({
   chainName: 'Polygon',
   setChainName: () => {},
   clientId: '',
 });
 
+export interface PaperProviderProps {
+  chainName: SupportedChainName;
+  clientId?: string;
+}
 export const PaperSDKProvider = ({
   chainName,
   clientId,
   children,
 }: React.PropsWithChildren<PaperProviderProps>) => {
   const [chainName_, setChainName] = useState<SupportedChainName>(chainName);
-
   const contextValue = useMemo(
     () => ({
       chainName: chainName_,
       setChainName,
       clientId: clientId || '',
     }),
-    [chainName_, setChainName],
+    [chainName_],
   );
 
   return (

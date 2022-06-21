@@ -13,9 +13,11 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:lib": "tsup --env.NODE_ENV production --minify --format esm,cjs --watch",
-    "build": "concurrently \"yarn build:lib\" \"yarn generate-types\"",
-    "generate-types": "tsc -w"
+    "dev:lib": "tsup --env.NODE_ENV production --minify --format esm,cjs --watch",
+    "dev:types": "tsc -w",
+    "dev:css": "tailwindcss -w -i ./styles/app.css -o src/styles/app.css",
+    "dev": "concurrently \"yarn dev:css\" \"yarn dev:lib\" \"yarn dev:types\"",
+    "build": "tsup --env.NODE_ENV production --minify --format esm,cjs && yarn tsc"
   },
   "repository": {
     "type": "git",
@@ -32,9 +34,11 @@
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
-    "@types/styled-components": "^5.1.25",
+    "autoprefixer": "^10.4.7",
     "concurrently": "^7.1.0",
+    "postcss": "^8.4.14",
     "prettier": "^2.6.2",
+    "tailwindcss": "^3.1.4",
     "tsup": "^5.12.6",
     "typescript": "^4.6.3"
   },
@@ -50,6 +54,6 @@
     "example": "examples"
   },
   "dependencies": {
-    "styled-components": "^5.3.5"
+    "ethers": "^5.6.9"
   }
 }

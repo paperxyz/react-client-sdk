@@ -1,8 +1,9 @@
-import ethers from 'ethers';
 import React, { useEffect, useState } from 'react';
+import { useSigner } from 'wagmi';
 import { PAPER_APP_URL } from '../constants/settings';
-import { Button } from './base/Button';
-import { Modal } from './base/Modal';
+import { Button } from './common/Button';
+import { Modal } from './common/Modal';
+import { ConnectWallet } from './ConnectWallet';
 
 export type PayWithCryptoError = {
   /**
@@ -24,7 +25,6 @@ interface PayWithCryptpIntrface {
   onSuccess?: (code: string) => void;
   onError?: (error: PayWithCryptoError) => void;
   onModalClose?: () => void;
-  signer?: ethers.Signer;
   children?:
     | React.ReactNode
     | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
@@ -39,10 +39,21 @@ export const PayWithCrypto = ({
   onModalClose,
 }: PayWithCryptpIntrface): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
+  const { data: signer } = useSigner();
+  const isJsonRpcSignerPresent = !!signer;
+
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => {
+    console.log('openModal isOpen', isOpen);
     setIsOpen(true);
   };
+  const closeModal = () => {
+    setIsOpen(false);
+    if (onModalClose) {
+      onModalClose();
+    }
+  };
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.origin.startsWith(PAPER_APP_URL)) {
@@ -72,39 +83,42 @@ export const PayWithCrypto = ({
     };
   }, []);
 
+  const payWithCryptoUrl = new URL(
+    '/sdk/v1/pay-with-crypto',
+    'http://localhost:3000',
+  );
+
   return (
     <>
       {children && isChildrenFunction ? (
         children({ openModal })
-      ) : children ? (
-        <button onClick={openModal}>{children}</button>
       ) : (
-        <div>
-          <Button className={className} onClick={openModal}>
-            Pay With ETH{' '}
-            <span
-              className='text-6xl text-red-400'
-              style={{
-                color: 'gray',
-              }}
-            >
-              on Ethereum
-            </span>
-          </Button>
-        </div>
-      )}
-      {isOpen && (
-        <Modal
-          isOpen={isOpen}
-          onClose={() => {
-            setIsOpen(false);
-            if (onModalClose) {
-              onModalClose();
-            }
-          }}
-        >
-          <button>close</button>
-        </Modal>
+        <>
+          {children ? (
+            <button onClick={openModal}>{children}</button>
+          ) : (
+            <Button className={className} onClick={openModal}>
+              Pay With ETH{' '}
+              <span className='font-bold text-gray-500'>on Ethereum</span>
+            </Button>
+          )}
+          <Modal isOpen={isOpen} onClose={closeModal}>
+            {isJsonRpcSignerPresent ? (
+              <iframe
+                id='payWithCardIframe'
+                src={payWithCryptoUrl.href}
+                width='100%'
+                height='100%'
+              />
+            ) : (
+              <ConnectWallet
+                onWalletConnected={() => {
+                  console.log('wallet connected');
+                }}
+              />
+            )}
+          </Modal>
+        </>
       )}
     </>
   );

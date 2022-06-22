@@ -3,7 +3,7 @@ import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
 import { usePaperSDKContext } from '../Provider';
-import { Button } from './base/Button';
+import { Button } from './common/Button';
 
 interface CreateWalletProps {
   emailAddress: string;

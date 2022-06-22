@@ -6,6 +6,11 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { publicProvider } from 'wagmi/providers/public';
 
 type SupportedChainName =
   | 'Polygon'
@@ -29,9 +34,11 @@ const PaperSDKContext = createContext<SDKContext>({
 
 export interface PaperProviderProps {
   chainName: SupportedChainName;
+  appName?: string;
   clientId?: string;
 }
 export const PaperSDKProvider = ({
+  appName,
   chainName,
   clientId,
   children,
@@ -46,10 +53,45 @@ export const PaperSDKProvider = ({
     [chainName_],
   );
 
+  const providers = [publicProvider()];
+  const { chains, provider, webSocketProvider } = configureChains(
+    [chain.mainnet, chain.rinkeby],
+    providers,
+  );
+
+  const client = createClient({
+    autoConnect: true,
+    connectors: [
+      new MetaMaskConnector({
+        chains,
+        options: {
+          shimChainChangedDisconnect: true,
+          shimDisconnect: true,
+        },
+      }),
+      new WalletConnectConnector({
+        chains,
+        options: {
+          qrcode: true,
+        },
+      }),
+      new CoinbaseWalletConnector({
+        chains,
+        options: {
+          appName: appName || 'Powered By Paper',
+        },
+      }),
+    ],
+    provider,
+    webSocketProvider,
+  });
+
   return (
-    <PaperSDKContext.Provider value={contextValue}>
-      {children}
-    </PaperSDKContext.Provider>
+    <WagmiConfig client={client}>
+      <PaperSDKContext.Provider value={contextValue}>
+        {children}
+      </PaperSDKContext.Provider>
+    </WagmiConfig>
   );
 };
 

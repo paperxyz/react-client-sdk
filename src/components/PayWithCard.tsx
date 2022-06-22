@@ -4,7 +4,7 @@ import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
-import { openCenteredPopup } from '../lib/utils';
+import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
 
 interface PayWithCardProps {

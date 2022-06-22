@@ -13,11 +13,14 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:lib": "tsup --env.NODE_ENV production --minify --format esm,cjs --watch",
-    "dev:types": "tsc -w",
+    "compile:lib": "tsup --format esm,cjs",
+    "dev:lib": "yarn compile:lib --watch",
+    "dev:types": "yarn build:types -w",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o src/styles/app.css",
     "dev": "concurrently \"yarn dev:css\" \"yarn dev:lib\" \"yarn dev:types\"",
-    "build": "tsup --env.NODE_ENV production --minify --format esm,cjs && yarn tsc"
+    "build:types": "yarn tsc",
+    "build:lib": "yarn compile:lib --env.NODE_ENV production --minify",
+    "build": "yarn build:lib && yarn build:types"
   },
   "repository": {
     "type": "git",
@@ -30,30 +33,28 @@
   },
   "homepage": "https://docs.paper.xyz",
   "peerDependencies": {
-    "react": "^17 || ^18"
+    "ethers": "^5.6.9",
+    "react": ">=17.0.2",
+    "react-dom": ">=17.0.2"
   },
   "devDependencies": {
-    "@types/react": "^17.0.0",
+    "@babel/core": "^7.0.0",
+    "@types/react": ">=17.0.0",
     "autoprefixer": "^10.4.7",
     "concurrently": "^7.1.0",
+    "ethers": "^5.6.9",
     "postcss": "^8.4.14",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tailwindcss": "^3.1.4",
-    "tsup": "^5.12.6",
+    "tsup": "^6.1.2",
     "typescript": "^4.6.3"
   },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true
-  },
-  "directories": {
-    "example": "examples"
-  },
   "dependencies": {
-    "ethers": "^5.6.9"
+    "@headlessui/react": "^1.6.5",
+    "detect-browser": "^5.3.0",
+    "wagmi": "^0.4.12"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSigner } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
 import { PAPER_APP_URL } from '../constants/settings';
 import { Button } from './common/Button';
 import { Modal } from './common/Modal';
@@ -25,6 +25,7 @@ interface PayWithCryptpIntrface {
   onSuccess?: (code: string) => void;
   onError?: (error: PayWithCryptoError) => void;
   onModalClose?: () => void;
+  checkoutId: string;
   children?:
     | React.ReactNode
     | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
@@ -32,6 +33,7 @@ interface PayWithCryptpIntrface {
 }
 
 export const PayWithCrypto = ({
+  checkoutId,
   children,
   className,
   onError,
@@ -39,12 +41,12 @@ export const PayWithCrypto = ({
   onModalClose,
 }: PayWithCryptpIntrface): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
+  const { data: user } = useAccount();
   const { data: signer } = useSigner();
   const isJsonRpcSignerPresent = !!signer;
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => {
-    console.log('openModal isOpen', isOpen);
     setIsOpen(true);
   };
   const closeModal = () => {
@@ -87,6 +89,9 @@ export const PayWithCrypto = ({
     '/sdk/v1/pay-with-crypto',
     'http://localhost:3000',
   );
+  payWithCryptoUrl.searchParams.append('walletAddress', user?.address || '');
+  payWithCryptoUrl.searchParams.append('walletType', user?.connector?.id || '');
+  payWithCryptoUrl.searchParams.append('checkoutId', checkoutId);
 
   return (
     <>
@@ -106,16 +111,11 @@ export const PayWithCrypto = ({
             {isJsonRpcSignerPresent ? (
               <iframe
                 id='payWithCardIframe'
+                className='mx-auto h-[700px] w-80'
                 src={payWithCryptoUrl.href}
-                width='100%'
-                height='100%'
               />
             ) : (
-              <ConnectWallet
-                onWalletConnected={() => {
-                  console.log('wallet connected');
-                }}
-              />
+              <ConnectWallet />
             )}
           </Modal>
         </>

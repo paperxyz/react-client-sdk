@@ -44,11 +44,7 @@ export function WalletIcon({
   }
 }
 
-export const ConnectWallet = ({
-  onWalletConnected,
-}: {
-  onWalletConnected: () => void;
-}): React.ReactElement => {
+export const ConnectWallet = (): React.ReactElement => {
   const {
     connect,
     connectors,
@@ -97,7 +93,7 @@ export const ConnectWallet = ({
         {connectors.map((connector) => {
           return connector.ready ? (
             <Button
-              className='flex mb-4 mr-2 '
+              className='mb-4 mr-2 flex '
               disabled={isConnecting}
               isLoading={isConnecting && connector.id === pendingConnector?.id}
               loadingText='Connecting'

@@ -49,7 +49,7 @@ export const Modal = ({
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex items-center justify-center min-h-full'>
+          <div className='flex min-h-full items-center justify-center'>
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -59,13 +59,13 @@ export const Modal = ({
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='relative w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+              <Dialog.Panel className='relative h-auto w-full max-w-md transform overflow-hidden rounded-2xl bg-[#FAFAFA] p-3 text-left align-middle shadow-xl transition-all md:p-6'>
                 <button
                   aria-label='close modal'
-                  className='absolute p-2 rounded-full right-5 top-5 hover:cursor-pointer active:bg-gray-500/50'
+                  className='absolute right-5 top-5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
                 >
                   <svg
-                    className='w-5 h-5'
+                    className='h-5 w-5'
                     onClick={onClose}
                     fill='none'
                     stroke='currentColor'
@@ -73,9 +73,9 @@ export const Modal = ({
                     xmlns='http://www.w3.org/2000/svg'
                   >
                     <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
                       d='M6 18L18 6M6 6l12 12'
                     ></path>
                   </svg>

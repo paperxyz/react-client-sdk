@@ -1,17 +1,14 @@
 import { Dialog } from '@headlessui/react';
-import React, { useState } from 'react';
-import { Connector, useAccount, useConnect } from 'wagmi';
+import React from 'react';
+import { useAccount } from 'wagmi';
 import { CoinbaseWalleticon } from '../icons/CoinbaseWalleticon';
 
 import { IconProps, MetaMaskIcon } from '../icons/MetaMaskIcon';
 import { WalletConnectIcon } from '../icons/WalletConnectIcon';
+import { WalletType } from '../interfaces/WalletTypes';
+import { useConnectWallet } from '../lib/hooks/useConnectWallet';
 import { Button } from './common/Button';
 
-const enum WalletType {
-  MetaMask = 'metaMask',
-  CoinbaseWallet = 'coinbaseWallet',
-  WalletConnect = 'walletConnect',
-}
 export function WalletIcon({
   walletType,
   className,
@@ -44,39 +41,17 @@ export function WalletIcon({
   }
 }
 
-export const ConnectWallet = (): React.ReactElement => {
-  const {
-    connect,
-    connectors,
-    error,
-    isConnecting: _isConnecting,
-    pendingConnector,
-  } = useConnect();
-  const [isUpdatingMetaMaskAccount, setIsUpdatingMetaMaskAccount] =
-    useState(false);
-  const isConnecting = _isConnecting || isUpdatingMetaMaskAccount;
-
+export const ConnectWallet = ({
+  onWalletConnected,
+  onWalletConnectFail,
+}: {
+  onWalletConnected: () => void;
+  onWalletConnectFail: (walletType: WalletType, error: Error) => void;
+}): React.ReactElement => {
+  const { connectWallet, connectors, error, isConnecting, pendingConnector } =
+    useConnectWallet();
   const { data: user } = useAccount();
 
-  const connectWallet = (connector: Connector) => {
-    return async () => {
-      if (
-        user?.connector?.id === WalletType.MetaMask &&
-        connector.id === WalletType.MetaMask
-      ) {
-        setIsUpdatingMetaMaskAccount(true);
-        await window.ethereum?.request({
-          //@ts-ignore
-          method: 'wallet_requestPermissions',
-          //@ts-ignore
-          params: [{ eth_accounts: {} }],
-        });
-        setIsUpdatingMetaMaskAccount(false);
-      } else {
-        connect(connector);
-      }
-    };
-  };
   return (
     <>
       <Dialog.Title
@@ -95,10 +70,19 @@ export const ConnectWallet = (): React.ReactElement => {
             <Button
               className='mb-4 mr-2 flex '
               disabled={isConnecting}
-              isLoading={isConnecting && connector.id === pendingConnector?.id}
+              isLoading={
+                isConnecting &&
+                (connector.id === pendingConnector?.id ||
+                  (user?.connector?.id === connector.id &&
+                    connector.id === WalletType.MetaMask))
+              }
               loadingText='Connecting'
               key={connector.id}
-              onClick={connectWallet(connector)}
+              onClick={connectWallet(
+                connector,
+                onWalletConnected,
+                onWalletConnectFail,
+              )}
             >
               {<WalletIcon walletType={connector.id} className='mr-2' />}
               {connector.name}

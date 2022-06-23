@@ -78,7 +78,7 @@ export const PaperSDKProvider = ({
       new CoinbaseWalletConnector({
         chains,
         options: {
-          appName: appName || 'Powered By Paper',
+          appName: appName || 'Paper.xyz',
         },
       }),
     ],

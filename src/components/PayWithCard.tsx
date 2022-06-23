@@ -144,11 +144,11 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
 
   payWithCardUrl.searchParams.append('checkoutId', checkoutId);
+  payWithCardUrl.searchParams.append('chainName', chainName);
   payWithCardUrl.searchParams.append(
     'recipientWalletAddress',
     recipientWalletAddress,
   );
-  payWithCardUrl.searchParams.append('chainName', chainName);
   if (emailAddress) {
     payWithCardUrl.searchParams.append('emailAddress', emailAddress);
   }

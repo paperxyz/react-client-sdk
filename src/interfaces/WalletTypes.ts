@@ -3,3 +3,9 @@ export const enum WalletType {
   CoinbaseWallet = 'coinbaseWallet',
   WalletConnect = 'walletConnect',
 }
+
+export type onWalletConnectFailType = (
+  walletType: WalletType,
+  currentUserWalletType: WalletType,
+  error: Error,
+) => void;

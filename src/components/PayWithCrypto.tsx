@@ -3,7 +3,6 @@ import { useAccount, useSigner } from 'wagmi';
 import { WalletType } from '../interfaces/WalletTypes';
 import { Button } from './common/Button';
 import { Modal } from './common/Modal';
-import { Spinner } from './common/Spinner';
 import { ConnectWallet } from './ConnectWallet';
 
 export type PayWithCryptoError = {
@@ -75,7 +74,7 @@ export const PayWithCrypto = ({
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.startsWith('https://ceab-65-200-105-218.ngrok.io')) {
+      if (!event.origin.startsWith('https://f11d-65-200-105-218.ngrok.io')) {
         return;
       }
       const data = event.data;
@@ -110,7 +109,7 @@ export const PayWithCrypto = ({
 
   const payWithCryptoUrl = new URL(
     '/sdk/v1/pay-with-crypto',
-    'https://ceab-65-200-105-218.ngrok.io',
+    'https://f11d-65-200-105-218.ngrok.io',
   );
 
   payWithCryptoUrl.searchParams.append(
@@ -139,15 +138,16 @@ export const PayWithCrypto = ({
   const ModalContents =
     isJsonRpcSignerPresent && !isTryingToChangeWallet ? (
       <>
-        {isIframeLoading && (
-          <Spinner className='absolute top-1/2 left-1/2 h-8 w-8 text-black' />
-        )}
+        {/* {isIframeLoading && (
+          <Spinner className='absolute top-1/2 left-1/2 !h-8 !w-8 !text-black' />
+        )} */}
         <iframe
           id='payWithCardIframe'
           className='mx-auto h-[700px] w-80'
           src={payWithCryptoUrl.href}
           onLoad={() => {
-            setIsIframeLoading(false);
+            // causes a double refresh
+            // setIsIframeLoading(false);
           }}
           scrolling='no'
         />
@@ -157,10 +157,13 @@ export const PayWithCrypto = ({
         onWalletConnected={() => {
           setIsTryingToChangeWallet(false);
         }}
-        onWalletConnectFail={(walletType) => {
+        onWalletConnectFail={(walletType, userWalletType) => {
           // coinbase will fail if we try to go back and connect again. because we never disconnected.
           // we'll get the error of "user already connected". We simply ignore it here.
-          if (walletType === WalletType.CoinbaseWallet) {
+          if (
+            walletType === WalletType.CoinbaseWallet &&
+            userWalletType === walletType
+          ) {
             setIsTryingToChangeWallet(false);
           }
         }}

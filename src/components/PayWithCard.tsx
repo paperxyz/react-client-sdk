@@ -141,7 +141,12 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   }, []);
 
   // Build iframe URL with query params.
-  const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
+  const payWithCardUrl = new URL(
+    '/sdk/v1/pay-with-card',
+
+    'https://f11d-65-200-105-218.ngrok.io',
+  );
+  // PAPER_APP_URL);
 
   payWithCardUrl.searchParams.append('checkoutId', checkoutId);
   payWithCardUrl.searchParams.append('chainName', chainName);

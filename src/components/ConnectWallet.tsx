@@ -5,7 +5,7 @@ import { CoinbaseWalleticon } from '../icons/CoinbaseWalleticon';
 
 import { IconProps, MetaMaskIcon } from '../icons/MetaMaskIcon';
 import { WalletConnectIcon } from '../icons/WalletConnectIcon';
-import { WalletType } from '../interfaces/WalletTypes';
+import { onWalletConnectFailType, WalletType } from '../interfaces/WalletTypes';
 import { useConnectWallet } from '../lib/hooks/useConnectWallet';
 import { Button } from './common/Button';
 
@@ -46,7 +46,7 @@ export const ConnectWallet = ({
   onWalletConnectFail,
 }: {
   onWalletConnected: () => void;
-  onWalletConnectFail: (walletType: WalletType, error: Error) => void;
+  onWalletConnectFail: onWalletConnectFailType;
 }): React.ReactElement => {
   const { connectWallet, connectors, error, isConnecting, pendingConnector } =
     useConnectWallet();
@@ -66,16 +66,14 @@ export const ConnectWallet = ({
 
       <div className='flex flex-col py-5'>
         {connectors.map((connector) => {
+          console.log('connector.id', connector.id);
+          console.log('user?.connector?.id', user?.connector?.id);
+          console.log('pendingConnector?.id', pendingConnector?.id);
           return connector.ready ? (
             <Button
               className='mb-4 mr-2 flex '
               disabled={isConnecting}
-              isLoading={
-                isConnecting &&
-                (connector.id === pendingConnector?.id ||
-                  (user?.connector?.id === connector.id &&
-                    connector.id === WalletType.MetaMask))
-              }
+              isLoading={isConnecting && connector.id === pendingConnector?.id}
               loadingText='Connecting'
               key={connector.id}
               onClick={connectWallet(

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Connector, useAccount, useConnect, useDisconnect } from 'wagmi';
-import { WalletType } from '../../interfaces/WalletTypes';
+import {
+  onWalletConnectFailType,
+  WalletType,
+} from '../../interfaces/WalletTypes';
 
 export function useConnectWallet() {
   const [isUpdatingMetaMaskAccount, setIsUpdatingMetaMaskAccount] =
@@ -10,15 +13,18 @@ export function useConnectWallet() {
     connectors,
     error,
     isConnecting: _isConnecting,
-    pendingConnector,
+    pendingConnector: _pendingConnector,
   } = useConnect();
   const isConnecting = _isConnecting || isUpdatingMetaMaskAccount;
   const { disconnectAsync } = useDisconnect();
+  const pendingConnector = isUpdatingMetaMaskAccount
+    ? { id: WalletType.MetaMask }
+    : _pendingConnector;
 
   const connectWallet = (
     connector: Connector,
     onWalletConnected: () => void,
-    onWalletConnectFail: (walletType: WalletType, error: Error) => void,
+    onWalletConnectFail: onWalletConnectFailType,
   ) => {
     const { data: user } = useAccount();
 
@@ -39,7 +45,11 @@ export function useConnectWallet() {
         } catch (e) {
           // user cancel request, don't need to do anything.
           console.error('error connecting to user metamask', e);
-          onWalletConnectFail(WalletType.MetaMask, e as Error);
+          onWalletConnectFail(
+            WalletType.MetaMask,
+            user?.connector?.id as WalletType,
+            e as Error,
+          );
         }
         setIsUpdatingMetaMaskAccount(false);
       } else {
@@ -55,7 +65,11 @@ export function useConnectWallet() {
         } catch (e) {
           // user Cancel request, don't need to do anything
           console.error("Error connecting to user's wallet", e);
-          onWalletConnectFail(connector.id as WalletType, e as Error);
+          onWalletConnectFail(
+            connector.id as WalletType,
+            user?.connector?.id as WalletType,
+            e as Error,
+          );
         }
       }
     };

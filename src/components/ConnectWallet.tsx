@@ -61,7 +61,7 @@ export const ConnectWallet = ({
         Pay with ETH on Ethereum
       </Dialog.Title>
       <Dialog.Description className='text-sm text-gray-500'>
-        Connect your wallet to get started
+        Connect the wallet you would like to use to pay
       </Dialog.Description>
 
       <div className='flex flex-col py-5'>

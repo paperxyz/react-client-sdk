@@ -21,7 +21,7 @@ export function useConnectWallet() {
     onWalletConnectFail: (walletType: WalletType, error: Error) => void,
   ) => {
     const { data: user } = useAccount();
-    console.log('user', user);
+
     return async () => {
       if (
         user?.connector?.id === WalletType.MetaMask &&

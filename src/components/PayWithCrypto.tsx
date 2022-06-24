@@ -1,9 +1,9 @@
-import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { useAccount, useSigner } from 'wagmi';
 import { WalletType } from '../interfaces/WalletTypes';
 import { Button } from './common/Button';
 import { Modal } from './common/Modal';
+import { Spinner } from './common/Spinner';
 import { ConnectWallet } from './ConnectWallet';
 
 export type PayWithCryptoError = {
@@ -17,22 +17,17 @@ export type PayWithCryptoError = {
 
 export enum PayWithCryptoErrorCode {
   ErrorConnectingToSigner = 'No wallet present',
+  ErrorSendingTransaction = 'Something went wrong sending transaction',
 }
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
 }
 
-enum PayWithCryptoScreenState {
-  CONNECT_WALLET,
-  VIEW_PRICING_DETAILS,
-}
-
 interface PayWithCardProps {
   onSuccess?: (code: string) => void;
   onError?: (error: PayWithCryptoError) => void;
   onModalClose?: () => void;
-  cryptoPayer?: ethers.Signer;
   checkoutId: string;
   recipientWalletAddress?: string;
   emailAddress?: string;
@@ -52,7 +47,6 @@ export const PayWithCrypto = ({
   metadata,
   children,
   className,
-  cryptoPayer,
   onError,
   onSuccess,
   onModalClose,
@@ -60,10 +54,11 @@ export const PayWithCrypto = ({
   const isChildrenFunction = typeof children === 'function';
   const { data: user } = useAccount();
   const { data: _signer } = useSigner();
-  console.log('_signer', _signer);
-  console.log('user in payWithCrypto', user);
+
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  const signer = cryptoPayer || _signer;
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
+
+  const signer = _signer;
   const isJsonRpcSignerPresent = !!signer;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -72,6 +67,7 @@ export const PayWithCrypto = ({
   };
   const closeModal = () => {
     setIsOpen(false);
+    setIsIframeLoading(true);
     if (onModalClose) {
       onModalClose();
     }
@@ -86,6 +82,7 @@ export const PayWithCrypto = ({
       switch (data.eventType) {
         case 'goBackToChoosingWallet':
           setIsTryingToChangeWallet(true);
+          setIsIframeLoading(true);
 
           // if (onError) {
           //   onError({
@@ -97,6 +94,9 @@ export const PayWithCrypto = ({
           //   onSuccess('');
           // }
           break;
+        case 'payWithEthClick': {
+          break;
+        }
         default:
           break;
       }
@@ -112,16 +112,18 @@ export const PayWithCrypto = ({
     '/sdk/v1/pay-with-crypto',
     'https://ceab-65-200-105-218.ngrok.io',
   );
-  payWithCryptoUrl.searchParams.append('walletAddress', user?.address || '');
+
+  payWithCryptoUrl.searchParams.append(
+    'payerWalletAddress',
+    user?.address || '',
+  );
   payWithCryptoUrl.searchParams.append('walletType', user?.connector?.id || '');
   payWithCryptoUrl.searchParams.append('checkoutId', checkoutId);
 
-  if (recipientWalletAddress) {
-    payWithCryptoUrl.searchParams.append(
-      'recipientWalletAddress',
-      recipientWalletAddress,
-    );
-  }
+  payWithCryptoUrl.searchParams.append(
+    'recipientWalletAddress',
+    recipientWalletAddress || user?.address || '',
+  );
   if (emailAddress) {
     payWithCryptoUrl.searchParams.append('emailAddress', emailAddress);
   }
@@ -136,11 +138,20 @@ export const PayWithCrypto = ({
 
   const ModalContents =
     isJsonRpcSignerPresent && !isTryingToChangeWallet ? (
-      <iframe
-        id='payWithCardIframe'
-        className='mx-auto h-[700px] w-80'
-        src={payWithCryptoUrl.href}
-      />
+      <>
+        {isIframeLoading && (
+          <Spinner className='absolute top-1/2 left-1/2 h-8 w-8 text-black' />
+        )}
+        <iframe
+          id='payWithCardIframe'
+          className='mx-auto h-[700px] w-80'
+          src={payWithCryptoUrl.href}
+          onLoad={() => {
+            setIsIframeLoading(false);
+          }}
+          scrolling='no'
+        />
+      </>
     ) : (
       <ConnectWallet
         onWalletConnected={() => {

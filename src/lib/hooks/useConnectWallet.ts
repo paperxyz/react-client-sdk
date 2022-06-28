@@ -12,10 +12,10 @@ export function useConnectWallet() {
     connectAsync,
     connectors,
     error,
-    isConnecting: _isConnecting,
+    isLoading,
     pendingConnector: _pendingConnector,
   } = useConnect();
-  const isConnecting = _isConnecting || isUpdatingMetaMaskAccount;
+  const isConnecting = isLoading || isUpdatingMetaMaskAccount;
   const { disconnectAsync } = useDisconnect();
   const pendingConnector = isUpdatingMetaMaskAccount
     ? { id: WalletType.MetaMask }
@@ -26,11 +26,11 @@ export function useConnectWallet() {
     onWalletConnected: () => void,
     onWalletConnectFail: onWalletConnectFailType,
   ) => {
-    const { data: user } = useAccount();
+    const { connector: userConnector } = useAccount();
 
     return async () => {
       if (
-        user?.connector?.id === WalletType.MetaMask &&
+        userConnector?.id === WalletType.MetaMask &&
         connector.id === WalletType.MetaMask
       ) {
         setIsUpdatingMetaMaskAccount(true);
@@ -47,27 +47,27 @@ export function useConnectWallet() {
           console.error('error connecting to user metamask', e);
           onWalletConnectFail(
             WalletType.MetaMask,
-            user?.connector?.id as WalletType,
+            connector?.id as WalletType,
             e as Error,
           );
         }
         setIsUpdatingMetaMaskAccount(false);
       } else {
         try {
-          if (user?.connector?.id === WalletType.WalletConnect) {
+          if (connector?.id === WalletType.WalletConnect) {
             // coinbase wallet refreshes the whole page when disconnected so we avoid that
             // Metamask should not be disconnected bc we call another method once connected to
             // allow easy connection to other accounts
             await disconnectAsync();
           }
-          await connectAsync(connector);
+          await connectAsync({ connector });
           onWalletConnected();
         } catch (e) {
           // user Cancel request, don't need to do anything
           console.error("Error connecting to user's wallet", e);
           onWalletConnectFail(
             connector.id as WalletType,
-            user?.connector?.id as WalletType,
+            userConnector?.id as WalletType,
             e as Error,
           );
         }

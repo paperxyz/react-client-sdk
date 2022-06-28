@@ -1,4 +1,5 @@
 export const enum WalletType {
+  PRESET = 'Preset',
   MetaMask = 'metaMask',
   CoinbaseWallet = 'coinbaseWallet',
   WalletConnect = 'walletConnect',

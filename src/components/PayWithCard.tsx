@@ -5,6 +5,7 @@ import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
+import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 
 interface PayWithCardProps {
@@ -65,12 +66,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               error: data.error,
             });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'paymentSuccess':
@@ -81,12 +77,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
             }
             onPaymentSuccess({ id: data.id });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'transferSuccess':
@@ -97,12 +88,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               // ...
             });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'review':
@@ -143,8 +129,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Build iframe URL with query params.
   const payWithCardUrl = new URL(
     '/sdk/v1/pay-with-card',
-
-    'https://f11d-65-200-105-218.ngrok.io',
+    'http://localhost:3000',
   );
   // PAPER_APP_URL);
 

@@ -55,6 +55,6 @@
   "dependencies": {
     "@headlessui/react": "^1.6.5",
     "detect-browser": "^5.3.0",
-    "wagmi": "^0.4.12"
+    "wagmi": "^0.5.0"
   }
 }

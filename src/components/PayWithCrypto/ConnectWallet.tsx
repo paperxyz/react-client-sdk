@@ -1,13 +1,15 @@
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import { useAccount } from 'wagmi';
-import { CoinbaseWalleticon } from '../icons/CoinbaseWalleticon';
+import { CoinbaseWalleticon } from '../../icons/CoinbaseWalleticon';
 
-import { IconProps, MetaMaskIcon } from '../icons/MetaMaskIcon';
-import { WalletConnectIcon } from '../icons/WalletConnectIcon';
-import { onWalletConnectFailType, WalletType } from '../interfaces/WalletTypes';
-import { useConnectWallet } from '../lib/hooks/useConnectWallet';
-import { Button } from './common/Button';
+import { IconProps, MetaMaskIcon } from '../../icons/MetaMaskIcon';
+import { WalletConnectIcon } from '../../icons/WalletConnectIcon';
+import {
+  onWalletConnectFailType,
+  WalletType,
+} from '../../interfaces/WalletTypes';
+import { useConnectWallet } from '../../lib/hooks/useConnectWallet';
+import { Button } from '../common/Button';
 
 export function WalletIcon({
   walletType,
@@ -50,7 +52,6 @@ export const ConnectWallet = ({
 }): React.ReactElement => {
   const { connectWallet, connectors, error, isConnecting, pendingConnector } =
     useConnectWallet();
-  const { data: user } = useAccount();
 
   return (
     <>
@@ -66,9 +67,6 @@ export const ConnectWallet = ({
 
       <div className='flex flex-col py-5'>
         {connectors.map((connector) => {
-          console.log('connector.id', connector.id);
-          console.log('user?.connector?.id', user?.connector?.id);
-          console.log('pendingConnector?.id', pendingConnector?.id);
           return connector.ready ? (
             <Button
               className='mb-4 mr-2 flex '

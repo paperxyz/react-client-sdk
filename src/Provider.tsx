@@ -54,7 +54,7 @@ export const PaperSDKProvider = ({
   );
 
   const providers = [publicProvider()];
-  const { chains, provider, webSocketProvider } = configureChains(
+  const { chains, provider } = configureChains(
     [chain.mainnet, chain.rinkeby],
     providers,
   );
@@ -83,7 +83,6 @@ export const PaperSDKProvider = ({
       }),
     ],
     provider,
-    webSocketProvider,
   });
 
   return (

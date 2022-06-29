@@ -1,5 +1,7 @@
+import { ethers } from 'ethers';
 import React, { useEffect, useRef } from 'react';
 import { useAccount, useSwitchNetwork } from 'wagmi';
+import { PAPER_APP_URL } from '../../constants/settings';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { useSendEth } from '../../lib/hooks/useSendEth';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
@@ -23,7 +25,9 @@ export interface PayWithCryptoChildrenProps {
 }
 
 export interface ViewPricingDetailsProps {
-  onSuccess?: (code: string) => void;
+  onSuccess?: (
+    transactionResponse: ethers.providers.TransactionResponse,
+  ) => void;
   onError?: (error: PayWithCryptoError) => void;
   suppressErrorToast?: boolean;
   checkoutId: string;
@@ -51,22 +55,8 @@ export const ViewPricingDetails = ({
   const { address, connector } = useAccount();
   const { sendTransaction } = useSendEth(
     async (data) => {
-      try {
-        if (onSuccess) {
-          onSuccess(data.hash);
-        }
-      } catch (e) {
-        if (onError) {
-          onError({
-            code: PayWithCryptoErrorCode.ErrorSendingTransaction,
-            error: e as Error,
-          });
-        }
-        if (!suppressErrorToast && iframeRef.current) {
-          postMessageToIframe(iframeRef.current, 'errorSendingTransaction', {
-            error: (e as Error).message,
-          });
-        }
+      if (onSuccess) {
+        onSuccess(data);
       }
     },
     (error) => {
@@ -116,7 +106,7 @@ export const ViewPricingDetails = ({
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.startsWith('http://localhost:3000')) {
+      if (!event.origin.startsWith(PAPER_APP_URL)) {
         return;
       }
       const data = event.data;
@@ -150,10 +140,7 @@ export const ViewPricingDetails = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  const payWithCryptoUrl = new URL(
-    '/sdk/v1/pay-with-crypto',
-    'http://localhost:3000',
-  );
+  const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
 
   payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
   payWithCryptoUrl.searchParams.append(

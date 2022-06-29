@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
+import { DEFAULT_BRAND_OPTIONS } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -49,9 +49,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.startsWith(PAPER_APP_URL)) {
-        return;
-      }
+      // if (!event.origin.startsWith(PAPER_APP_URL)) {
+      //   return;
+      // }
       const data = event.data;
       const payWithCardIframe = document.getElementById(
         'payWithCardIframe',
@@ -127,11 +127,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   }, []);
 
   // Build iframe URL with query params.
-  const payWithCardUrl = new URL(
-    '/sdk/v1/pay-with-card',
-    'http://localhost:3000',
-  );
-  // PAPER_APP_URL);
+  const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
 
   payWithCardUrl.searchParams.append('checkoutId', checkoutId);
   payWithCardUrl.searchParams.append('chainName', chainName);

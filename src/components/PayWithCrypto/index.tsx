@@ -37,7 +37,6 @@ export const PayWithCrypto = ({
   const { data: _signer } = useSigner();
 
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  const [isIframeLoading, setIsIframeLoading] = useState(true);
 
   const signer = _signer;
   const isJsonRpcSignerPresent = !!signer;
@@ -47,7 +46,6 @@ export const PayWithCrypto = ({
   };
   const closeModal = () => {
     setIsOpen(false);
-    setIsIframeLoading(true);
     if (onModalClose) {
       onModalClose();
     }
@@ -63,7 +61,12 @@ export const PayWithCrypto = ({
         quantity={quantity}
         metadata={metadata}
         onError={onError}
-        onSuccess={onSuccess}
+        onSuccess={(transactionResponse) => {
+          closeModal();
+          if (onSuccess) {
+            onSuccess(transactionResponse);
+          }
+        }}
         suppressErrorToast={suppressErrorToast}
         setIsTryingToChangeWallet={setIsTryingToChangeWallet}
       />

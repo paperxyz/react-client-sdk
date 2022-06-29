@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { DEFAULT_BRAND_OPTIONS } from '../constants/settings';
+import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';

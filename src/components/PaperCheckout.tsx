@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
+import { openCenteredPopup } from '../lib/utils/popup';
 
 export enum PaperCheckoutDisplay {
   /**
@@ -182,26 +183,13 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   switch (display) {
     case PaperCheckoutDisplay.POPUP: {
       const onClick = () => {
-        if (!window?.top) return;
-
-        const y =
-          window.top.outerHeight / 2 + window.top.screenY - options.height / 2;
-        const x =
-          window.top.outerWidth / 2 + window.top.screenX - options.width / 2;
-        window.open(
-          checkoutUrl,
-          'Paper Checkout',
-          `toolbar=no,
-          location=no,
-          status=no,
-          menubar=no,
-          scrollbars=yes,
-          resizable=yes,
-          width=${options.width},
-          height=${options.height},
-          top=${y},
-          left=${x}`,
-        );
+        openCenteredPopup({
+          url: checkoutUrl.href,
+          h: options.height,
+          w: options.width,
+          win: window,
+          windowName: 'Paper Checkout',
+        });
 
         if (onOpenCheckout) {
           onOpenCheckout();

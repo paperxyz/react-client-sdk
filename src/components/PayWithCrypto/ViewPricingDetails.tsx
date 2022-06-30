@@ -60,7 +60,7 @@ export const ViewPricingDetails = ({
           setIsTryingToChangeWallet(true);
           break;
         case 'payWithEth': {
-          // try switching network first if needed // supported
+          // try switching network first if needed or supported
           try {
             if (switchNetworkAsync) {
               await switchNetworkAsync(data.chainId);

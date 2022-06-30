@@ -49,9 +49,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // if (!event.origin.startsWith(PAPER_APP_URL)) {
-      //   return;
-      // }
+      if (!event.origin.startsWith(PAPER_APP_URL)) {
+        return;
+      }
       const data = event.data;
       const payWithCardIframe = document.getElementById(
         'payWithCardIframe',

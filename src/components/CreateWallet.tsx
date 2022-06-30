@@ -29,7 +29,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // if (event.origin !== "https://paper.xyz") return;
+      // if (event.origin !== PAPER_APP_URL) return;
 
       const data = event.data;
 

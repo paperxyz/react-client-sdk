@@ -12,7 +12,7 @@
 [Paper](https://paper.xyz) is a developer-first NFT checkout solution that
 easily onboards users without wallets or cryptocurrencies.
 
-## [Documentation](https://docs.paper.xyz/react-sdk-experimental/overview)
+## [Documentation](https://docs.paper.xyz/reference/papersdkprovider)
 
 ## Installation
 

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useRef } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
+import { PAPER_APP_URL } from '../../constants/settings';
 import {
   PayWithCryptoError,
   PayWithCryptoErrorCode,
@@ -48,9 +49,9 @@ export const ViewPricingDetails = ({
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      // if (!event.origin.startsWith(PAPER_APP_URL)) {
-      //   return;
-      // }
+      if (!event.origin.startsWith(PAPER_APP_URL)) {
+        return;
+      }
       const data = event.data;
       switch (data.eventType) {
         case 'goBackToChoosingWallet':
@@ -123,10 +124,7 @@ export const ViewPricingDetails = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  const payWithCryptoUrl = new URL(
-    '/sdk/v1/pay-with-crypto',
-    'http://localhost:3000',
-  );
+  const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
 
   payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
   payWithCryptoUrl.searchParams.append(

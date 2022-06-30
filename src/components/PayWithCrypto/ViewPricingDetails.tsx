@@ -1,24 +1,13 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useRef } from 'react';
-import { useAccount, useSwitchNetwork } from 'wagmi';
-import { PAPER_APP_URL } from '../../constants/settings';
+import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
+import {
+  PayWithCryptoError,
+  PayWithCryptoErrorCode,
+} from '../../interfaces/PayWithCryptoError';
 import { WalletType } from '../../interfaces/WalletTypes';
-import { useSendEth } from '../../lib/hooks/useSendEth';
+import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
-
-export type PayWithCryptoError = {
-  /**
-   * An enum representing the error encountered.
-   * The value is a human-readable, English message describing the error.
-   */
-  code: PayWithCryptoErrorCode;
-  error: Error;
-};
-
-export enum PayWithCryptoErrorCode {
-  ErrorConnectingToSigner = 'No wallet present',
-  ErrorSendingTransaction = 'Something went wrong sending transaction',
-}
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -53,80 +42,74 @@ export const ViewPricingDetails = ({
 }: ViewPricingDetailsProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { address, connector } = useAccount();
-  const { sendTransaction } = useSendEth(
-    async (data) => {
-      if (onSuccess) {
-        onSuccess(data);
-      }
-    },
-    (error) => {
-      if (onError) {
-        onError({
-          code: PayWithCryptoErrorCode.ErrorSendingTransaction,
-          error,
-        });
-      }
-      if (!suppressErrorToast) {
-        if (error.message.includes('rejected')) {
-          if (iframeRef.current) {
-            postMessageToIframe(
-              iframeRef.current,
-              'userRejectedTransaction',
-              {},
-            );
-          }
-        } else if (error.message.includes('insufficient funds')) {
-          if (iframeRef.current) {
-            postMessageToIframe(iframeRef.current, 'insufficientBalance', {});
-          }
-        } else {
-          if (iframeRef.current) {
-            postMessageToIframe(iframeRef.current, 'errorSendingTransaction', {
-              error: error.message,
-            });
-          }
-        }
-      }
-    },
-  );
+  const { sendTransactionAsync } = useSendTransaction();
 
-  const { switchNetwork } = useSwitchNetwork({
-    onError(error) {
-      console.log('error switching chain', error);
-      if (iframeRef.current) {
-        postMessageToIframe(iframeRef.current, 'networkSwitchFailed', {});
-      }
-    },
-    onSuccess() {
-      if (iframeRef.current) {
-        postMessageToIframe(iframeRef.current, 'networkSwitched', {});
-      }
-    },
-  });
+  const { switchNetworkAsync } = useSwitchNetwork();
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.startsWith(PAPER_APP_URL)) {
-        return;
-      }
+      // if (!event.origin.startsWith(PAPER_APP_URL)) {
+      //   return;
+      // }
       const data = event.data;
       switch (data.eventType) {
         case 'goBackToChoosingWallet':
           setIsTryingToChangeWallet(true);
           break;
         case 'payWithEth': {
-          console.log('data', data);
-          sendTransaction({
-            data: data.blob,
-            chainId: data.chainId,
-            value: data.value,
-            paymentAddress: data.paymentAddress,
-          });
-          break;
-        }
-        case 'switchNetwork': {
-          if (switchNetwork) {
-            switchNetwork(data.chainId);
+          // try switching network first if needed // supported
+          try {
+            if (switchNetworkAsync) {
+              await switchNetworkAsync(data.chainId);
+            } else if (connector?.getChainId() !== data.chainId) {
+              throw {
+                isErrorObject: true,
+                title: PayWithCryptoErrorCode.WrongChain(data.chainName),
+                description: `Please change to ${data.chainName} to proceed.`,
+              };
+            }
+          } catch (error) {
+            handlePayWithCryptoError(
+              error as Error,
+              data.chainName,
+              onError,
+              (errorObject) => {
+                if (iframeRef.current && !suppressErrorToast) {
+                  postMessageToIframe(iframeRef.current, 'payWithEthError', {
+                    error: errorObject,
+                  });
+                }
+              },
+            );
+            return;
+          }
+
+          // send the transaction
+          try {
+            const result = await sendTransactionAsync({
+              chainId: data.chainId,
+              request: {
+                value: data.value,
+                data: data.blob,
+                to: data.paymentAddress,
+              },
+            });
+            if (onSuccess) {
+              onSuccess(result);
+            }
+          } catch (error) {
+            handlePayWithCryptoError(
+              error as Error,
+              data.chainName,
+              onError,
+              (errorObject) => {
+                if (iframeRef.current) {
+                  postMessageToIframe(iframeRef.current, 'payWithEthError', {
+                    error: errorObject,
+                  });
+                }
+              },
+            );
           }
           break;
         }
@@ -140,7 +123,10 @@ export const ViewPricingDetails = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
+  const payWithCryptoUrl = new URL(
+    '/sdk/v1/pay-with-crypto',
+    'http://localhost:3000',
+  );
 
   payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
   payWithCryptoUrl.searchParams.append(

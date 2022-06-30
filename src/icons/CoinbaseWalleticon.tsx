@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconProps } from './MetaMaskIcon';
 
-export const CoinbaseWalleticon = ({
+export const CoinbaseWalletIcon = ({
   className,
   onClick,
   size = 24,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
+import { PayWithCryptoErrorCode } from '../../interfaces/PayWithCryptoError';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
@@ -12,6 +13,7 @@ import {
 
 type PayWithCardProps = {
   onModalClose?: () => void;
+  onWalletConnected?: () => void;
   children?:
     | React.ReactNode
     | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
@@ -31,6 +33,7 @@ export const PayWithCrypto = ({
   onError,
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
+  onWalletConnected,
   onModalClose,
 }: PayWithCardProps): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
@@ -74,8 +77,11 @@ export const PayWithCrypto = ({
       <ConnectWallet
         onWalletConnected={() => {
           setIsTryingToChangeWallet(false);
+          if (onWalletConnected) {
+            onWalletConnected();
+          }
         }}
-        onWalletConnectFail={(walletType, userWalletType) => {
+        onWalletConnectFail={(walletType, userWalletType, error) => {
           // coinbase will fail if we try to go back and connect again. because we never disconnected.
           // we'll get the error of "user already connected". We simply ignore it here.
           if (
@@ -83,6 +89,12 @@ export const PayWithCrypto = ({
             userWalletType === walletType
           ) {
             setIsTryingToChangeWallet(false);
+          }
+          if (onError) {
+            onError({
+              code: PayWithCryptoErrorCode.ErrorConnectingToWallet,
+              error,
+            });
           }
         }}
       />

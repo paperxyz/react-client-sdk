@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import React from 'react';
-import { CoinbaseWalleticon } from '../../icons/CoinbaseWalleticon';
+import { CoinbaseWalletIcon } from '../../icons/CoinbaseWalleticon';
 
 import { IconProps, MetaMaskIcon } from '../../icons/MetaMaskIcon';
 import { WalletConnectIcon } from '../../icons/WalletConnectIcon';
@@ -32,7 +32,7 @@ export function WalletIcon({
       );
     case WalletType.CoinbaseWallet:
       return (
-        <CoinbaseWalleticon
+        <CoinbaseWalletIcon
           className={className}
           onClick={onClick}
           size={size}

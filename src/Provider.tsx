@@ -35,7 +35,7 @@ const PaperSDKContext = createContext<SDKContext>({
 });
 
 export interface PaperProviderProps {
-  chainName: SupportedChainName;
+  chainName?: SupportedChainName;
   appName?: string;
   clientId?: string;
 }
@@ -45,7 +45,9 @@ export const PaperSDKProvider = ({
   clientId,
   children,
 }: React.PropsWithChildren<PaperProviderProps>) => {
-  const [chainName_, setChainName] = useState<SupportedChainName>(chainName);
+  const [chainName_, setChainName] = useState<SupportedChainName>(
+    chainName || 'Polygon',
+  );
   const contextValue = useMemo(
     () => ({
       chainName: chainName_,

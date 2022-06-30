@@ -25,7 +25,6 @@ export const PayWithCrypto = ({
   className,
   checkoutId,
   recipientWalletAddress,
-  appName,
   emailAddress,
   quantity,
   metadata,
@@ -59,7 +58,6 @@ export const PayWithCrypto = ({
       <ViewPricingDetails
         checkoutId={checkoutId}
         recipientWalletAddress={recipientWalletAddress}
-        appName={appName}
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}

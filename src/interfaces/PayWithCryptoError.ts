@@ -20,4 +20,5 @@ export class PayWithCryptoErrorCode {
     return `Wrong Chain. Expected: ${chainName}`;
   }
   static ChainSwitchUnderway = 'There is a network switch already underway';
+  static PendingSignature = 'Pending Signature';
 }

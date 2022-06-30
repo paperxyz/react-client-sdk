@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
 import { PAPER_APP_URL } from '../../constants/settings';
 import {
@@ -10,6 +10,7 @@ import { WalletType } from '../../interfaces/WalletTypes';
 import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
+import { Spinner } from '../common/Spinner';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -41,10 +42,11 @@ export const ViewPricingDetails = ({
   recipientWalletAddress,
 }: ViewPricingDetailsProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
   const { address, connector } = useAccount();
-  const { sendTransactionAsync } = useSendTransaction();
-
+  const { sendTransactionAsync, isLoading: isSendingTransaction } =
+    useSendTransaction();
   const { switchNetworkAsync } = useSwitchNetwork();
 
   useEffect(() => {
@@ -87,6 +89,13 @@ export const ViewPricingDetails = ({
 
           // send the transaction
           try {
+            if (isSendingTransaction) {
+              throw {
+                title: PayWithCryptoErrorCode.PendingSignature,
+                description: 'Check your wallet to confirm the transaction.',
+                isErrorObject: true,
+              };
+            }
             const result = await sendTransactionAsync({
               chainId: data.chainId,
               request: {
@@ -123,7 +132,8 @@ export const ViewPricingDetails = ({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, []);
+  }, [isSendingTransaction]);
+
   const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
 
   payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
@@ -153,18 +163,20 @@ export const ViewPricingDetails = ({
 
   return (
     <>
-      {/* {isIframeLoading && (
-    <Spinner className='absolute top-1/2 left-1/2 !h-8 !w-8 !text-black' />
-  )} */}
+      {isIframeLoading && (
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+          <Spinner className='!h-8 !w-8 !text-black' />
+        </div>
+      )}
       <iframe
         ref={iframeRef}
         id='payWithCardIframe'
         className='mx-auto h-[700px] w-80'
         src={payWithCryptoUrl.href}
-        // onLoad={() => {
-        // causes a double refresh
-        // setIsIframeLoading(false);
-        // }}
+        onLoad={() => {
+          // causes a double refresh
+          setIsIframeLoading(false);
+        }}
         scrolling='no'
       />
     </>

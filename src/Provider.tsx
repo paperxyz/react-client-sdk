@@ -25,11 +25,13 @@ interface SDKContext {
   chainName: SupportedChainName;
   setChainName: Dispatch<SetStateAction<SupportedChainName>>;
   clientId: string;
+  appName: string;
 }
 const PaperSDKContext = createContext<SDKContext>({
   chainName: 'Polygon',
   setChainName: () => {},
   clientId: '',
+  appName: '',
 });
 
 export interface PaperProviderProps {
@@ -48,9 +50,10 @@ export const PaperSDKProvider = ({
     () => ({
       chainName: chainName_,
       setChainName,
+      appName: appName || '',
       clientId: clientId || '',
     }),
-    [chainName_],
+    [chainName_, appName, clientId],
   );
 
   const providers = [publicProvider()];

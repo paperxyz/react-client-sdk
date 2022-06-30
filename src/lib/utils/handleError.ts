@@ -1,7 +1,7 @@
 import { IErrorObject } from '../../interfaces/PaperSDKError';
 import {
   PayWithCryptoError,
-  PayWithCryptoErrorCode
+  PayWithCryptoErrorCode,
 } from '../../interfaces/PayWithCryptoError';
 
 export function handlePayWithCryptoError(
@@ -23,7 +23,6 @@ export function handlePayWithCryptoError(
     }
   } else {
     if (error.message.includes('rejected')) {
-      console.log('onError', onError)
       if (onError) {
         onError({ code: PayWithCryptoErrorCode.TransactionCancelled, error });
       }

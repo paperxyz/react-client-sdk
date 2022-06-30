@@ -8,6 +8,7 @@ import {
 import { WalletType } from '../../interfaces/WalletTypes';
 import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
+import { usePaperSDKContext } from '../../Provider';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -20,7 +21,6 @@ export interface ViewPricingDetailsProps {
   onError?: (error: PayWithCryptoError) => void;
   suppressErrorToast?: boolean;
   checkoutId: string;
-  appName?: string;
   recipientWalletAddress?: string;
   emailAddress?: string;
   quantity?: number;
@@ -31,7 +31,6 @@ export interface ViewPricingDetailsProps {
 export const ViewPricingDetails = ({
   checkoutId,
   setIsTryingToChangeWallet,
-  appName,
   emailAddress,
   metadata,
   onError,
@@ -41,6 +40,7 @@ export const ViewPricingDetails = ({
   recipientWalletAddress,
 }: ViewPricingDetailsProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { appName } = usePaperSDKContext();
   const { address, connector } = useAccount();
   const { sendTransactionAsync } = useSendTransaction();
 

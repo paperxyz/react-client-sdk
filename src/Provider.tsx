@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  Dispatch,
   SetStateAction,
   useContext,
   useMemo,
@@ -21,12 +20,10 @@ type SupportedChainName =
   | 'SolanaDevnet'
   | 'Avalanche';
 
-interface SDKContext {
-  chainName: SupportedChainName;
-  setChainName: Dispatch<SetStateAction<SupportedChainName>>;
-  clientId: string;
-  appName: string;
-}
+type SDKContext = PaperProviderProps & {
+  setChainName: React.Dispatch<SetStateAction<SupportedChainName>>;
+};
+
 const PaperSDKContext = createContext<SDKContext>({
   chainName: 'Polygon',
   setChainName: () => {},

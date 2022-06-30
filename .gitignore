@@ -7,4 +7,3 @@ temp/
 *.log
 .DS_Store
 .yarn
-package-lock.json

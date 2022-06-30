@@ -4,45 +4,9 @@ import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
+import { openCenteredPopup } from '../lib/utils/popup';
+import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
-
-/**
- * Opens a popup centered on the parent page and returns a reference to the window.
- * The caller can close the popup with `popupWindow.close()`.
- * @returns The Window that was popped up
- */
-export const openCenteredPopup = ({
-  url,
-  title = 'Paper Checkout',
-  width,
-  height,
-}: {
-  url: string;
-  title?: string;
-  width: number;
-  height: number;
-}): Window | null => {
-  if (!window?.top) {
-    return null;
-  }
-
-  const y = window.top.outerHeight / 2 + window.top.screenY - height / 2;
-  const x = window.top.outerWidth / 2 + window.top.screenX - width / 2;
-  return window.open(
-    url,
-    title,
-    `toolbar=no,
-    location=no,
-    status=no,
-    menubar=no,
-    scrollbars=yes,
-    resizable=yes,
-    width=${width},
-    height=${height},
-    top=${y},
-    left=${x}`,
-  );
-};
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -102,12 +66,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               error: data.error,
             });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'paymentSuccess':
@@ -118,12 +77,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
             }
             onPaymentSuccess({ id: data.id });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'transferSuccess':
@@ -134,12 +88,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
               // ...
             });
           }
-          payWithCardIframe?.contentWindow?.postMessage(
-            {
-              ...data,
-            },
-            '*',
-          );
+          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'review':
@@ -151,8 +100,10 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         case 'openReviewPaymentPopupWindow':
           reviewPaymentPopupWindowRef.current = openCenteredPopup({
             url: data.url,
-            width: data.width,
-            height: data.height,
+            win: window,
+            windowName: 'Paper Checkout',
+            w: data.width,
+            h: data.height,
           });
           if (onClose) {
             addOnCloseListener({
@@ -179,11 +130,11 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
 
   payWithCardUrl.searchParams.append('checkoutId', checkoutId);
+  payWithCardUrl.searchParams.append('chainName', chainName);
   payWithCardUrl.searchParams.append(
     'recipientWalletAddress',
     recipientWalletAddress,
   );
-  payWithCardUrl.searchParams.append('chainName', chainName);
   if (emailAddress) {
     payWithCardUrl.searchParams.append('emailAddress', emailAddress);
   }

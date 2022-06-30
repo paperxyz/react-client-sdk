@@ -16,3 +16,9 @@ export enum PaperSDKErrorCode {
   AddressNotAllowed = 'This address is not on the allowlist.',
   NoActiveClaimPhase = 'There is no active claim phase at the moment.',
 }
+
+export interface IErrorObject {
+  isErrorObject: boolean;
+  title: string;
+  description: string;
+}

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
-import { openCenteredPopup } from '../lib/utils';
+import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
-import { Button } from './base/Button';
+import { Button } from './common/Button';
 
 interface VerifyOwnershipWithPaperProps {
   onSuccess?: (code: string) => void;

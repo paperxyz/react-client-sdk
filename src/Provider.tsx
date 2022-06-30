@@ -4,8 +4,13 @@ import React, {
   SetStateAction,
   useContext,
   useMemo,
-  useState
+  useState,
 } from 'react';
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { publicProvider } from 'wagmi/providers/public';
 
 type SupportedChainName =
   | 'Polygon'
@@ -20,38 +25,75 @@ interface SDKContext {
   chainName: SupportedChainName;
   setChainName: Dispatch<SetStateAction<SupportedChainName>>;
   clientId: string;
-}
-
-export interface PaperProviderProps {
-  chainName: SupportedChainName;
-  clientId?: string;
+  appName: string;
 }
 const PaperSDKContext = createContext<SDKContext>({
   chainName: 'Polygon',
   setChainName: () => {},
   clientId: '',
+  appName: '',
 });
 
+export interface PaperProviderProps {
+  chainName: SupportedChainName;
+  appName?: string;
+  clientId?: string;
+}
 export const PaperSDKProvider = ({
+  appName,
   chainName,
   clientId,
   children,
 }: React.PropsWithChildren<PaperProviderProps>) => {
   const [chainName_, setChainName] = useState<SupportedChainName>(chainName);
-
   const contextValue = useMemo(
     () => ({
       chainName: chainName_,
       setChainName,
+      appName: appName || '',
       clientId: clientId || '',
     }),
-    [chainName_, setChainName],
+    [chainName_, appName, clientId],
   );
 
+  const providers = [publicProvider()];
+  const { chains, provider } = configureChains(
+    [chain.mainnet, chain.rinkeby],
+    providers,
+  );
+
+  const client = createClient({
+    autoConnect: true,
+    connectors: [
+      new MetaMaskConnector({
+        chains,
+        options: {
+          shimChainChangedDisconnect: true,
+          shimDisconnect: true,
+        },
+      }),
+      new WalletConnectConnector({
+        chains,
+        options: {
+          qrcode: true,
+        },
+      }),
+      new CoinbaseWalletConnector({
+        chains,
+        options: {
+          appName: appName || 'Paper.xyz',
+        },
+      }),
+    ],
+    provider,
+  });
+
   return (
-    <PaperSDKContext.Provider value={contextValue}>
-      {children}
-    </PaperSDKContext.Provider>
+    <WagmiConfig client={client}>
+      <PaperSDKContext.Provider value={contextValue}>
+        {children}
+      </PaperSDKContext.Provider>
+    </WagmiConfig>
   );
 };
 

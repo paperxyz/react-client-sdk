@@ -62,31 +62,35 @@ export const PaperSDKProvider = ({
     providers,
   );
 
-  const client = createClient({
-    autoConnect: true,
-    connectors: [
-      new MetaMaskConnector({
-        chains,
-        options: {
-          shimChainChangedDisconnect: true,
-          shimDisconnect: true,
-        },
+  const client = useMemo(
+    () =>
+      createClient({
+        autoConnect: true,
+        connectors: [
+          new MetaMaskConnector({
+            chains,
+            options: {
+              shimChainChangedDisconnect: true,
+              shimDisconnect: true,
+            },
+          }),
+          new WalletConnectConnector({
+            chains,
+            options: {
+              qrcode: true,
+            },
+          }),
+          new CoinbaseWalletConnector({
+            chains,
+            options: {
+              appName: appName || 'Paper.xyz',
+            },
+          }),
+        ],
+        provider,
       }),
-      new WalletConnectConnector({
-        chains,
-        options: {
-          qrcode: true,
-        },
-      }),
-      new CoinbaseWalletConnector({
-        chains,
-        options: {
-          appName: appName || 'Paper.xyz',
-        },
-      }),
-    ],
-    provider,
-  });
+    [appName],
+  );
 
   return (
     <WagmiConfig client={client}>

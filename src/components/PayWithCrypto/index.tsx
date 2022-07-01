@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAccount, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { PayWithCryptoErrorCode } from '../../interfaces/PayWithCryptoError';
 import {
   onWalletConnectedType,
@@ -40,12 +40,8 @@ export const PayWithCrypto = ({
 }: PayWithCardProps): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
-  const { address } = useAccount();
-  console.log('address', address);
-  console.log('_signer', _signer);
 
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  console.log('isTryingToChangeWallet', isTryingToChangeWallet);
   const signer = _signer;
   const isJsonRpcSignerPresent = !!signer;
   const [isOpen, setIsOpen] = useState(false);

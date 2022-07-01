@@ -77,9 +77,10 @@ export const ViewPricingDetails = ({
               data.chainName,
               onError,
               (errorObject) => {
-                if (iframeRef.current && !suppressErrorToast) {
+                if (iframeRef.current) {
                   postMessageToIframe(iframeRef.current, 'payWithEthError', {
                     error: errorObject,
+                    suppressErrorToast,
                   });
                 }
               },
@@ -116,6 +117,7 @@ export const ViewPricingDetails = ({
                 if (iframeRef.current) {
                   postMessageToIframe(iframeRef.current, 'payWithEthError', {
                     error: errorObject,
+                    suppressErrorToast,
                   });
                 }
               },

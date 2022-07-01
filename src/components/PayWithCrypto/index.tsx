@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
 import { PayWithCryptoErrorCode } from '../../interfaces/PayWithCryptoError';
-import { ConnectWalletProps, WalletType } from '../../interfaces/WalletTypes';
+import {
+  onWalletConnectedType,
+  WalletType,
+} from '../../interfaces/WalletTypes';
 import { Button } from '../common/Button';
 import { Modal } from '../common/Modal';
 import { ConnectWallet } from './ConnectWallet';
@@ -13,12 +16,12 @@ import {
 
 type PayWithCardProps = {
   onClose?: () => void;
+  onWalletConnected?: onWalletConnectedType;
   children?:
     | React.ReactNode
     | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
   className?: string;
-} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'> &
-  Omit<ConnectWalletProps, 'onWalletConnectFail'>;
+} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
 export const PayWithCrypto = ({
   children,

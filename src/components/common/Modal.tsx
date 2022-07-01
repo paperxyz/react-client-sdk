@@ -62,7 +62,7 @@ export const Modal = ({
               <Dialog.Panel className='relative m-4 h-auto w-full max-w-md transform overflow-hidden rounded-2xl bg-[#FAFAFA] p-2 text-left align-middle shadow-xl transition-all md:p-5'>
                 <button
                   aria-label='close modal'
-                  className='z-100 absolute right-5 top-5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+                  className='z-100 absolute right-1.5 top-1.5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20 md:right-5 md:top-5'
                 >
                   <svg
                     className='h-5 w-5'

@@ -626,6 +626,18 @@ video {
   left: 50%;
 }
 
+.right-1\.5 {
+  right: 0.375rem;
+}
+
+.top-1\.5 {
+  top: 0.375rem;
+}
+
+.right-1 {
+  right: 0.25rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1231,6 +1243,14 @@ video {
 }
 
 @media (min-width: 768px) {
+  .md\:right-5 {
+    right: 1.25rem;
+  }
+
+  .md\:top-5 {
+    top: 1.25rem;
+  }
+
   .md\:p-5 {
     padding: 1.25rem;
   }

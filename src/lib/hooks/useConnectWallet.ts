@@ -49,7 +49,6 @@ export function useConnectWallet() {
           );
         } catch (e) {
           // user cancel request, don't need to do anything.
-          console.error('error connecting to user metamask', e);
           onWalletConnectFail(
             WalletType.MetaMask,
             connector?.id as WalletType,

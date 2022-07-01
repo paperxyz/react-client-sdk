@@ -4,10 +4,7 @@ import { CoinbaseWalletIcon } from '../../icons/CoinbaseWalleticon';
 
 import { IconProps, MetaMaskIcon } from '../../icons/MetaMaskIcon';
 import { WalletConnectIcon } from '../../icons/WalletConnectIcon';
-import {
-  onWalletConnectFailType,
-  WalletType,
-} from '../../interfaces/WalletTypes';
+import { ConnectWalletProps, WalletType } from '../../interfaces/WalletTypes';
 import { useConnectWallet } from '../../lib/hooks/useConnectWallet';
 import { Button } from '../common/Button';
 
@@ -46,10 +43,7 @@ export function WalletIcon({
 export const ConnectWallet = ({
   onWalletConnected,
   onWalletConnectFail,
-}: {
-  onWalletConnected: () => void;
-  onWalletConnectFail: onWalletConnectFailType;
-}): React.ReactElement => {
+}: ConnectWalletProps): React.ReactElement => {
   const { connectWallet, connectors, error, isConnecting, pendingConnector } =
     useConnectWallet();
 
@@ -87,8 +81,6 @@ export const ConnectWallet = ({
             <></>
           );
         })}
-
-        {error && <div>{error.message}</div>}
       </div>
     </>
   );

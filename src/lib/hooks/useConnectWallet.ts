@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Connector, useAccount, useConnect, useDisconnect } from 'wagmi';
 import {
+  onWalletConnectedType,
   onWalletConnectFailType,
   WalletType,
 } from '../../interfaces/WalletTypes';
@@ -23,7 +24,7 @@ export function useConnectWallet() {
 
   const connectWallet = (
     connector: Connector,
-    onWalletConnected: () => void,
+    onWalletConnected: onWalletConnectedType,
     onWalletConnectFail: onWalletConnectFailType,
   ) => {
     const { connector: userConnector } = useAccount();
@@ -41,7 +42,11 @@ export function useConnectWallet() {
             //@ts-ignore
             params: [{ eth_accounts: {} }],
           });
-          onWalletConnected();
+
+          onWalletConnected(
+            await userConnector.getAccount(),
+            await userConnector.getChainId(),
+          );
         } catch (e) {
           // user cancel request, don't need to do anything.
           console.error('error connecting to user metamask', e);
@@ -60,11 +65,10 @@ export function useConnectWallet() {
             // allow easy connection to other accounts
             await disconnectAsync();
           }
-          await connectAsync({ connector });
-          onWalletConnected();
+          const connected = await connectAsync({ connector });
+          onWalletConnected(connected.account, connected.chain.id);
         } catch (e) {
           // user Cancel request, don't need to do anything
-          console.error("Error connecting to user's wallet", e);
           onWalletConnectFail(
             connector.id as WalletType,
             userConnector?.id as WalletType,

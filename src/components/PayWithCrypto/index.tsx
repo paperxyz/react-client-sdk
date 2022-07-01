@@ -12,7 +12,7 @@ import {
 } from './ViewPricingDetails';
 
 type PayWithCardProps = {
-  onModalClose?: () => void;
+  onClose?: () => void;
   onWalletConnected?: () => void;
   children?:
     | React.ReactNode
@@ -33,7 +33,7 @@ export const PayWithCrypto = ({
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
-  onModalClose,
+  onClose,
 }: PayWithCardProps): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
@@ -48,8 +48,8 @@ export const PayWithCrypto = ({
   };
   const closeModal = () => {
     setIsOpen(false);
-    if (onModalClose) {
-      onModalClose();
+    if (onClose) {
+      onClose();
     }
   };
 

@@ -6,12 +6,14 @@ export const Modal = ({
   onClose,
   escapeToClose = true,
   clickOutsideModalToClose = false,
+  bgColor = '#FAFAFA',
   children,
 }: {
   isOpen: boolean;
   onClose: () => void;
   escapeToClose?: boolean;
   clickOutsideModalToClose?: boolean;
+  bgColor?: string;
   children: React.ReactNode;
 }) => {
   useEffect(() => {
@@ -59,7 +61,10 @@ export const Modal = ({
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='relative m-4 h-auto w-full max-w-md transform overflow-hidden rounded-2xl bg-[#FAFAFA] p-2 text-left align-middle shadow-xl transition-all md:p-5'>
+              <Dialog.Panel
+                className='relative m-4 h-auto w-full max-w-md transform overflow-hidden rounded-2xl  p-2 text-left align-middle shadow-xl transition-all md:p-5'
+                style={{ backgroundColor: bgColor }}
+              >
                 <button
                   aria-label='close modal'
                   className='z-100 absolute right-5 top-5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'

@@ -40,20 +40,18 @@ export interface PaperProviderProps {
   clientId?: string;
 }
 export const PaperSDKProvider = ({
-  appName,
-  chainName,
-  clientId,
+  appName = '',
+  chainName = 'Polygon',
+  clientId = '',
   children,
 }: React.PropsWithChildren<PaperProviderProps>) => {
-  const [chainName_, setChainName] = useState<SupportedChainName>(
-    chainName || 'Polygon',
-  );
+  const [chainName_, setChainName] = useState<SupportedChainName>(chainName);
   const contextValue = useMemo(
     () => ({
       chainName: chainName_,
       setChainName,
-      appName: appName || '',
-      clientId: clientId || '',
+      appName: appName,
+      clientId: clientId,
     }),
     [chainName_, appName, clientId],
   );

@@ -44,7 +44,7 @@ export const ConnectWallet = ({
   onWalletConnected,
   onWalletConnectFail,
 }: ConnectWalletProps): React.ReactElement => {
-  const { connectWallet, connectors, error, isConnecting, pendingConnector } =
+  const { connectWallet, connectors, isConnecting, pendingConnector } =
     useConnectWallet();
 
   return (

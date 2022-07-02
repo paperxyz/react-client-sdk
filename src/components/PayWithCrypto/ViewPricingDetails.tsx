@@ -172,7 +172,7 @@ export const ViewPricingDetails = ({
       )}
       <iframe
         ref={iframeRef}
-        id='payWithCardIframe'
+        id='pay-with-crypto-iframe'
         className='mx-auto h-[700px] w-80'
         src={payWithCryptoUrl.href}
         onLoad={() => {

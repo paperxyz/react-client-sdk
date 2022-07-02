@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
-import { openCenteredPopup } from '../lib/utils/popup';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
+import { Modal } from './common/Modal';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -45,6 +45,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 }) => {
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
+  const [reviewPaymentUrl, setReviewPaymentUrl] = useState<URL | undefined>();
+  const [isOpen, setIsOpen] = useState(false);
+  const closeModal = () => {
+    setIsOpen(false);
+    if (onClose) {
+      onClose();
+    }
+  };
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
@@ -98,21 +106,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           break;
 
         case 'openReviewPaymentPopupWindow':
-          reviewPaymentPopupWindowRef.current = openCenteredPopup({
-            url: data.url,
-            win: window,
-            windowName: 'Paper Checkout',
-            w: data.width,
-            h: data.height,
-          });
-          if (onClose) {
-            addOnCloseListener({
-              window: reviewPaymentPopupWindowRef.current,
-              contentWindow: payWithCardIframe?.contentWindow,
-              onClose,
-              contentWindowData: data,
-            });
-          }
+          setReviewPaymentUrl(new URL(data.url));
+          setIsOpen(true);
           break;
 
         default:
@@ -169,41 +164,29 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
-  // Add timestamp to prevent loading a cached page.
-  payWithCardUrl.searchParams.append('date', Date.now().toString());
-
   return (
-    <iframe
-      id='payWithCardIframe'
-      src={payWithCardUrl.href}
-      width='100%'
-      height='100%'
-      allowTransparency
-    />
+    <>
+      <iframe
+        id='payWithCardIframe'
+        src={payWithCardUrl.href}
+        width='100%'
+        height='100%'
+        allowTransparency
+      />
+
+      <Modal
+        isOpen={isOpen}
+        onClose={closeModal}
+        bgColor={options.colorBackground || '#ffffff'}
+      >
+        {reviewPaymentUrl && (
+          <iframe
+            id='review-card-payment-iframe'
+            src={reviewPaymentUrl.href}
+            className='h-[700px] max-h-full w-96 max-w-full'
+          />
+        )}
+      </Modal>
+    </>
   );
-};
-
-const addOnCloseListener = ({
-  window,
-  onClose,
-  contentWindow,
-  contentWindowData,
-}: {
-  window?: any;
-  onClose: () => void;
-  contentWindow?: any;
-  contentWindowData?: any;
-}) => {
-  if (!window) return;
-
-  const CHECK_CLOSED_INTERVAL_MILLISECONDS = 500;
-  const checkWindowClosedInterval = setInterval(function () {
-    if (window.closed) {
-      clearInterval(checkWindowClosedInterval);
-      if (onClose) {
-        onClose();
-      }
-      contentWindow?.postMessage({ ...contentWindowData }, '*');
-    }
-  }, CHECK_CLOSED_INTERVAL_MILLISECONDS);
 };

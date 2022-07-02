@@ -297,7 +297,6 @@ const inlineStyles: { [name: string]: any } = {
   overlayIsVisible: {
     visibility: 'visible',
     opacity: 1,
-    backdropFilter: 'blur(2px)',
     background: '#0008',
   },
   modalOverlay: {

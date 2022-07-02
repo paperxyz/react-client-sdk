@@ -68,7 +68,7 @@ export const Modal = ({
               >
                 <button
                   aria-label='close modal'
-                  className='z-100 absolute right-2 top-2 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+                  className='z-100 absolute right-1.5 top-1.5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20 md:right-5 md:top-5'
                 >
                   <svg
                     className='h-5 w-5'

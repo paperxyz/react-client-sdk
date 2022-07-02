@@ -63,7 +63,7 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden p-2 text-left align-middle transition-all sm:m-4 sm:rounded-lg sm:shadow-xl'
+                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg p-5 text-left align-middle shadow-xl transition-all sm:m-4'
                 style={{ backgroundColor: bgColor }}
               >
                 <CloseButton onClose={onClose} />

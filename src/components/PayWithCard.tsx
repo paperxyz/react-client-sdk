@@ -164,9 +164,6 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
   }
 
-  // Add timestamp to prevent loading a cached page.
-  payWithCardUrl.searchParams.append('date', Date.now().toString());
-
   return (
     <>
       <iframe
@@ -176,6 +173,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         height='100%'
         allowTransparency
       />
+
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
@@ -185,7 +183,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           <iframe
             id='review-card-payment-iframe'
             src={reviewPaymentUrl.href}
-            className='mx-auto h-[700px] w-96'
+            className='h-[700px] max-h-full w-96 max-w-full'
           />
         )}
       </Modal>

@@ -38,6 +38,7 @@ export const Modal = ({
         className='relative z-10'
         onClose={clickOutsideModalToClose ? onClose : () => {}}
       >
+        {/* Overlay */}
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
@@ -47,7 +48,7 @@ export const Modal = ({
           leaveFrom='opacity-100'
           leaveTo='opacity-0'
         >
-          <div className='fixed inset-0 bg-black bg-opacity-25' />
+          <div className='fixed inset-0 bg-black bg-opacity-50' />
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
@@ -62,12 +63,12 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='relative m-4 h-auto w-full max-w-md transform overflow-hidden rounded-2xl  p-2 text-left align-middle shadow-xl transition-all md:p-5'
+                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden p-2 text-left align-middle transition-all md:m-4 md:rounded-lg md:shadow-xl'
                 style={{ backgroundColor: bgColor }}
               >
                 <button
                   aria-label='close modal'
-                  className='z-100 absolute right-5 top-5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+                  className='z-100 absolute right-2 top-2 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
                 >
                   <svg
                     className='h-5 w-5'

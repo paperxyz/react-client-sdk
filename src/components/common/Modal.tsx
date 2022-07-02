@@ -63,29 +63,10 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden p-2 text-left align-middle transition-all md:m-4 md:rounded-lg md:shadow-xl'
+                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden p-2 text-left align-middle transition-all sm:m-4 sm:rounded-lg sm:shadow-xl'
                 style={{ backgroundColor: bgColor }}
               >
-                <button
-                  aria-label='close modal'
-                  className='z-100 absolute right-1.5 top-1.5 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20 md:right-5 md:top-5'
-                >
-                  <svg
-                    className='h-5 w-5'
-                    onClick={onClose}
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth='2'
-                      d='M6 18L18 6M6 6l12 12'
-                    ></path>
-                  </svg>
-                </button>
+                <CloseButton onClose={onClose} />
                 {children}
               </Dialog.Panel>
             </Transition.Child>
@@ -93,5 +74,30 @@ export const Modal = ({
         </div>
       </Dialog>
     </Transition>
+  );
+};
+
+const CloseButton = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <button
+      aria-label='close modal'
+      className='z-100 absolute right-2 top-2 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+    >
+      <svg
+        className='h-5 w-5'
+        onClick={onClose}
+        fill='none'
+        stroke='currentColor'
+        viewBox='0 0 24 24'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          strokeWidth='2'
+          d='M6 18L18 6M6 6l12 12'
+        ></path>
+      </svg>
+    </button>
   );
 };

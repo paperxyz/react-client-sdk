@@ -35,7 +35,7 @@ export const Modal = ({
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
         as='div'
-        className='relative z-10'
+        className='paper-modal relative z-[1000]'
         onClose={clickOutsideModalToClose ? onClose : () => {}}
       >
         {/* Overlay */}
@@ -48,7 +48,7 @@ export const Modal = ({
           leaveFrom='opacity-100'
           leaveTo='opacity-0'
         >
-          <div className='fixed inset-0 bg-black bg-opacity-50' />
+          <div className='paper-modal-overlay fixed inset-0 bg-black bg-opacity-50' />
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
@@ -63,7 +63,7 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg p-5 text-left align-middle shadow-xl transition-all sm:m-4'
+                className='paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg p-5 text-left align-middle shadow-xl transition-all sm:m-4'
                 style={{ backgroundColor: bgColor }}
               >
                 <CloseButton onClose={onClose} />

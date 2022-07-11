@@ -101,7 +101,10 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
         case 'review':
           if (onReview) {
-            onReview({ id: data.id });
+            onReview({
+              id: data.id,
+              cardholderName: data.cardholderName,
+            });
           }
           break;
 

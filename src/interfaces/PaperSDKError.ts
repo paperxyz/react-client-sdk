@@ -26,9 +26,3 @@ export enum PayWithCryptoErrorCode {
   ChainSwitchUnderway = 'There is a network switch already underway',
   PendingSignature = 'Pending Signature',
 }
-
-export interface IErrorObject {
-  isErrorObject: boolean;
-  title: string;
-  description: string;
-}

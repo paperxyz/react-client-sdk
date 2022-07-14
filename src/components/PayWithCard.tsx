@@ -15,6 +15,7 @@ interface PayWithCardProps {
   emailAddress: string;
   quantity?: number;
   metadata?: Record<string, any>;
+  customArgs?: SignedPayload;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -29,12 +30,18 @@ interface PayWithCardProps {
   onError?: (error: PaperSDKError) => void;
 }
 
+type SignedPayload = {
+  payload: { [key: string]: any };
+  signature: string;
+};
+
 export const PayWithCard: React.FC<PayWithCardProps> = ({
   checkoutId,
   recipientWalletAddress,
   emailAddress,
   quantity,
   metadata,
+  customArgs,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -147,6 +154,12 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       payWithCardUrl.searchParams.append(
         'metadata',
         encodeURIComponent(JSON.stringify(metadata)),
+      );
+    }
+    if (customArgs) {
+      payWithCardUrl.searchParams.append(
+        'customArgs',
+        JSON.stringify(customArgs),
       );
     }
     if (options.colorPrimary) {

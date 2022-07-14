@@ -146,7 +146,7 @@ export const ViewPricingDetails = ({
     );
     payWithCryptoUrl.searchParams.append(
       'walletType',
-      recipientWalletAddress ? WalletType.PRESET : connector?.id || '',
+      recipientWalletAddress ? WalletType.PRESET : connector?.name || '',
     );
     payWithCryptoUrl.searchParams.append('checkoutId', checkoutId);
     if (appName) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
-import { PayWithCryptoErrorCode } from '../../interfaces/PayWithCryptoError';
+import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
   WalletType,

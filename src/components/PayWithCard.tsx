@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
@@ -6,6 +6,7 @@ import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
+import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
 
 interface PayWithCardProps {
@@ -45,7 +46,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 }) => {
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
-  const [reviewPaymentUrl, setReviewPaymentUrl] = useState<URL | undefined>();
+  const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
+    string | undefined
+  >();
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
@@ -109,7 +112,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           break;
 
         case 'openReviewPaymentPopupWindow':
-          setReviewPaymentUrl(new URL(data.url));
+          setReviewPaymentUrl(new URL(data.url).href);
           setIsOpen(true);
           break;
 
@@ -125,51 +128,66 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   }, []);
 
   // Build iframe URL with query params.
-  const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
+  const payWithCardUrl = useMemo(() => {
+    const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
 
-  payWithCardUrl.searchParams.append('checkoutId', checkoutId);
-  payWithCardUrl.searchParams.append('chainName', chainName);
-  payWithCardUrl.searchParams.append(
-    'recipientWalletAddress',
+    payWithCardUrl.searchParams.append('checkoutId', checkoutId);
+    payWithCardUrl.searchParams.append('chainName', chainName);
+    payWithCardUrl.searchParams.append(
+      'recipientWalletAddress',
+      recipientWalletAddress,
+    );
+    if (emailAddress) {
+      payWithCardUrl.searchParams.append('emailAddress', emailAddress);
+    }
+    if (quantity) {
+      payWithCardUrl.searchParams.append('quantity', quantity.toString());
+    }
+    if (metadata) {
+      payWithCardUrl.searchParams.append(
+        'metadata',
+        encodeURIComponent(JSON.stringify(metadata)),
+      );
+    }
+    if (options.colorPrimary) {
+      payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);
+    }
+    if (options.colorBackground) {
+      payWithCardUrl.searchParams.append(
+        'colorBackground',
+        options.colorBackground,
+      );
+    }
+    if (options.colorText) {
+      payWithCardUrl.searchParams.append('colorText', options.colorText);
+    }
+    if (options.borderRadius !== undefined) {
+      payWithCardUrl.searchParams.append(
+        'borderRadius',
+        options.borderRadius.toString(),
+      );
+    }
+    if (options.fontFamily) {
+      payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
+    }
+    return payWithCardUrl;
+  }, [
+    checkoutId,
+    chainName,
     recipientWalletAddress,
-  );
-  if (emailAddress) {
-    payWithCardUrl.searchParams.append('emailAddress', emailAddress);
-  }
-  if (quantity) {
-    payWithCardUrl.searchParams.append('quantity', quantity.toString());
-  }
-  if (metadata) {
-    payWithCardUrl.searchParams.append(
-      'metadata',
-      encodeURIComponent(JSON.stringify(metadata)),
-    );
-  }
-  if (options.colorPrimary) {
-    payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);
-  }
-  if (options.colorBackground) {
-    payWithCardUrl.searchParams.append(
-      'colorBackground',
-      options.colorBackground,
-    );
-  }
-  if (options.colorText) {
-    payWithCardUrl.searchParams.append('colorText', options.colorText);
-  }
-  if (options.borderRadius !== undefined) {
-    payWithCardUrl.searchParams.append(
-      'borderRadius',
-      options.borderRadius.toString(),
-    );
-  }
-  if (options.fontFamily) {
-    payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
-  }
+    emailAddress,
+    quantity,
+    JSON.stringify(metadata),
+    options.colorPrimary,
+    options.colorBackground,
+    options.colorText,
+    options.borderRadius,
+    options.fontFamily,
+  ]);
 
   return (
     <>
-      <iframe
+      <IFrameWrapper
         id='payWithCardIframe'
         src={payWithCardUrl.href}
         width='100%'
@@ -185,7 +203,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         {reviewPaymentUrl && (
           <iframe
             id='review-card-payment-iframe'
-            src={reviewPaymentUrl.href}
+            src={reviewPaymentUrl}
             className='h-[700px] max-h-full w-96 max-w-full'
           />
         )}

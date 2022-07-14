@@ -1,13 +1,17 @@
-import { IErrorObject } from '../../interfaces/PaperSDKError';
 import {
-  PayWithCryptoError,
+  PaperSDKError,
   PayWithCryptoErrorCode,
-} from '../../interfaces/PayWithCryptoError';
+} from '../../interfaces/PaperSDKError';
+
+export interface IErrorObject {
+  isErrorObject: boolean;
+  title: PayWithCryptoErrorCode;
+  description: string;
+}
 
 export function handlePayWithCryptoError(
   error: Error | IErrorObject,
-  currentChain: string,
-  onError?: (code: PayWithCryptoError) => void,
+  onError?: (code: PaperSDKError) => void,
   postToParent?: (errorObject: Omit<IErrorObject, 'isErrorObject'>) => void,
 ) {
   if ('isErrorObject' in error) {
@@ -31,7 +35,7 @@ export function handlePayWithCryptoError(
     } else if (error.message.includes('insufficient funds')) {
       if (onError) {
         onError({
-          code: PayWithCryptoErrorCode.InsufficientBalance(currentChain),
+          code: PayWithCryptoErrorCode.InsufficientBalance,
           error,
         });
       }
@@ -39,7 +43,7 @@ export function handlePayWithCryptoError(
         postToParent({
           description:
             "Check your wallet's ETH balance to make sure you have enough!",
-          title: PayWithCryptoErrorCode.InsufficientBalance(currentChain),
+          title: PayWithCryptoErrorCode.InsufficientBalance,
         });
       }
     } else if (error.message.includes('Error switching chain')) {

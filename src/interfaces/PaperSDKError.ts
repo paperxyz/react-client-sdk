@@ -3,7 +3,7 @@ export type PaperSDKError = {
    * An enum representing the error encountered.
    * The value is a human-readable, English message describing the error.
    */
-  code: PaperSDKErrorCode;
+  code: PaperSDKErrorCode | PayWithCryptoErrorCode;
   error: Error;
 };
 
@@ -15,6 +15,16 @@ export enum PaperSDKErrorCode {
   NotEnoughSupply = 'There is not enough supply to claim.',
   AddressNotAllowed = 'This address is not on the allowlist.',
   NoActiveClaimPhase = 'There is no active claim phase at the moment.',
+}
+
+export enum PayWithCryptoErrorCode {
+  ErrorConnectingToWallet = 'Error connecting to wallet',
+  ErrorSendingTransaction = 'Something went wrong sending transaction',
+  InsufficientBalance = `Insufficient ETH`,
+  TransactionCancelled = 'Transaction Cancelled',
+  WrongChain = `Wrong Chain Detected`,
+  ChainSwitchUnderway = 'There is a network switch already underway',
+  PendingSignature = 'Pending Signature',
 }
 
 export interface IErrorObject {

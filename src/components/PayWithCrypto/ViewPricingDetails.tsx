@@ -24,9 +24,11 @@ export interface PayWithCryptoChildrenProps {
 }
 
 export interface ViewPricingDetailsProps {
-  onSuccess?: (
-    transactionResponse: ethers.providers.TransactionResponse,
-  ) => void;
+  onSuccess?: ({
+    transactionResponse,
+  }: {
+    transactionResponse: ethers.providers.TransactionResponse;
+  }) => void;
   onError?: (error: PaperSDKError) => void;
   suppressErrorToast?: boolean;
   checkoutId: string;
@@ -112,7 +114,7 @@ export const ViewPricingDetails = ({
               },
             });
             if (onSuccess) {
-              onSuccess(result);
+              onSuccess({ transactionResponse: result });
             }
           } catch (error) {
             handlePayWithCryptoError(error as Error, onError, (errorObject) => {

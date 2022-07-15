@@ -101,6 +101,10 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   // Handle message events from iframe.
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (!event.origin.startsWith(paperDomain)) {
+        return;
+      }
+
       const data = event.data;
 
       switch (data.eventType) {

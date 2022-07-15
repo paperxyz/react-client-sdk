@@ -79,6 +79,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       if (!event.origin.startsWith(paperDomain)) {
         return;
       }
+
       const data = event.data;
       const payWithCardIframe = document.getElementById(
         'payWithCardIframe',

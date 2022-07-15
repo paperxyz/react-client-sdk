@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
+import {
+  DEFAULT_BRAND_OPTIONS,
+  PAPER_APP_URL,
+  PAPER_APP_URL_ALT,
+} from '../constants/settings';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
@@ -59,6 +63,14 @@ export interface PaperCheckoutProps {
     fontFamily: string;
   };
   children?: React.ReactNode;
+
+  /**
+   * If true, uses the papercheckout.com instead of paper.xyz domain.
+   * This setting is useful if your users are unable to access the paper.xyz domain.
+   *
+   * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
+   */
+  experimentalUseAltDomain?: boolean;
 }
 
 export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
@@ -78,9 +90,13 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   onCloseCheckout,
   onPaymentSuccess,
   onTransferSuccess,
+  experimentalUseAltDomain,
   children,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const paperDomain = experimentalUseAltDomain
+    ? PAPER_APP_URL_ALT
+    : PAPER_APP_URL;
 
   // Handle message events from iframe.
   useEffect(() => {
@@ -124,7 +140,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   }, []);
 
   // Build iframe URL with query params.
-  const checkoutUrl = new URL(`/checkout/${checkoutId}`, PAPER_APP_URL);
+  const checkoutUrl = new URL(`/checkout/${checkoutId}`, paperDomain);
   checkoutUrl.searchParams.append('display', display);
 
   if (options.colorPrimary) {

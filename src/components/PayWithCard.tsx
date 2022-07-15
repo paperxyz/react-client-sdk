@@ -31,8 +31,10 @@ interface PayWithCardProps {
 }
 
 type SignedPayload = {
-  payload: { [key: string]: any };
-  signature: string;
+  signedPayload: {
+    payload: { [key: string]: any };
+    signature: string;
+  };
 };
 
 export const PayWithCard: React.FC<PayWithCardProps> = ({

@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
+import {
+  DEFAULT_BRAND_OPTIONS,
+  PAPER_APP_URL,
+  PAPER_APP_URL_ALT,
+} from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -28,6 +32,14 @@ interface PayWithCardProps {
   onReview?: (result: ReviewResult) => void;
   onClose?: () => void;
   onError?: (error: PaperSDKError) => void;
+
+  /**
+   * If true, uses the papercheckout.com instead of paper.xyz domain.
+   * This setting is useful if your users are unable to access the paper.xyz domain.
+   *
+   * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
+   */
+  experimentalUseAltDomain?: boolean;
 }
 
 type SignedPayload = {
@@ -52,6 +64,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onReview,
   onClose,
   onError,
+  experimentalUseAltDomain,
 }) => {
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
@@ -65,13 +78,17 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       onClose();
     }
   };
+  const paperDomain = experimentalUseAltDomain
+    ? PAPER_APP_URL_ALT
+    : PAPER_APP_URL;
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.startsWith(PAPER_APP_URL)) {
+      if (!event.origin.startsWith(paperDomain)) {
         return;
       }
+
       const data = event.data;
       const payWithCardIframe = document.getElementById(
         'payWithCardIframe',
@@ -138,7 +155,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
-    const payWithCardUrl = new URL('/sdk/v1/pay-with-card', PAPER_APP_URL);
+    const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
     payWithCardUrl.searchParams.append('chainName', chainName);

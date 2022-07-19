@@ -19,7 +19,7 @@ interface PayWithCardProps {
   emailAddress: string;
   quantity?: number;
   metadata?: Record<string, any>;
-  customArgs?: SignedPayload;
+  signatureArgs?: SignedPayload;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -42,7 +42,7 @@ interface PayWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
-type SignedPayload = {
+export type SignedPayload = {
   signedPayload: {
     payload: { [key: string]: any };
     signature: string;
@@ -55,7 +55,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   emailAddress,
   quantity,
   metadata,
-  customArgs,
+  signatureArgs,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -175,10 +175,11 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         encodeURIComponent(JSON.stringify(metadata)),
       );
     }
-    if (customArgs) {
+    if (signatureArgs) {
       payWithCardUrl.searchParams.append(
-        'customArgs',
-        JSON.stringify(customArgs),
+        'signatureArgs',
+        // Base 64 encode
+        btoa(JSON.stringify(signatureArgs)),
       );
     }
     if (options.colorPrimary) {

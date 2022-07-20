@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
+  PAPER_APP_URL,
   PAPER_APP_URL_ALT,
 } from '../constants/settings';
 import {
@@ -97,15 +98,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   };
   const paperDomain = experimentalUseAltDomain
     ? PAPER_APP_URL_ALT
-    : 'http:/localhost:3000';
-  // : PAPER_APP_URL;
+    : PAPER_APP_URL;
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // if (!event.origin.startsWith(paperDomain)) {
-      //   return;
-      // }
+      if (!event.origin.startsWith(paperDomain)) {
+        return;
+      }
 
       const data = event.data;
       const payWithCardIframe = document.getElementById(

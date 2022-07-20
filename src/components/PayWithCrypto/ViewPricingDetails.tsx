@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
+import { PAPER_APP_URL } from '../../constants/settings';
 import {
   ReadMethodCallType,
   WriteMethodCallType,

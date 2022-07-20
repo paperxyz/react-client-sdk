@@ -1,10 +1,10 @@
 export enum Currency {
-  MATIC = 'MATIC',
-  ETH = 'ETH',
-  USDC = 'USDC',
-  USDCE = 'USDC.e',
-  SOL = 'SOL',
-  AVAX = 'AVAX',
+  MATIC,
+  ETH,
+  USDC,
+  'USDC.e',
+  SOL,
+  AVAX,
 }
 
 type ArgumentMapType = {
@@ -15,6 +15,6 @@ export type ReadMethodCallType = {
   args?: ArgumentMapType;
 };
 export type WriteMethodCallType = ReadMethodCallType & {
+  payment: { currency: keyof typeof Currency; value: string };
   callOptions?: { gasOptions?: string };
-  payment?: { currency: Currency; value: string };
 };

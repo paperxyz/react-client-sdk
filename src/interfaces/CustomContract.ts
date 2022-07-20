@@ -6,6 +6,11 @@ export enum Currency {
   SOL,
   AVAX,
 }
+export enum gasOptions {
+  'low',
+  'normal',
+  'high',
+}
 
 type ArgumentMapType = {
   [key: string]: string | null | number | boolean | ArgumentMapType;
@@ -16,5 +21,5 @@ export type ReadMethodCallType = {
 };
 export type WriteMethodCallType = ReadMethodCallType & {
   payment: { currency: keyof typeof Currency; value: string };
-  callOptions?: { gasOptions?: string };
+  callOptions?: { gasOptions?: keyof typeof gasOptions };
 };

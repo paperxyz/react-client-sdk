@@ -72,6 +72,11 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
+    const payWithCardIframe = document.getElementById(
+      'payWithCardIframe',
+    ) as HTMLIFrameElement;
+    postMessageToIframe(payWithCardIframe, 'payWithCardCloseModal', {});
+
     if (onClose) {
       onClose();
     }

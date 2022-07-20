@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
   PAPER_APP_URL_ALT,
@@ -15,6 +21,7 @@ import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
+import { Spinner } from './common/Spinner';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -64,7 +71,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onError,
   experimentalUseAltDomain,
 }) => {
-  const { chainName } = usePaperSDKContext();
+  const { appName } = usePaperSDKContext();
+  const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =
+    useState<boolean>(true);
+  const onCardDetailLoad = useCallback(() => {
+    // causes a double refresh
+    setIsCardDetailIframeLoading(false);
+  }, []);
+
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
   const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
     string | undefined
@@ -89,9 +103,9 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.startsWith(paperDomain)) {
-        return;
-      }
+      // if (!event.origin.startsWith(paperDomain)) {
+      //   return;
+      // }
 
       const data = event.data;
       const payWithCardIframe = document.getElementById(
@@ -154,39 +168,39 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     };
   }, []);
 
+  const metadataStringified = JSON.stringify(metadata);
+  const mintMethodStringified = JSON.stringify(mintMethod);
+  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
     const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
-    payWithCardUrl.searchParams.append('chainName', chainName);
     payWithCardUrl.searchParams.append(
       'recipientWalletAddress',
       recipientWalletAddress,
     );
     payWithCardUrl.searchParams.append('emailAddress', emailAddress);
 
+    if (appName) {
+      payWithCardUrl.searchParams.append('appName', appName);
+    }
     if (quantity) {
       payWithCardUrl.searchParams.append('quantity', quantity.toString());
     }
     if (metadata) {
-      payWithCardUrl.searchParams.append(
-        'metadata',
-        encodeURIComponent(JSON.stringify(metadata)),
-      );
+      payWithCardUrl.searchParams.append('metadata', metadataStringified);
     }
     if (mintMethod) {
       payWithCardUrl.searchParams.append(
         'mintMethod',
-        Buffer.from(JSON.stringify(mintMethod), 'ascii').toString('base64'),
+        Buffer.from(mintMethodStringified, 'ascii').toString('base64'),
       );
     }
     if (eligibilityMethod) {
       payWithCardUrl.searchParams.append(
         'eligibilityMethod',
-        Buffer.from(JSON.stringify(eligibilityMethod), 'ascii').toString(
-          'base64',
-        ),
+        Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
       );
     }
     if (options.colorPrimary) {
@@ -212,12 +226,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     }
     return payWithCardUrl;
   }, [
+    appName,
     checkoutId,
-    chainName,
     recipientWalletAddress,
     emailAddress,
     quantity,
-    JSON.stringify(metadata),
+    metadataStringified,
+    mintMethodStringified,
+    eligibilityMethodStringified,
     options.colorPrimary,
     options.colorBackground,
     options.colorText,
@@ -227,13 +243,21 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
 
   return (
     <>
-      <IFrameWrapper
-        id='payWithCardIframe'
-        src={payWithCardUrl.href}
-        width='100%'
-        height='100%'
-        allowTransparency
-      />
+      <div className='relative h-full w-full'>
+        {isCardDetailIframeLoading && (
+          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <Spinner className='!h-8 !w-8 !text-black' />
+          </div>
+        )}
+        <IFrameWrapper
+          id='payWithCardIframe'
+          src={payWithCardUrl.href}
+          onLoad={onCardDetailLoad}
+          width='100%'
+          height='100%'
+          allowTransparency
+        />
+      </div>
 
       <Modal
         isOpen={isOpen}

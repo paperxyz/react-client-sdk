@@ -18,6 +18,7 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
+import { SignedPayload } from '../PayWithCard';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -37,6 +38,7 @@ export interface ViewPricingDetailsProps {
   quantity?: number;
   metadata?: Record<string, any>;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
+  signatureArgs?: SignedPayload;
 }
 
 export const ViewPricingDetails = ({
@@ -44,6 +46,7 @@ export const ViewPricingDetails = ({
   setIsTryingToChangeWallet,
   emailAddress,
   metadata,
+  signatureArgs,
   onError,
   suppressErrorToast = false,
   onSuccess,
@@ -164,6 +167,13 @@ export const ViewPricingDetails = ({
       payWithCryptoUrl.searchParams.append(
         'metadata',
         JSON.stringify(metadata),
+      );
+    }
+    if (signatureArgs) {
+      payWithCryptoUrl.searchParams.append(
+        'signatureArgs',
+        // Base 64 encode
+        btoa(JSON.stringify(signatureArgs)),
       );
     }
     // Add timestamp to prevent loading a cached page.

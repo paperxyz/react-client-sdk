@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
-  PAPER_APP_URL,
   PAPER_APP_URL_ALT,
 } from '../constants/settings';
+import {
+  ReadMethodCallType,
+  WriteMethodCallType,
+} from '../interfaces/CustomContract';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -17,6 +20,8 @@ interface PayWithCardProps {
   checkoutId: string;
   recipientWalletAddress: string;
   emailAddress: string;
+  mintMethod?: WriteMethodCallType;
+  eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
   options?: {
@@ -47,6 +52,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   emailAddress,
   quantity,
   metadata,
+  eligibilityMethod,
+  mintMethod,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -71,7 +78,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   };
   const paperDomain = experimentalUseAltDomain
     ? PAPER_APP_URL_ALT
-    : PAPER_APP_URL;
+    : 'http:/localhost:3000';
+  // : PAPER_APP_URL;
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
@@ -119,18 +127,15 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
           postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
-        case 'review':
+        case 'openReviewPaymentPopupWindow':
+          setReviewPaymentUrl(new URL(data.url).href);
+          setIsOpen(true);
           if (onReview) {
             onReview({
               id: data.id,
               cardholderName: data.cardholderName,
             });
           }
-          break;
-
-        case 'openReviewPaymentPopupWindow':
-          setReviewPaymentUrl(new URL(data.url).href);
-          setIsOpen(true);
           break;
 
         default:
@@ -154,9 +159,8 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       'recipientWalletAddress',
       recipientWalletAddress,
     );
-    if (emailAddress) {
-      payWithCardUrl.searchParams.append('emailAddress', emailAddress);
-    }
+    payWithCardUrl.searchParams.append('emailAddress', emailAddress);
+
     if (quantity) {
       payWithCardUrl.searchParams.append('quantity', quantity.toString());
     }
@@ -164,6 +168,20 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
       payWithCardUrl.searchParams.append(
         'metadata',
         encodeURIComponent(JSON.stringify(metadata)),
+      );
+    }
+    if (mintMethod) {
+      payWithCardUrl.searchParams.append(
+        'mintMethod',
+        Buffer.from(JSON.stringify(mintMethod), 'ascii').toString('base64'),
+      );
+    }
+    if (eligibilityMethod) {
+      payWithCardUrl.searchParams.append(
+        'eligibilityMethod',
+        Buffer.from(JSON.stringify(eligibilityMethod), 'ascii').toString(
+          'base64',
+        ),
       );
     }
     if (options.colorPrimary) {

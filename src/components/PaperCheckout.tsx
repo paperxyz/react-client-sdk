@@ -7,6 +7,7 @@ import {
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
+import { SignedPayload } from './PayWithCard';
 
 export enum PaperCheckoutDisplay {
   /**
@@ -49,6 +50,7 @@ export interface PaperCheckoutProps {
   quantity?: number;
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
+  signatureArgs?: SignedPayload;
   metadata?: Record<string, any>;
   appName?: string;
   onOpenCheckout?: () => void;
@@ -75,6 +77,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   quantity,
   eligibilityMethod,
   mintMethod,
+  signatureArgs,
   metadata,
   appName,
   options = {
@@ -138,6 +141,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
   const metadataStringified = JSON.stringify(metadata);
+  const signatureArgsStringified = JSON.stringify(signatureArgs);
 
   if (options.colorPrimary) {
     checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
@@ -167,6 +171,13 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     checkoutUrl.searchParams.append(
       'eligibilityMethod',
       Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
+    );
+  }
+  if (signatureArgs) {
+    checkoutUrl.searchParams.append(
+      'signatureArgs',
+      // Base 64 encode
+      Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
     );
   }
   if (appName) {

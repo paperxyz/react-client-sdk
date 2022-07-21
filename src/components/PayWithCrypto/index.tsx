@@ -34,6 +34,7 @@ export const PayWithCrypto = ({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
+  signatureArgs,
   onError,
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
@@ -67,6 +68,7 @@ export const PayWithCrypto = ({
         metadata={metadata}
         eligibilityMethod={eligibilityMethod}
         mintMethod={mintMethod}
+        signatureArgs={signatureArgs}
         onError={onError}
         onSuccess={(transactionResponse) => {
           closeModal();

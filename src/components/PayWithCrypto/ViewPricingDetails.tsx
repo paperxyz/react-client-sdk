@@ -22,6 +22,7 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
+import { SignedPayload } from '../PayWithCard';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -43,6 +44,7 @@ export interface ViewPricingDetailsProps {
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
+  signatureArgs?: SignedPayload;
 }
 
 export const ViewPricingDetails = ({
@@ -52,6 +54,7 @@ export const ViewPricingDetails = ({
   metadata,
   eligibilityMethod,
   mintMethod,
+  signatureArgs,
   onError,
   suppressErrorToast = false,
   onSuccess,
@@ -150,6 +153,8 @@ export const ViewPricingDetails = ({
   const metadataStringified = JSON.stringify(metadata);
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const signatureArgsStringified = JSON.stringify(signatureArgs);
+
   const payWithCryptoUrl = useMemo(() => {
     // const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
     const payWithCryptoUrl = new URL(
@@ -169,13 +174,13 @@ export const ViewPricingDetails = ({
     if (mintMethod) {
       payWithCryptoUrl.searchParams.append(
         'mintMethod',
-        Buffer.from(mintMethodStringified, 'ascii').toString('base64'),
+        Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
       );
     }
     if (eligibilityMethod) {
       payWithCryptoUrl.searchParams.append(
         'eligibilityMethod',
-        Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
+        Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
       );
     }
     if (appName) {
@@ -190,6 +195,13 @@ export const ViewPricingDetails = ({
     if (metadata) {
       payWithCryptoUrl.searchParams.append('metadata', metadataStringified);
     }
+    if (signatureArgs) {
+      payWithCryptoUrl.searchParams.append(
+        'signatureArgs',
+        // Base 64 encode
+        Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
+      );
+    }
     // Add timestamp to prevent loading a cached page.
     payWithCryptoUrl.searchParams.append('date', Date.now().toString());
     return payWithCryptoUrl;
@@ -203,6 +215,7 @@ export const ViewPricingDetails = ({
     metadataStringified,
     mintMethodStringified,
     eligibilityMethodStringified,
+    signatureArgsStringified,
   ]);
 
   https: return (

@@ -32,6 +32,7 @@ interface PayWithCardProps {
   eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
+  signatureArgs?: SignedPayload;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -54,6 +55,13 @@ interface PayWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
+export type SignedPayload = {
+  signedPayload: {
+    payload: { [key: string]: any };
+    signature: string;
+  };
+};
+
 export const PayWithCard: React.FC<PayWithCardProps> = ({
   checkoutId,
   recipientWalletAddress,
@@ -62,6 +70,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   metadata,
   eligibilityMethod,
   mintMethod,
+  signatureArgs,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -171,6 +180,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   const metadataStringified = JSON.stringify(metadata);
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const signatureArgsStringified = JSON.stringify(signatureArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
     const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
@@ -194,13 +204,20 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     if (mintMethod) {
       payWithCardUrl.searchParams.append(
         'mintMethod',
-        Buffer.from(mintMethodStringified, 'ascii').toString('base64'),
+        Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
       );
     }
     if (eligibilityMethod) {
       payWithCardUrl.searchParams.append(
         'eligibilityMethod',
-        Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
+        Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
+      );
+    }
+    if (signatureArgs) {
+      payWithCardUrl.searchParams.append(
+        'signatureArgs',
+        // Base 64 encode
+        Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
       );
     }
     if (options.colorPrimary) {
@@ -234,6 +251,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     metadataStringified,
     mintMethodStringified,
     eligibilityMethodStringified,
+    signatureArgsStringified,
     options.colorPrimary,
     options.colorBackground,
     options.colorText,

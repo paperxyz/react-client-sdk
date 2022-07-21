@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
+import {
+  ReadMethodCallType,
+  WriteMethodCallType,
+} from '../interfaces/CustomContract';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
@@ -43,6 +47,8 @@ export interface PaperCheckoutProps {
   recipientWalletAddress?: string;
   emailAddress?: string;
   quantity?: number;
+  mintMethod?: WriteMethodCallType;
+  eligibilityMethod?: ReadMethodCallType;
   metadata?: Record<string, any>;
   appName?: string;
   onOpenCheckout?: () => void;
@@ -67,6 +73,8 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   recipientWalletAddress,
   emailAddress,
   quantity,
+  eligibilityMethod,
+  mintMethod,
   metadata,
   appName,
   options = {
@@ -125,7 +133,11 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 
   // Build iframe URL with query params.
   const checkoutUrl = new URL(`/checkout/${checkoutId}`, PAPER_APP_URL);
+
   checkoutUrl.searchParams.append('display', display);
+  const mintMethodStringified = JSON.stringify(mintMethod);
+  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const metadataStringified = JSON.stringify(metadata);
 
   if (options.colorPrimary) {
     checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
@@ -145,7 +157,18 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (options.fontFamily) {
     checkoutUrl.searchParams.append('fontFamily', options.fontFamily);
   }
-
+  if (mintMethod) {
+    checkoutUrl.searchParams.append(
+      'mintMethod',
+      Buffer.from(mintMethodStringified, 'ascii').toString('base64'),
+    );
+  }
+  if (eligibilityMethod) {
+    checkoutUrl.searchParams.append(
+      'eligibilityMethod',
+      Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
+    );
+  }
   if (appName) {
     checkoutUrl.searchParams.append('appName', appName);
   }
@@ -161,7 +184,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (metadata) {
     checkoutUrl.searchParams.append(
       'metadata',
-      encodeURIComponent(JSON.stringify(metadata)),
+      encodeURIComponent(metadataStringified),
     );
   }
 

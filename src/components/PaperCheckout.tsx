@@ -164,13 +164,13 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (mintMethod) {
     checkoutUrl.searchParams.append(
       'mintMethod',
-      Buffer.from(mintMethodStringified, 'ascii').toString('base64'),
+      Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
     );
   }
   if (eligibilityMethod) {
     checkoutUrl.searchParams.append(
       'eligibilityMethod',
-      Buffer.from(eligibilityMethodStringified, 'ascii').toString('base64'),
+      Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
     );
   }
   if (signatureArgs) {

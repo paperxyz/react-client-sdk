@@ -17,6 +17,7 @@ type SupportedChainName =
   | 'Mumbai'
   | 'Ethereum'
   | 'Rinkeby'
+  | 'Goerli'
   | 'Solana'
   | 'SolanaDevnet'
   | 'Avalanche';

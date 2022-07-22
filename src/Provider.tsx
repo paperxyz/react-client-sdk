@@ -59,7 +59,7 @@ export const PaperSDKProvider = ({
 
   const providers = [publicProvider()];
   const { chains, provider } = configureChains(
-    [chain.mainnet, chain.rinkeby],
+    [chain.mainnet, chain.goerli],
     providers,
   );
 

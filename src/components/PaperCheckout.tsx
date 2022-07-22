@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
+import {
+  ReadMethodCallType,
+  WriteMethodCallType,
+} from '../interfaces/CustomContract';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
+import { SignedPayload } from './PayWithCard';
 
 export enum PaperCheckoutDisplay {
   /**
@@ -43,6 +48,9 @@ export interface PaperCheckoutProps {
   recipientWalletAddress?: string;
   emailAddress?: string;
   quantity?: number;
+  mintMethod?: WriteMethodCallType;
+  eligibilityMethod?: ReadMethodCallType;
+  signatureArgs?: SignedPayload;
   metadata?: Record<string, any>;
   appName?: string;
   onOpenCheckout?: () => void;
@@ -67,6 +75,9 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   recipientWalletAddress,
   emailAddress,
   quantity,
+  eligibilityMethod,
+  mintMethod,
+  signatureArgs,
   metadata,
   appName,
   options = {
@@ -125,7 +136,12 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
 
   // Build iframe URL with query params.
   const checkoutUrl = new URL(`/checkout/${checkoutId}`, PAPER_APP_URL);
+
   checkoutUrl.searchParams.append('display', display);
+  const mintMethodStringified = JSON.stringify(mintMethod);
+  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const metadataStringified = JSON.stringify(metadata);
+  const signatureArgsStringified = JSON.stringify(signatureArgs);
 
   if (options.colorPrimary) {
     checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
@@ -145,7 +161,25 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (options.fontFamily) {
     checkoutUrl.searchParams.append('fontFamily', options.fontFamily);
   }
-
+  if (mintMethod) {
+    checkoutUrl.searchParams.append(
+      'mintMethod',
+      Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
+    );
+  }
+  if (eligibilityMethod) {
+    checkoutUrl.searchParams.append(
+      'eligibilityMethod',
+      Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
+    );
+  }
+  if (signatureArgs) {
+    checkoutUrl.searchParams.append(
+      'signatureArgs',
+      // Base 64 encode
+      Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
+    );
+  }
   if (appName) {
     checkoutUrl.searchParams.append('appName', appName);
   }
@@ -161,7 +195,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   if (metadata) {
     checkoutUrl.searchParams.append(
       'metadata',
-      encodeURIComponent(JSON.stringify(metadata)),
+      encodeURIComponent(metadataStringified),
     );
   }
 

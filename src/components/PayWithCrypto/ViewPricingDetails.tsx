@@ -157,10 +157,7 @@ export const ViewPricingDetails = ({
 
   const payWithCryptoUrl = useMemo(() => {
     // const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
-    const payWithCryptoUrl = new URL(
-      '/sdk/v1/pay-with-crypto',
-      'http://localhost:3000',
-    );
+    const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
     payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
     payWithCryptoUrl.searchParams.append(
       'recipientWalletAddress',

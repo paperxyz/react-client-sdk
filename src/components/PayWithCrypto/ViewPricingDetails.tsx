@@ -8,7 +8,10 @@ import React, {
 } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
 import { PAPER_APP_URL } from '../../constants/settings';
-import { ContractType, CustomContractArgWrapper } from '../../interfaces/CustomContract';
+import {
+  ContractType,
+  CustomContractArgWrapper,
+} from '../../interfaces/CustomContract';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -19,7 +22,6 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
-import { SignedPayload } from '../PayWithCard';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -171,11 +173,8 @@ export const ViewPricingDetails = <T extends ContractType>({
       );
     }
     if (contractType) {
-      payWithCryptoUrl.searchParams.append(
-        'contractType',
-        contractType
-      );
-    }    
+      payWithCryptoUrl.searchParams.append('contractType', contractType);
+    }
     if (contractArgs) {
       payWithCryptoUrl.searchParams.append(
         'contractArgs',

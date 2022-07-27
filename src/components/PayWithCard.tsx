@@ -1,9 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
   PAPER_APP_URL,
   PAPER_APP_URL_ALT,
 } from '../constants/settings';
+import {
+  ContractType,
+  CustomContractArgWrapper,
+} from '../interfaces/CustomContract';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -49,7 +53,7 @@ export type SignedPayload = {
   };
 };
 
-export const PayWithCard: React.FC<PayWithCardProps> = ({
+export const PayWithCard = <T extends ContractType>({
   checkoutId,
   recipientWalletAddress,
   emailAddress,
@@ -65,7 +69,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   onClose,
   onError,
   experimentalUseAltDomain,
-}) => {
+}: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
   const [reviewPaymentUrl, setReviewPaymentUrl] = useState<

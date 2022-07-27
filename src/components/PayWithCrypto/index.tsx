@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
+import {
+  ContractType,
+  CustomContractArgWrapper,
+} from '../../interfaces/CustomContract';
 import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
@@ -14,16 +18,19 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
-type PayWithCardProps = {
-  onClose?: () => void;
-  onWalletConnected?: onWalletConnectedType;
-  children?:
-    | React.ReactNode
-    | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
-  className?: string;
-} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
+type PayWithCardProps<T extends ContractType> = CustomContractArgWrapper<
+  {
+    onClose?: () => void;
+    onWalletConnected?: onWalletConnectedType;
+    children?:
+      | React.ReactNode
+      | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
+    className?: string;
+  } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
+  T
+>;
 
-export const PayWithCrypto = ({
+export const PayWithCrypto = <T extends ContractType>({
   children,
   className,
   checkoutId,
@@ -38,7 +45,7 @@ export const PayWithCrypto = ({
   onSuccess,
   onWalletConnected,
   onClose,
-}: PayWithCardProps): React.ReactElement => {
+}: PayWithCardProps<T>): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
 

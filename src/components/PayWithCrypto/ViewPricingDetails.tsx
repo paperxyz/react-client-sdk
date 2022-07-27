@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
 import { PAPER_APP_URL } from '../../constants/settings';
+import { ContractType, CustomContractArgWrapper } from '../../interfaces/CustomContract';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -38,21 +39,21 @@ export interface ViewPricingDetailsProps {
   quantity?: number;
   metadata?: Record<string, any>;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
-  signatureArgs?: SignedPayload;
 }
 
-export const ViewPricingDetails = ({
+export const ViewPricingDetails = <T extends ContractType>({
   checkoutId,
   setIsTryingToChangeWallet,
   emailAddress,
   metadata,
-  signatureArgs,
   onError,
   suppressErrorToast = false,
   onSuccess,
   quantity,
   recipientWalletAddress,
-}: ViewPricingDetailsProps) => {
+  contractType,
+  contractArgs,
+}: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
@@ -169,11 +170,17 @@ export const ViewPricingDetails = ({
         JSON.stringify(metadata),
       );
     }
-    if (signatureArgs) {
+    if (contractType) {
       payWithCryptoUrl.searchParams.append(
-        'signatureArgs',
+        'contractType',
+        contractType
+      );
+    }    
+    if (contractArgs) {
+      payWithCryptoUrl.searchParams.append(
+        'contractArgs',
         // Base 64 encode
-        btoa(JSON.stringify(signatureArgs)),
+        btoa(JSON.stringify(contractArgs)),
       );
     }
     // Add timestamp to prevent loading a cached page.

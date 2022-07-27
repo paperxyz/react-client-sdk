@@ -18,7 +18,7 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
-type PayWithCardProps<T extends ContractType> = CustomContractArgWrapper<
+type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   {
     onClose?: () => void;
     onWalletConnected?: onWalletConnectedType;
@@ -39,13 +39,14 @@ export const PayWithCrypto = <T extends ContractType>({
   quantity,
   metadata,
   suppressErrorToast,
-  signatureArgs,
+  contractType,
+  contractArgs,
   onError,
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
   onClose,
-}: PayWithCardProps<T>): React.ReactElement => {
+}: PayWithCryptoProps<T>): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
 
@@ -71,7 +72,8 @@ export const PayWithCrypto = <T extends ContractType>({
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}
-        signatureArgs={signatureArgs}
+        contractType={contractType}
+        contractArgs={contractArgs}
         onError={onError}
         onSuccess={(transactionResponse) => {
           closeModal();

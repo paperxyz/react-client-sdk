@@ -23,14 +23,13 @@ interface PayWithCardProps {
   emailAddress: string;
   quantity?: number;
   metadata?: Record<string, any>;
-  signatureArgs?: SignedPayload;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
     colorText?: string;
     borderRadius?: number;
     fontFamily?: string;
-  };
+  };  
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
   onReview?: (result: ReviewResult) => void;
@@ -46,12 +45,6 @@ interface PayWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
-export type SignedPayload = {
-  signedPayload: {
-    payload: { [key: string]: any };
-    signature: string;
-  };
-};
 
 export const PayWithCard = <T extends ContractType>({
   checkoutId,
@@ -59,10 +52,11 @@ export const PayWithCard = <T extends ContractType>({
   emailAddress,
   quantity,
   metadata,
-  signatureArgs,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
+  contractType,
+  contractArgs,
   onPaymentSuccess,
   onTransferSuccess,
   onReview,
@@ -70,6 +64,7 @@ export const PayWithCard = <T extends ContractType>({
   onError,
   experimentalUseAltDomain,
 }: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
+
   const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
   const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
@@ -179,11 +174,17 @@ export const PayWithCard = <T extends ContractType>({
         encodeURIComponent(JSON.stringify(metadata)),
       );
     }
-    if (signatureArgs) {
+    if (contractType) {
       payWithCardUrl.searchParams.append(
-        'signatureArgs',
+        'contractType',
+        contractType,
+      );
+    }
+    if (contractArgs) {
+      payWithCardUrl.searchParams.append(
+        'contractArgs',
         // Base 64 encode
-        btoa(JSON.stringify(signatureArgs)),
+        btoa(JSON.stringify(contractArgs)),
       );
     }
     if (options.colorPrimary) {

@@ -1,8 +1,6 @@
 export type SignedPayload = {
-  signedPayload: {
-    payload: { [key: string]: any };
-    signature: string;
-  };
+  payload: { [key: string]: any };
+  signature: string;
 };
 
 export enum ContractType {
@@ -16,18 +14,18 @@ export enum ContractType {
 }
 
 export type CustomContractArgWrapper<props, T extends ContractType> =
-  | (props & {
+  | props & {
       contractType: T;
       contractArgs: T extends ContractType.AUCTION_HOUSE
-        ? { 
-            mintAddress: string, 
+        ? {
+            mintAddress: string;
             price: {
-              amount: number,
-              currency: 'SOL' | 'USDC',
-            }, 
-            quantity: string 
+              amount: number;
+              currency: 'SOL' | 'USDC';
+            };
+            quantity: string;
           }
         : T extends ContractType.THIRDWEB_SIGNATURE
         ? SignedPayload
         : undefined;
-    });
+    };

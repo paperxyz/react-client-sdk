@@ -1,4 +1,8 @@
-export const PAPER_APP_URL = 'https://paper.xyz';
+export const PAPER_APP_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://paper.xyz'
+    : 'http://localhost:3000';
+
 export const PAPER_APP_URL_ALT = 'https://papercheckout.com';
 
 export const DEFAULT_BRAND_OPTIONS = {

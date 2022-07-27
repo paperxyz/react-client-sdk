@@ -9,6 +9,10 @@ import React, {
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
 import { PAPER_APP_URL } from '../../constants/settings';
 import {
+  ReadMethodCallType,
+  WriteMethodCallType,
+} from '../../interfaces/CustomContract';
+import {
   PaperSDKError,
   PayWithCryptoErrorCode,
 } from '../../interfaces/PaperSDKError';
@@ -37,6 +41,8 @@ export interface ViewPricingDetailsProps {
   emailAddress?: string;
   quantity?: number;
   metadata?: Record<string, any>;
+  mintMethod?: WriteMethodCallType;
+  eligibilityMethod?: ReadMethodCallType;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
   signatureArgs?: SignedPayload;
 }
@@ -46,6 +52,8 @@ export const ViewPricingDetails = ({
   setIsTryingToChangeWallet,
   emailAddress,
   metadata,
+  eligibilityMethod,
+  mintMethod,
   signatureArgs,
   onError,
   suppressErrorToast = false,
@@ -142,7 +150,13 @@ export const ViewPricingDetails = ({
     };
   }, [isSendingTransaction]);
 
+  const metadataStringified = JSON.stringify(metadata);
+  const mintMethodStringified = JSON.stringify(mintMethod);
+  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const signatureArgsStringified = JSON.stringify(signatureArgs);
+
   const payWithCryptoUrl = useMemo(() => {
+    // const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
     const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
     payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
     payWithCryptoUrl.searchParams.append(
@@ -154,6 +168,18 @@ export const ViewPricingDetails = ({
       recipientWalletAddress ? WalletType.PRESET : connector?.name || '',
     );
     payWithCryptoUrl.searchParams.append('checkoutId', checkoutId);
+    if (mintMethod) {
+      payWithCryptoUrl.searchParams.append(
+        'mintMethod',
+        Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
+      );
+    }
+    if (eligibilityMethod) {
+      payWithCryptoUrl.searchParams.append(
+        'eligibilityMethod',
+        Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
+      );
+    }
     if (appName) {
       payWithCryptoUrl.searchParams.append('appName', appName);
     }
@@ -164,16 +190,13 @@ export const ViewPricingDetails = ({
       payWithCryptoUrl.searchParams.append('quantity', quantity.toString());
     }
     if (metadata) {
-      payWithCryptoUrl.searchParams.append(
-        'metadata',
-        JSON.stringify(metadata),
-      );
+      payWithCryptoUrl.searchParams.append('metadata', metadataStringified);
     }
     if (signatureArgs) {
       payWithCryptoUrl.searchParams.append(
         'signatureArgs',
         // Base 64 encode
-        btoa(JSON.stringify(signatureArgs)),
+        Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
       );
     }
     // Add timestamp to prevent loading a cached page.
@@ -186,7 +209,10 @@ export const ViewPricingDetails = ({
     appName,
     emailAddress,
     quantity,
-    JSON.stringify(metadata),
+    metadataStringified,
+    mintMethodStringified,
+    eligibilityMethodStringified,
+    signatureArgsStringified,
   ]);
 
   https: return (

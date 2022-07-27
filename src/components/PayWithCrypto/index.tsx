@@ -14,7 +14,7 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
-type PayWithCardProps = {
+type PayWithCryptoProps = {
   onClose?: () => void;
   onWalletConnected?: onWalletConnectedType;
   children?:
@@ -31,6 +31,8 @@ export const PayWithCrypto = ({
   emailAddress,
   quantity,
   metadata,
+  eligibilityMethod,
+  mintMethod,
   suppressErrorToast,
   signatureArgs,
   onError,
@@ -38,7 +40,7 @@ export const PayWithCrypto = ({
   onSuccess,
   onWalletConnected,
   onClose,
-}: PayWithCardProps): React.ReactElement => {
+}: PayWithCryptoProps): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
 
@@ -64,6 +66,8 @@ export const PayWithCrypto = ({
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}
+        eligibilityMethod={eligibilityMethod}
+        mintMethod={mintMethod}
         signatureArgs={signatureArgs}
         onError={onError}
         onSuccess={(transactionResponse) => {
@@ -105,7 +109,12 @@ export const PayWithCrypto = ({
   return (
     <>
       {children && isChildrenFunction ? (
-        children({ openModal })
+        <>
+          {children({ openModal })}
+          <Modal isOpen={isOpen} onClose={closeModal}>
+            {ModalContents}
+          </Modal>
+        </>
       ) : (
         <>
           {children ? (

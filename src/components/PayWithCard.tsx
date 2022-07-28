@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
   PAPER_APP_URL,
@@ -7,6 +13,8 @@ import {
 import {
   ContractType,
   CustomContractArgWrapper,
+  ReadMethodCallType,
+  WriteMethodCallType,
 } from '../interfaces/CustomContract';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
@@ -16,11 +24,14 @@ import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
+import { Spinner } from './common/Spinner';
 
 interface PayWithCardProps {
   checkoutId: string;
   recipientWalletAddress: string;
   emailAddress: string;
+  mintMethod?: WriteMethodCallType;
+  eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
   options?: {
@@ -29,7 +40,7 @@ interface PayWithCardProps {
     colorText?: string;
     borderRadius?: number;
     fontFamily?: string;
-  };  
+  };
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
   onReview?: (result: ReviewResult) => void;
@@ -45,13 +56,14 @@ interface PayWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
-
 export const PayWithCard = <T extends ContractType>({
   checkoutId,
   recipientWalletAddress,
   emailAddress,
   quantity,
   metadata,
+  eligibilityMethod,
+  mintMethod,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -64,8 +76,14 @@ export const PayWithCard = <T extends ContractType>({
   onError,
   experimentalUseAltDomain,
 }: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
+  const { appName } = usePaperSDKContext();
+  const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =
+    useState<boolean>(true);
+  const onCardDetailLoad = useCallback(() => {
+    // causes a double refresh
+    setIsCardDetailIframeLoading(false);
+  }, []);
 
-  const { chainName } = usePaperSDKContext();
   const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
   const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
     string | undefined
@@ -73,6 +91,11 @@ export const PayWithCard = <T extends ContractType>({
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
+    const payWithCardIframe = document.getElementById(
+      'payWithCardIframe',
+    ) as HTMLIFrameElement;
+    postMessageToIframe(payWithCardIframe, 'payWithCardCloseModal', {});
+
     if (onClose) {
       onClose();
     }
@@ -127,18 +150,15 @@ export const PayWithCard = <T extends ContractType>({
           postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
-        case 'review':
+        case 'openReviewPaymentPopupWindow':
+          setReviewPaymentUrl(new URL(data.url).href);
+          setIsOpen(true);
           if (onReview) {
             onReview({
               id: data.id,
               cardholderName: data.cardholderName,
             });
           }
-          break;
-
-        case 'openReviewPaymentPopupWindow':
-          setReviewPaymentUrl(new URL(data.url).href);
-          setIsOpen(true);
           break;
 
         default:
@@ -152,39 +172,50 @@ export const PayWithCard = <T extends ContractType>({
     };
   }, []);
 
+  const metadataStringified = JSON.stringify(metadata);
+  const mintMethodStringified = JSON.stringify(mintMethod);
+  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
+  const contractArgsStringified = JSON.stringify(contractArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
     const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
-    payWithCardUrl.searchParams.append('chainName', chainName);
     payWithCardUrl.searchParams.append(
       'recipientWalletAddress',
       recipientWalletAddress,
     );
-    if (emailAddress) {
-      payWithCardUrl.searchParams.append('emailAddress', emailAddress);
+    payWithCardUrl.searchParams.append('emailAddress', emailAddress);
+
+    if (appName) {
+      payWithCardUrl.searchParams.append('appName', appName);
     }
     if (quantity) {
       payWithCardUrl.searchParams.append('quantity', quantity.toString());
     }
     if (metadata) {
+      payWithCardUrl.searchParams.append('metadata', metadataStringified);
+    }
+    if (mintMethod) {
       payWithCardUrl.searchParams.append(
-        'metadata',
-        encodeURIComponent(JSON.stringify(metadata)),
+        'mintMethod',
+        Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
+      );
+    }
+    if (eligibilityMethod) {
+      payWithCardUrl.searchParams.append(
+        'eligibilityMethod',
+        Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
       );
     }
     if (contractType) {
-      payWithCardUrl.searchParams.append(
-        'contractType',
-        contractType,
-      );
+      payWithCardUrl.searchParams.append('contractType', contractType);
     }
     if (contractArgs) {
       payWithCardUrl.searchParams.append(
         'contractArgs',
         // Base 64 encode
-        btoa(JSON.stringify(contractArgs)),
+        Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
       );
     }
     if (options.colorPrimary) {
@@ -210,12 +241,15 @@ export const PayWithCard = <T extends ContractType>({
     }
     return payWithCardUrl;
   }, [
+    appName,
     checkoutId,
-    chainName,
     recipientWalletAddress,
     emailAddress,
     quantity,
-    JSON.stringify(metadata),
+    metadataStringified,
+    mintMethodStringified,
+    eligibilityMethodStringified,
+    contractArgsStringified,
     options.colorPrimary,
     options.colorBackground,
     options.colorText,
@@ -225,13 +259,21 @@ export const PayWithCard = <T extends ContractType>({
 
   return (
     <>
-      <IFrameWrapper
-        id='payWithCardIframe'
-        src={payWithCardUrl.href}
-        width='100%'
-        height='100%'
-        allowTransparency
-      />
+      <div className='relative h-full w-full'>
+        {isCardDetailIframeLoading && (
+          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <Spinner className='!h-8 !w-8 !text-black' />
+          </div>
+        )}
+        <IFrameWrapper
+          id='payWithCardIframe'
+          src={payWithCardUrl.href}
+          onLoad={onCardDetailLoad}
+          width='100%'
+          height='100%'
+          allowTransparency
+        />
+      </div>
 
       <Modal
         isOpen={isOpen}

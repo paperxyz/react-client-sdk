@@ -38,6 +38,8 @@ export const PayWithCrypto = <T extends ContractType>({
   emailAddress,
   quantity,
   metadata,
+  eligibilityMethod,
+  mintMethod,
   suppressErrorToast,
   contractType,
   contractArgs,
@@ -74,6 +76,8 @@ export const PayWithCrypto = <T extends ContractType>({
         metadata={metadata}
         contractType={contractType}
         contractArgs={contractArgs}
+        eligibilityMethod={eligibilityMethod}
+        mintMethod={mintMethod}
         onError={onError}
         onSuccess={(transactionResponse) => {
           closeModal();
@@ -114,7 +118,12 @@ export const PayWithCrypto = <T extends ContractType>({
   return (
     <>
       {children && isChildrenFunction ? (
-        children({ openModal })
+        <>
+          {children({ openModal })}
+          <Modal isOpen={isOpen} onClose={closeModal}>
+            {ModalContents}
+          </Modal>
+        </>
       ) : (
         <>
           {children ? (

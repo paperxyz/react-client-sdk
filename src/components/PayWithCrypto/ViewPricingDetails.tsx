@@ -11,6 +11,7 @@ import { PAPER_APP_URL } from '../../constants/settings';
 import {
   ContractType,
   CustomContractArgWrapper,
+  fetchCustomContractArgsFromProps,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../../interfaces/CustomContract';
@@ -59,8 +60,7 @@ export const ViewPricingDetails = <T extends ContractType>({
   onSuccess,
   quantity,
   recipientWalletAddress,
-  contractType,
-  contractArgs,
+  ...props
 }: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
@@ -69,6 +69,9 @@ export const ViewPricingDetails = <T extends ContractType>({
   const { sendTransactionAsync, isLoading: isSendingTransaction } =
     useSendTransaction();
   const { switchNetworkAsync } = useSwitchNetwork();
+  const { contractType, contractArgs } =
+    fetchCustomContractArgsFromProps(props);
+
   const onLoad = useCallback(() => {
     // causes a double refresh
     setIsIframeLoading(false);

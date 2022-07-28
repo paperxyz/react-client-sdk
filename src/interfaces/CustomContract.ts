@@ -14,7 +14,8 @@ export enum ContractType {
 }
 
 export type CustomContractArgWrapper<props, T extends ContractType> =
-  | props & {
+  | props
+  | (props & {
       contractType: T;
       contractArgs: T extends ContractType.AUCTION_HOUSE
         ? {
@@ -29,7 +30,26 @@ export type CustomContractArgWrapper<props, T extends ContractType> =
         : T extends ContractType.THIRDWEB_SIGNATURE
         ? SignedPayload
         : undefined;
-    };
+    });
+
+export type fetchCustomContractArgsFromPropsResponse = {
+  contractType?: string;
+  contractArgs?: any;
+};
+
+export const fetchCustomContractArgsFromProps = (
+  props: Record<string, any>,
+): fetchCustomContractArgsFromPropsResponse => {
+  const propsToReturn: fetchCustomContractArgsFromPropsResponse = {};
+  if ('contractType' in props) {
+    propsToReturn.contractType = props.contractType;
+  }
+  if ('contractArgs' in props) {
+    propsToReturn.contractArgs = props.contractArgs;
+  }
+
+  return propsToReturn;
+};
 
 /** This is basically a map from argument name to the value
  * Example:

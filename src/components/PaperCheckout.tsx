@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import {
+  ContractType,
+  CustomContractArgWrapper,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { openCenteredPopup } from '../lib/utils/popup';
-import { SignedPayload } from './PayWithCard';
 
 export enum PaperCheckoutDisplay {
   /**
@@ -42,34 +43,37 @@ export enum PaperCheckoutDisplay {
   EMBED = 'EMBED',
 }
 
-export interface PaperCheckoutProps {
-  checkoutId: string;
-  display?: PaperCheckoutDisplay;
-  recipientWalletAddress?: string;
-  emailAddress?: string;
-  quantity?: number;
-  mintMethod?: WriteMethodCallType;
-  eligibilityMethod?: ReadMethodCallType;
-  signatureArgs?: SignedPayload;
-  metadata?: Record<string, any>;
-  appName?: string;
-  onOpenCheckout?: () => void;
-  onCloseCheckout?: () => void;
-  onPaymentSuccess?: (result: PaymentSuccessResult) => void;
-  onTransferSuccess?: (result: TransferSuccessResult) => void;
-  options?: {
-    width: number;
-    height: number;
-    colorPrimary: string;
-    colorBackground: string;
-    colorText: string;
-    borderRadius: number;
-    fontFamily: string;
-  };
-  children?: React.ReactNode;
-}
+export type PaperCheckoutProps<T extends ContractType> =
+  CustomContractArgWrapper<
+    {
+      checkoutId: string;
+      display?: PaperCheckoutDisplay;
+      recipientWalletAddress?: string;
+      emailAddress?: string;
+      quantity?: number;
+      mintMethod?: WriteMethodCallType;
+      eligibilityMethod?: ReadMethodCallType;
+      metadata?: Record<string, any>;
+      appName?: string;
+      onOpenCheckout?: () => void;
+      onCloseCheckout?: () => void;
+      onPaymentSuccess?: (result: PaymentSuccessResult) => void;
+      onTransferSuccess?: (result: TransferSuccessResult) => void;
+      options?: {
+        width: number;
+        height: number;
+        colorPrimary: string;
+        colorBackground: string;
+        colorText: string;
+        borderRadius: number;
+        fontFamily: string;
+      };
+      children?: React.ReactNode;
+    },
+    T
+  >;
 
-export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
+export const PaperCheckout = <T extends ContractType>({
   checkoutId,
   display = PaperCheckoutDisplay.POPUP,
   recipientWalletAddress,
@@ -77,7 +81,6 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   quantity,
   eligibilityMethod,
   mintMethod,
-  signatureArgs,
   metadata,
   appName,
   options = {
@@ -85,12 +88,14 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
     height: 800,
     ...DEFAULT_BRAND_OPTIONS,
   },
+  contractType,
+  contractArgs,
   onOpenCheckout,
   onCloseCheckout,
   onPaymentSuccess,
   onTransferSuccess,
   children,
-}) => {
+}: PaperCheckoutProps<T>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // Handle message events from iframe.
@@ -141,7 +146,7 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
   const metadataStringified = JSON.stringify(metadata);
-  const signatureArgsStringified = JSON.stringify(signatureArgs);
+  const contractArgsStringified = JSON.stringify(contractArgs);
 
   if (options.colorPrimary) {
     checkoutUrl.searchParams.append('colorPrimary', options.colorPrimary);
@@ -173,11 +178,14 @@ export const PaperCheckout: React.FC<PaperCheckoutProps> = ({
       Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
     );
   }
-  if (signatureArgs) {
+  if (contractType) {
+    checkoutUrl.searchParams.append('contractType', contractType);
+  }
+  if (contractArgs) {
     checkoutUrl.searchParams.append(
-      'signatureArgs',
+      'contractArgs',
       // Base 64 encode
-      Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
+      Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
     );
   }
   if (appName) {

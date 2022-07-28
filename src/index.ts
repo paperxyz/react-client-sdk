@@ -4,6 +4,7 @@ export * from './components/PaperCheckout';
 export * from './components/PayWithCard';
 export * from './components/PayWithCrypto/index';
 export * from './components/VerifyOwnershipWithPaper';
+export * from './interfaces/CustomContract';
 export * from './interfaces/PaperSDKError';
 export * from './interfaces/PaperUser';
 export * from './interfaces/PaymentSuccessResult';

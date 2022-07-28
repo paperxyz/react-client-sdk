@@ -11,6 +11,8 @@ import {
   PAPER_APP_URL_ALT,
 } from '../constants/settings';
 import {
+  ContractType,
+  CustomContractArgWrapper,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
@@ -32,7 +34,6 @@ interface PayWithCardProps {
   eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
-  signatureArgs?: SignedPayload;
   options?: {
     colorPrimary?: string;
     colorBackground?: string;
@@ -55,14 +56,7 @@ interface PayWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
-export type SignedPayload = {
-  signedPayload: {
-    payload: { [key: string]: any };
-    signature: string;
-  };
-};
-
-export const PayWithCard: React.FC<PayWithCardProps> = ({
+export const PayWithCard = <T extends ContractType>({
   checkoutId,
   recipientWalletAddress,
   emailAddress,
@@ -70,17 +64,18 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   metadata,
   eligibilityMethod,
   mintMethod,
-  signatureArgs,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
+  contractType,
+  contractArgs,
   onPaymentSuccess,
   onTransferSuccess,
   onReview,
   onClose,
   onError,
   experimentalUseAltDomain,
-}) => {
+}: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
   const { appName } = usePaperSDKContext();
   const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =
     useState<boolean>(true);
@@ -180,7 +175,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
   const metadataStringified = JSON.stringify(metadata);
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
-  const signatureArgsStringified = JSON.stringify(signatureArgs);
+  const contractArgsStringified = JSON.stringify(contractArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
     const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
@@ -213,11 +208,14 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
         Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
       );
     }
-    if (signatureArgs) {
+    if (contractType) {
+      payWithCardUrl.searchParams.append('contractType', contractType);
+    }
+    if (contractArgs) {
       payWithCardUrl.searchParams.append(
-        'signatureArgs',
+        'contractArgs',
         // Base 64 encode
-        Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
+        Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
       );
     }
     if (options.colorPrimary) {
@@ -251,7 +249,7 @@ export const PayWithCard: React.FC<PayWithCardProps> = ({
     metadataStringified,
     mintMethodStringified,
     eligibilityMethodStringified,
-    signatureArgsStringified,
+    contractArgsStringified,
     options.colorPrimary,
     options.colorBackground,
     options.colorText,

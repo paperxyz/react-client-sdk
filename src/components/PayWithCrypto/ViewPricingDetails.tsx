@@ -9,6 +9,8 @@ import React, {
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
 import { PAPER_APP_URL } from '../../constants/settings';
 import {
+  ContractType,
+  CustomContractArgWrapper,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../../interfaces/CustomContract';
@@ -22,7 +24,6 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
-import { SignedPayload } from '../PayWithCard';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -44,23 +45,23 @@ export interface ViewPricingDetailsProps {
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
-  signatureArgs?: SignedPayload;
 }
 
-export const ViewPricingDetails = ({
+export const ViewPricingDetails = <T extends ContractType>({
   checkoutId,
   setIsTryingToChangeWallet,
   emailAddress,
   metadata,
   eligibilityMethod,
   mintMethod,
-  signatureArgs,
   onError,
   suppressErrorToast = false,
   onSuccess,
   quantity,
   recipientWalletAddress,
-}: ViewPricingDetailsProps) => {
+  contractType,
+  contractArgs,
+}: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
@@ -153,7 +154,7 @@ export const ViewPricingDetails = ({
   const metadataStringified = JSON.stringify(metadata);
   const mintMethodStringified = JSON.stringify(mintMethod);
   const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
-  const signatureArgsStringified = JSON.stringify(signatureArgs);
+  const contractArgsStringified = JSON.stringify(contractArgs);
 
   const payWithCryptoUrl = useMemo(() => {
     // const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
@@ -192,11 +193,14 @@ export const ViewPricingDetails = ({
     if (metadata) {
       payWithCryptoUrl.searchParams.append('metadata', metadataStringified);
     }
-    if (signatureArgs) {
+    if (contractType) {
+      payWithCryptoUrl.searchParams.append('contractType', contractType);
+    }
+    if (contractArgs) {
       payWithCryptoUrl.searchParams.append(
-        'signatureArgs',
+        'contractArgs',
         // Base 64 encode
-        Buffer.from(signatureArgsStringified, 'utf-8').toString('base64'),
+        Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
       );
     }
     // Add timestamp to prevent loading a cached page.
@@ -212,7 +216,7 @@ export const ViewPricingDetails = ({
     metadataStringified,
     mintMethodStringified,
     eligibilityMethodStringified,
-    signatureArgsStringified,
+    contractArgsStringified,
   ]);
 
   https: return (

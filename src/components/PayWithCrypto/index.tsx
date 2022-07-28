@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
+import {
+  ContractType,
+  CustomContractArgWrapper,
+} from '../../interfaces/CustomContract';
 import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
@@ -14,16 +18,19 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
-type PayWithCryptoProps = {
-  onClose?: () => void;
-  onWalletConnected?: onWalletConnectedType;
-  children?:
-    | React.ReactNode
-    | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
-  className?: string;
-} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
+type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
+  {
+    onClose?: () => void;
+    onWalletConnected?: onWalletConnectedType;
+    children?:
+      | React.ReactNode
+      | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
+    className?: string;
+  } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
+  T
+>;
 
-export const PayWithCrypto = ({
+export const PayWithCrypto = <T extends ContractType>({
   children,
   className,
   checkoutId,
@@ -34,13 +41,14 @@ export const PayWithCrypto = ({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
-  signatureArgs,
+  contractType,
+  contractArgs,
   onError,
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
   onClose,
-}: PayWithCryptoProps): React.ReactElement => {
+}: PayWithCryptoProps<T>): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
 
@@ -66,9 +74,10 @@ export const PayWithCrypto = ({
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}
+        contractType={contractType}
+        contractArgs={contractArgs}
         eligibilityMethod={eligibilityMethod}
         mintMethod={mintMethod}
-        signatureArgs={signatureArgs}
         onError={onError}
         onSuccess={(transactionResponse) => {
           closeModal();

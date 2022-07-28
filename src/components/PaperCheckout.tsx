@@ -3,6 +3,7 @@ import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import {
   ContractType,
   CustomContractArgWrapper,
+  fetchCustomContractArgsFromProps,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
@@ -88,15 +89,16 @@ export const PaperCheckout = <T extends ContractType>({
     height: 800,
     ...DEFAULT_BRAND_OPTIONS,
   },
-  contractType,
-  contractArgs,
   onOpenCheckout,
   onCloseCheckout,
   onPaymentSuccess,
   onTransferSuccess,
   children,
+  ...props
 }: PaperCheckoutProps<T>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { contractType, contractArgs } =
+    fetchCustomContractArgsFromProps(props);
 
   // Handle message events from iframe.
   useEffect(() => {

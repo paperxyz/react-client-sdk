@@ -3,6 +3,7 @@ import { useSigner } from 'wagmi';
 import {
   ContractType,
   CustomContractArgWrapper,
+  fetchCustomContractArgsFromProps,
 } from '../../interfaces/CustomContract';
 import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
@@ -41,13 +42,12 @@ export const PayWithCrypto = <T extends ContractType>({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
-  contractType,
-  contractArgs,
   onError,
   // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
   onClose,
+  ...props
 }: PayWithCryptoProps<T>): React.ReactElement => {
   const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
@@ -56,6 +56,9 @@ export const PayWithCrypto = <T extends ContractType>({
   const signer = _signer;
   const isJsonRpcSignerPresent = !!signer;
   const [isOpen, setIsOpen] = useState(false);
+  const { contractType, contractArgs } =
+    fetchCustomContractArgsFromProps(props);
+
   const openModal = () => {
     setIsOpen(true);
   };
@@ -74,6 +77,7 @@ export const PayWithCrypto = <T extends ContractType>({
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}
+        // @ts-ignore: Special circumstance of this usage
         contractType={contractType}
         contractArgs={contractArgs}
         eligibilityMethod={eligibilityMethod}

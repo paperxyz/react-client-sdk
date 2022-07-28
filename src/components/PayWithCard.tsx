@@ -13,6 +13,7 @@ import {
 import {
   ContractType,
   CustomContractArgWrapper,
+  fetchCustomContractArgsFromProps,
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
@@ -67,14 +68,13 @@ export const PayWithCard = <T extends ContractType>({
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
-  contractType,
-  contractArgs,
   onPaymentSuccess,
   onTransferSuccess,
   onReview,
   onClose,
   onError,
   experimentalUseAltDomain,
+  ...props
 }: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
   const { appName } = usePaperSDKContext();
   const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =
@@ -89,6 +89,9 @@ export const PayWithCard = <T extends ContractType>({
     string | undefined
   >();
   const [isOpen, setIsOpen] = useState(false);
+  const { contractType, contractArgs } =
+    fetchCustomContractArgsFromProps(props);
+
   const closeModal = () => {
     setIsOpen(false);
     const payWithCardIframe = document.getElementById(

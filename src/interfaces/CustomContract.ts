@@ -19,11 +19,12 @@ export type CustomContractArgWrapper<props, T extends ContractType> =
       contractArgs: T extends ContractType.AUCTION_HOUSE
         ? {
             mintAddress: string;
+            tokenAccount: string;
+            sellerWalletAddress: string;
             price: {
               amount: number;
               currency: 'SOL' | 'USDC';
             };
-            quantity: string;
           }
         : T extends ContractType.THIRDWEB_SIGNATURE
         ? SignedPayload

@@ -77,6 +77,7 @@ export const PayWithCrypto = <T extends ContractType>({
         emailAddress={emailAddress}
         quantity={quantity}
         metadata={metadata}
+        // @ts-ignore: Special circumstance of this usage
         contractType={contractType}
         contractArgs={contractArgs}
         eligibilityMethod={eligibilityMethod}

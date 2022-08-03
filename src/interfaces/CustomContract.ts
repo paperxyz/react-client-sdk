@@ -86,7 +86,13 @@ export const fetchCustomContractArgsFromProps = (
  *
  */
 type ArgumentMapType = {
-  [key: string]: string | null | number | boolean | ArgumentMapType;
+  [key: string]:
+    | string
+    | null
+    | number
+    | boolean
+    | Array<ArgumentMapType>
+    | ArgumentMapType;
 };
 
 /** This specifies the way a method should be called.

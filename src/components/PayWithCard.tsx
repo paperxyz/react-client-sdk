@@ -84,7 +84,6 @@ export const PayWithCard = <T extends ContractType>({
     setIsCardDetailIframeLoading(false);
   }, []);
 
-  const reviewPaymentPopupWindowRef = useRef<Window | null>(null);
   const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
     string | undefined
   >();
@@ -133,10 +132,8 @@ export const PayWithCard = <T extends ContractType>({
 
         case 'paymentSuccess':
           if (onPaymentSuccess) {
-            // If onPaymentSuccess is defined, close the popup and assume the caller wants to own the buyer experience after payment.
-            if (reviewPaymentPopupWindowRef.current) {
-              reviewPaymentPopupWindowRef.current.close();
-            }
+            // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
+            closeModal();
             onPaymentSuccess({ id: data.id });
           }
           postMessageToIframe(payWithCardIframe, data.eventType, data);

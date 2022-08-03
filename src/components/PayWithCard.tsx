@@ -86,11 +86,11 @@ export const PayWithCard = <T extends ContractType>({
     fetchCustomContractArgsFromProps(props);
 
   const closeModal = () => {
-    setIsOpen(false);
     const payWithCardIframe = document.getElementById(
       'payWithCardIframe',
     ) as HTMLIFrameElement;
     postMessageToIframe(payWithCardIframe, 'payWithCardCloseModal', {});
+    setIsOpen(false);
 
     if (onClose) {
       onClose();
@@ -125,12 +125,14 @@ export const PayWithCard = <T extends ContractType>({
           break;
 
         case 'paymentSuccess':
-          if (onPaymentSuccess) {
-            // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
-            closeModal();
-            onPaymentSuccess({ id: data.id });
-          }
           postMessageToIframe(payWithCardIframe, data.eventType, data);
+
+          if (onPaymentSuccess) {
+            console.log('onPaymentSuccess is set. Closing modal');
+            // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
+            onPaymentSuccess({ id: data.id });
+            closeModal();
+          }
           break;
 
         case 'transferSuccess':

@@ -16,6 +16,7 @@ import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
 import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
+import { resizeIframeToExpandedHeight } from '../lib/utils/resizeIframe';
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
@@ -78,9 +79,7 @@ export const PayWithCard = <T extends ContractType>({
     setIsCardDetailIframeLoading(false);
   }, []);
 
-  const [reviewPaymentUrl, setReviewPaymentUrl] = useState<
-    string | undefined
-  >();
+  const [modalUrl, setModalUrl] = useState<string | undefined>();
   const [isOpen, setIsOpen] = useState(false);
   const { contractType, contractArgs } =
     fetchCustomContractArgsFromProps(props);
@@ -128,10 +127,9 @@ export const PayWithCard = <T extends ContractType>({
           postMessageToIframe(payWithCardIframe, data.eventType, data);
 
           if (onPaymentSuccess) {
-            console.log('onPaymentSuccess is set. Closing modal');
+            console.log('onPaymentSuccess is set.');
             // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
             onPaymentSuccess({ id: data.id });
-            closeModal();
           }
           break;
 
@@ -146,17 +144,27 @@ export const PayWithCard = <T extends ContractType>({
           postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
-        case 'openReviewPaymentPopupWindow':
-          setReviewPaymentUrl(new URL(data.url).href);
-          setIsOpen(true);
+        case 'reviewComplete':
           if (onReview) {
             onReview({
               id: data.id,
               cardholderName: data.cardholderName,
             });
           }
+          resizeIframeToExpandedHeight(payWithCardIframe);
           break;
 
+        case 'openModalWithUrl':
+          setModalUrl(data.url);
+          setIsOpen(true);
+          break;
+
+        case 'completedSDKModal':
+          closeModal();
+          if (data.postToIframe) {
+            postMessageToIframe(payWithCardIframe, data.eventType, data);
+          }
+          break;
         default:
         // Ignore unrecognized event
       }
@@ -174,7 +182,7 @@ export const PayWithCard = <T extends ContractType>({
   const contractArgsStringified = JSON.stringify(contractArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
-    const payWithCardUrl = new URL('/sdk/v1/pay-with-card', paperDomain);
+    const payWithCardUrl = new URL('/sdk/v2/pay-with-card', paperDomain);
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
     payWithCardUrl.searchParams.append(
@@ -270,16 +278,15 @@ export const PayWithCard = <T extends ContractType>({
           allowTransparency
         />
       </div>
-
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
         bgColor={options.colorBackground || '#ffffff'}
       >
-        {reviewPaymentUrl && (
+        {modalUrl && (
           <iframe
             id='review-card-payment-iframe'
-            src={reviewPaymentUrl}
+            src={modalUrl}
             className='h-[700px] max-h-full w-96 max-w-full'
           />
         )}

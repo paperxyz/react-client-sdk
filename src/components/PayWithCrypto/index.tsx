@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { Transition } from '@headlessui/react';
+import React, { useEffect, useState } from 'react';
 import { useSigner } from 'wagmi';
 import {
   ContractType,
@@ -10,11 +11,8 @@ import {
   onWalletConnectedType,
   WalletType,
 } from '../../interfaces/WalletTypes';
-import { Button } from '../common/Button';
-import { Modal } from '../common/Modal';
 import { ConnectWallet } from './ConnectWallet';
 import {
-  PayWithCryptoChildrenProps,
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
@@ -23,17 +21,11 @@ type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   {
     onClose?: () => void;
     onWalletConnected?: onWalletConnectedType;
-    children?:
-      | React.ReactNode
-      | ((props: PayWithCryptoChildrenProps) => React.ReactNode);
-    className?: string;
   } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
   T
 >;
 
 export const PayWithCrypto = <T extends ContractType>({
-  children,
-  className,
   checkoutId,
   recipientWalletAddress,
   emailAddress,
@@ -42,107 +34,96 @@ export const PayWithCrypto = <T extends ContractType>({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
+  options,
   onError,
-  // This is fired when the transaction is sent to chain, it might still fail there for whatever reason.
+  // This is fired when the transaction is sent to chain, the transaction might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
   onClose,
   ...props
 }: PayWithCryptoProps<T>): React.ReactElement => {
-  const isChildrenFunction = typeof children === 'function';
   const { data: _signer } = useSigner();
-
+  const [isClientSide, setIsClientSide] = useState(false);
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
   const signer = _signer;
   const isJsonRpcSignerPresent = !!signer;
-  const [isOpen, setIsOpen] = useState(false);
-  const { contractType, contractArgs } =
-    fetchCustomContractArgsFromProps(props);
+  const customContractArgs = fetchCustomContractArgsFromProps(props);
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-  const closeModal = () => {
-    setIsOpen(false);
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const ModalContents =
-    isJsonRpcSignerPresent && !isTryingToChangeWallet ? (
-      <ViewPricingDetails
-        checkoutId={checkoutId}
-        recipientWalletAddress={recipientWalletAddress}
-        emailAddress={emailAddress}
-        quantity={quantity}
-        metadata={metadata}
-        // @ts-ignore: Special circumstance of this usage
-        contractType={contractType}
-        contractArgs={contractArgs}
-        eligibilityMethod={eligibilityMethod}
-        mintMethod={mintMethod}
-        onError={onError}
-        onSuccess={(transactionResponse) => {
-          closeModal();
-          if (onSuccess) {
-            onSuccess(transactionResponse);
-          }
-        }}
-        suppressErrorToast={suppressErrorToast}
-        setIsTryingToChangeWallet={setIsTryingToChangeWallet}
-      />
-    ) : (
-      <ConnectWallet
-        onWalletConnected={(userAddress, chainId) => {
-          setIsTryingToChangeWallet(false);
-          if (onWalletConnected) {
-            onWalletConnected(userAddress, chainId);
-          }
-        }}
-        onWalletConnectFail={(walletType, userWalletType, error) => {
-          // coinbase will fail if we try to go back and connect again. because we never disconnected.
-          // we'll get the error of "user already connected". We simply ignore it here.
-          if (
-            walletType === WalletType.CoinbaseWallet &&
-            userWalletType === walletType
-          ) {
-            setIsTryingToChangeWallet(false);
-          }
-          if (onError) {
-            onError({
-              code: PayWithCryptoErrorCode.ErrorConnectingToWallet,
-              error,
-            });
-          }
-        }}
-      />
-    );
+  useEffect(() => {
+    setIsClientSide(true);
+  }, []);
 
   return (
-    <>
-      {children && isChildrenFunction ? (
+    <div className='relative grid w-full'>
+      {isClientSide && (
         <>
-          {children({ openModal })}
-          <Modal isOpen={isOpen} onClose={closeModal}>
-            {ModalContents}
-          </Modal>
-        </>
-      ) : (
-        <>
-          {children ? (
-            <button onClick={openModal}>{children}</button>
-          ) : (
-            <Button className={className} onClick={openModal}>
-              Pay With ETH{' '}
-              <span className='font-bold text-gray-500'>on Ethereum</span>
-            </Button>
-          )}
-          <Modal isOpen={isOpen} onClose={closeModal}>
-            {ModalContents}
-          </Modal>
+          <Transition
+            show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
+            className='col-start-1 row-start-1'
+            enter='transition-opacity duration-75 delay-150'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='transition-opacity duration-150'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <ConnectWallet
+              onWalletConnected={(userAddress, chainId) => {
+                setIsTryingToChangeWallet(false);
+                if (onWalletConnected) {
+                  onWalletConnected(userAddress, chainId);
+                }
+              }}
+              onWalletConnectFail={(walletType, userWalletType, error) => {
+                // coinbase will fail if we try to go back and connect again. because we never disconnected.
+                // we'll get the error of "user already connected". We simply ignore it here.
+                if (
+                  walletType === WalletType.CoinbaseWallet &&
+                  userWalletType === walletType
+                ) {
+                  setIsTryingToChangeWallet(false);
+                }
+                if (onError) {
+                  onError({
+                    code: PayWithCryptoErrorCode.ErrorConnectingToWallet,
+                    error,
+                  });
+                }
+              }}
+            />
+          </Transition>
+          <Transition
+            show={isJsonRpcSignerPresent && !isTryingToChangeWallet}
+            className='bg-transparent/* */ col-start-1  row-start-1'
+            enter='transition-opacity duration-75 delay-150'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='transition-opacity duration-150'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <ViewPricingDetails
+              checkoutId={checkoutId}
+              recipientWalletAddress={recipientWalletAddress}
+              emailAddress={emailAddress}
+              quantity={quantity}
+              metadata={metadata}
+              {...customContractArgs}
+              eligibilityMethod={eligibilityMethod}
+              mintMethod={mintMethod}
+              onError={onError}
+              onSuccess={(transactionResponse) => {
+                if (onSuccess) {
+                  onSuccess(transactionResponse);
+                }
+              }}
+              suppressErrorToast={suppressErrorToast}
+              options={options}
+              setIsTryingToChangeWallet={setIsTryingToChangeWallet}
+            />
+          </Transition>
         </>
       )}
-    </>
+    </div>
   );
 };

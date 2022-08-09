@@ -11,6 +11,7 @@ import {
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
+import { ICustomizationOptions } from '../interfaces/Customization';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -29,13 +30,7 @@ interface PayWithCardProps {
   eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
-  options?: {
-    colorPrimary?: string;
-    colorBackground?: string;
-    colorText?: string;
-    borderRadius?: number;
-    fontFamily?: string;
-  };
+  options?: ICustomizationOptions;
   onPaymentSuccess?: (result: PaymentSuccessResult) => void;
   onTransferSuccess?: (result: TransferSuccessResult) => void;
   onReview?: (result: ReviewResult) => void;

@@ -33,7 +33,7 @@ export type CustomContractArgWrapper<props, T extends ContractType> =
     });
 
 export type fetchCustomContractArgsFromPropsResponse = {
-  contractType?: string;
+  contractType?: ContractType;
   contractArgs?: any;
 };
 

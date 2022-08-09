@@ -1,3 +1,4 @@
+import { Transition } from '@headlessui/react';
 import { ethers } from 'ethers';
 import React, {
   useCallback,
@@ -7,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { useAccount, useSendTransaction, useSwitchNetwork } from 'wagmi';
-import { PAPER_APP_URL } from '../../constants/settings';
+import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import {
   ContractType,
   CustomContractArgWrapper,
@@ -15,6 +16,7 @@ import {
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../../interfaces/CustomContract';
+import { ICustomizationOptions } from '../../interfaces/Customization';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -46,6 +48,7 @@ export interface ViewPricingDetailsProps {
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
+  options?: ICustomizationOptions;
 }
 
 export const ViewPricingDetails = <T extends ContractType>({
@@ -60,6 +63,9 @@ export const ViewPricingDetails = <T extends ContractType>({
   onSuccess,
   quantity,
   recipientWalletAddress,
+  options = {
+    ...DEFAULT_BRAND_OPTIONS,
+  },
   ...props
 }: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -73,7 +79,6 @@ export const ViewPricingDetails = <T extends ContractType>({
     fetchCustomContractArgsFromProps(props);
 
   const onLoad = useCallback(() => {
-    // causes a double refresh
     setIsIframeLoading(false);
   }, []);
 
@@ -143,6 +148,13 @@ export const ViewPricingDetails = <T extends ContractType>({
           }
           break;
         }
+        case 'sizing': {
+          if (iframeRef.current) {
+            iframeRef.current.style.height = data.height + 'px';
+            iframeRef.current.style.maxHeight = data.height + 'px';
+          }
+          break;
+        }
         default:
           break;
       }
@@ -206,6 +218,30 @@ export const ViewPricingDetails = <T extends ContractType>({
         Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
       );
     }
+    if (options.colorPrimary) {
+      payWithCryptoUrl.searchParams.append(
+        'colorPrimary',
+        options.colorPrimary,
+      );
+    }
+    if (options.colorBackground) {
+      payWithCryptoUrl.searchParams.append(
+        'colorBackground',
+        options.colorBackground,
+      );
+    }
+    if (options.colorText) {
+      payWithCryptoUrl.searchParams.append('colorText', options.colorText);
+    }
+    if (options.borderRadius !== undefined) {
+      payWithCryptoUrl.searchParams.append(
+        'borderRadius',
+        options.borderRadius.toString(),
+      );
+    }
+    if (options.fontFamily) {
+      payWithCryptoUrl.searchParams.append('fontFamily', options.fontFamily);
+    }
     // Add timestamp to prevent loading a cached page.
     payWithCryptoUrl.searchParams.append('date', Date.now().toString());
     return payWithCryptoUrl;
@@ -222,20 +258,31 @@ export const ViewPricingDetails = <T extends ContractType>({
     contractArgsStringified,
   ]);
 
-  https: return (
+  return (
     <>
-      {isIframeLoading && (
+      <Transition
+        appear={true}
+        show={isIframeLoading}
+        as={React.Fragment}
+        enter='transition-opacity duration-75'
+        enterFrom='opacity-0'
+        enterTo='opacity-100'
+        leave='transition-opacity duration-150'
+        leaveFrom='opacity-100'
+        leaveTo='opacity-0'
+      >
         <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
           <Spinner className='!h-8 !w-8 !text-black' />
         </div>
-      )}
+      </Transition>
       <IFrameWrapper
         ref={iframeRef}
         id='pay-with-crypto-iframe'
-        className='mx-auto h-[700px] w-80'
+        className=' mx-auto w-full transition-all'
         src={payWithCryptoUrl.href}
         onLoad={onLoad}
         scrolling='no'
+        allowTransparency
       />
     </>
   );

@@ -136,6 +136,12 @@ export const ViewPricingDetails = <T extends ContractType>({
             if (onSuccess) {
               onSuccess({ transactionResponse: result });
             }
+            if (iframeRef.current) {
+              postMessageToIframe(iframeRef.current, 'paymentSuccess', {
+                suppressErrorToast,
+                transactionHash: result.hash,
+              });
+            }
           } catch (error) {
             handlePayWithCryptoError(error as Error, onError, (errorObject) => {
               if (iframeRef.current) {

@@ -48,6 +48,7 @@ export interface ViewPricingDetailsProps {
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
+  showConnectWalletOptions?: boolean;
   options?: ICustomizationOptions;
 }
 
@@ -60,6 +61,7 @@ export const ViewPricingDetails = <T extends ContractType>({
   mintMethod,
   onError,
   suppressErrorToast = false,
+  showConnectWalletOptions = true,
   onSuccess,
   quantity,
   recipientWalletAddress,
@@ -201,6 +203,9 @@ export const ViewPricingDetails = <T extends ContractType>({
         'eligibilityMethod',
         Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
       );
+    }
+    if (showConnectWalletOptions) {
+      payWithCryptoUrl.searchParams.append('showConnectWalletOptions', 'true');
     }
     if (appName) {
       payWithCryptoUrl.searchParams.append('appName', appName);

@@ -19,7 +19,6 @@ import {
 
 type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   {
-    onClose?: () => void;
     onWalletConnected?: onWalletConnectedType;
   } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
   T
@@ -34,12 +33,12 @@ export const PayWithCrypto = <T extends ContractType>({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
+  showConnectWalletOptions,
   options,
   onError,
   // This is fired when the transaction is sent to chain, the transaction might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
-  onClose,
   ...props
 }: PayWithCryptoProps<T>): React.ReactElement => {
   const { data: _signer } = useSigner();
@@ -57,43 +56,48 @@ export const PayWithCrypto = <T extends ContractType>({
     <div className='relative grid w-full'>
       {isClientSide && (
         <>
-          <Transition
-            show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-            className='col-start-1 row-start-1'
-            enter='transition-opacity duration-75 delay-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='transition-opacity duration-150'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
-          >
-            <ConnectWallet
-              onWalletConnected={(userAddress, chainId) => {
-                setIsTryingToChangeWallet(false);
-                if (onWalletConnected) {
-                  onWalletConnected(userAddress, chainId);
-                }
-              }}
-              onWalletConnectFail={(walletType, userWalletType, error) => {
-                // coinbase will fail if we try to go back and connect again. because we never disconnected.
-                // we'll get the error of "user already connected". We simply ignore it here.
-                if (
-                  walletType === WalletType.CoinbaseWallet &&
-                  userWalletType === walletType
-                ) {
+          {showConnectWalletOptions && (
+            <Transition
+              show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
+              className='col-start-1 row-start-1'
+              enter='transition-opacity duration-75 delay-150'
+              enterFrom='opacity-0'
+              enterTo='opacity-100'
+              leave='transition-opacity duration-150'
+              leaveFrom='opacity-100'
+              leaveTo='opacity-0'
+            >
+              <ConnectWallet
+                onWalletConnected={(userAddress, chainId) => {
                   setIsTryingToChangeWallet(false);
-                }
-                if (onError) {
-                  onError({
-                    code: PayWithCryptoErrorCode.ErrorConnectingToWallet,
-                    error,
-                  });
-                }
-              }}
-            />
-          </Transition>
+                  if (onWalletConnected) {
+                    onWalletConnected(userAddress, chainId);
+                  }
+                }}
+                onWalletConnectFail={(walletType, userWalletType, error) => {
+                  // coinbase will fail if we try to go back and connect again. because we never disconnected.
+                  // we'll get the error of "user already connected". We simply ignore it here.
+                  if (
+                    walletType === WalletType.CoinbaseWallet &&
+                    userWalletType === walletType
+                  ) {
+                    setIsTryingToChangeWallet(false);
+                  }
+                  if (onError) {
+                    onError({
+                      code: PayWithCryptoErrorCode.ErrorConnectingToWallet,
+                      error,
+                    });
+                  }
+                }}
+              />
+            </Transition>
+          )}
           <Transition
-            show={isJsonRpcSignerPresent && !isTryingToChangeWallet}
+            show={
+              (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
+              !showConnectWalletOptions
+            }
             className='bg-transparent/* */ col-start-1  row-start-1'
             enter='transition-opacity duration-75 delay-150'
             enterFrom='opacity-0'
@@ -117,6 +121,7 @@ export const PayWithCrypto = <T extends ContractType>({
                   onSuccess(transactionResponse);
                 }
               }}
+              showConnectWalletOptions={showConnectWalletOptions}
               suppressErrorToast={suppressErrorToast}
               options={options}
               setIsTryingToChangeWallet={setIsTryingToChangeWallet}

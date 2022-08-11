@@ -8,7 +8,6 @@ export const enum WalletType {
 
 export interface ConnectWalletProps {
   onWalletConnected: onWalletConnectedType;
-  onSelectWalletPageLoaded?: () => void;
   onWalletConnectFail: onWalletConnectFailType;
 }
 

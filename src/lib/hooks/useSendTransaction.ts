@@ -23,7 +23,7 @@ export const useSendTransaction = ({ signer }: { signer?: ethers.Signer }) => {
           throw e;
         }
       } else {
-        const response = await _sendTransactionAsync();
+        const response = await _sendTransactionAsync(args);
         return response;
       }
     },

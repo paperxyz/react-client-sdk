@@ -23,7 +23,7 @@ export const useSwitchNetwork = ({ signer }: { signer?: ethers.Signer }) => {
         }
         return chainToSwitchTo;
       } else {
-        return await _switchNetworkAsync?.();
+        return await _switchNetworkAsync?.(chainId);
       }
     },
     [signer, _switchNetworkAsync],

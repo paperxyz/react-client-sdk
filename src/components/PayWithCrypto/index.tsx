@@ -17,10 +17,15 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
+export enum PayWithCryptoPage {
+  ConnectWallet,
+  PaymentDetails,
+}
+
 type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   {
     onWalletConnected?: onWalletConnectedType;
-    onSelectWalletPageLoaded?: () => void;
+    onPageChange?: (currentPage: PayWithCryptoPage) => void;
   } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
   T
 >;
@@ -43,7 +48,7 @@ export const PayWithCrypto = <T extends ContractType>({
   // This is fired when the transaction is sent to chain, the transaction might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
-  onSelectWalletPageLoaded,
+  onPageChange,
   ...contractSpecificArgs
 }: PayWithCryptoProps<T>): React.ReactElement => {
   const { data: _signer } = useSigner();
@@ -57,6 +62,26 @@ export const PayWithCrypto = <T extends ContractType>({
   useEffect(() => {
     setIsClientSide(true);
   }, []);
+
+  useEffect(() => {
+    if (onPageChange) {
+      if (
+        (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
+        !showConnectWalletOptions
+      ) {
+        onPageChange(PayWithCryptoPage.PaymentDetails);
+      } else if (
+        showConnectWalletOptions &&
+        (!isJsonRpcSignerPresent || isTryingToChangeWallet)
+      ) {
+        onPageChange(PayWithCryptoPage.ConnectWallet);
+      }
+    }
+  }, [
+    showConnectWalletOptions,
+    isJsonRpcSignerPresent,
+    isTryingToChangeWallet,
+  ]);
 
   return (
     <div className='relative grid w-full'>
@@ -74,7 +99,6 @@ export const PayWithCrypto = <T extends ContractType>({
               leaveTo='opacity-0'
             >
               <ConnectWallet
-                onSelectWalletPageLoaded={onSelectWalletPageLoaded}
                 onWalletConnected={(userAddress, chainId) => {
                   setIsTryingToChangeWallet(false);
                   if (onWalletConnected) {

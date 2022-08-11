@@ -1,12 +1,14 @@
 export const enum WalletType {
-  PRESET = 'Preset',
+  Preset = 'Preset',
   MetaMask = 'metaMask',
   CoinbaseWallet = 'coinbaseWallet',
   WalletConnect = 'walletConnect',
+  Phantom = 'Phantom',
 }
 
 export interface ConnectWalletProps {
   onWalletConnected: onWalletConnectedType;
+  onSelectWalletPageLoaded?: () => void;
   onWalletConnectFail: onWalletConnectFailType;
 }
 

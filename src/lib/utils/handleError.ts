@@ -22,7 +22,10 @@ export function handlePayWithCryptoError(
       postToParent({ ...error });
     }
   } else {
-    if (error.message.includes('rejected')) {
+    if (
+      error.message.includes('rejected') ||
+      error.message.includes('denied transaction')
+    ) {
       if (onError) {
         onError({ code: PayWithCryptoErrorCode.TransactionCancelled, error });
       }

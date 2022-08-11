@@ -20,6 +20,7 @@ import {
 type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   {
     onWalletConnected?: onWalletConnectedType;
+    onSelectWalletPageLoaded?: () => void;
   } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
   T
 >;
@@ -33,20 +34,25 @@ export const PayWithCrypto = <T extends ContractType>({
   eligibilityMethod,
   mintMethod,
   suppressErrorToast,
-  showConnectWalletOptions,
+  signer,
+  setUpSigner,
+  walletType,
+  showConnectWalletOptions = true,
   options,
   onError,
   // This is fired when the transaction is sent to chain, the transaction might still fail there for whatever reason.
   onSuccess,
   onWalletConnected,
-  ...props
+  onSelectWalletPageLoaded,
+  ...contractSpecificArgs
 }: PayWithCryptoProps<T>): React.ReactElement => {
   const { data: _signer } = useSigner();
   const [isClientSide, setIsClientSide] = useState(false);
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  const signer = _signer;
-  const isJsonRpcSignerPresent = !!signer;
-  const customContractArgs = fetchCustomContractArgsFromProps(props);
+  const actualSigner = signer || _signer;
+  const isJsonRpcSignerPresent = !!actualSigner;
+  const customContractArgs =
+    fetchCustomContractArgsFromProps(contractSpecificArgs);
 
   useEffect(() => {
     setIsClientSide(true);
@@ -68,6 +74,7 @@ export const PayWithCrypto = <T extends ContractType>({
               leaveTo='opacity-0'
             >
               <ConnectWallet
+                onSelectWalletPageLoaded={onSelectWalletPageLoaded}
                 onWalletConnected={(userAddress, chainId) => {
                   setIsTryingToChangeWallet(false);
                   if (onWalletConnected) {
@@ -82,6 +89,7 @@ export const PayWithCrypto = <T extends ContractType>({
                     userWalletType === walletType
                   ) {
                     setIsTryingToChangeWallet(false);
+                    return;
                   }
                   if (onError) {
                     onError({
@@ -115,13 +123,16 @@ export const PayWithCrypto = <T extends ContractType>({
               {...customContractArgs}
               eligibilityMethod={eligibilityMethod}
               mintMethod={mintMethod}
+              showConnectWalletOptions={showConnectWalletOptions}
+              signer={signer}
+              setUpSigner={setUpSigner}
+              walletType={walletType}
               onError={onError}
               onSuccess={(transactionResponse) => {
                 if (onSuccess) {
                   onSuccess(transactionResponse);
                 }
               }}
-              showConnectWalletOptions={showConnectWalletOptions}
               suppressErrorToast={suppressErrorToast}
               options={options}
               setIsTryingToChangeWallet={setIsTryingToChangeWallet}

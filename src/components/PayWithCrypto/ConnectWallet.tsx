@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CoinbaseWalletIcon } from '../../icons/CoinbaseWalleticon';
 
 import { IconProps, MetaMaskIcon } from '../../icons/MetaMaskIcon';
@@ -42,9 +42,16 @@ export function WalletIcon({
 export const ConnectWallet = ({
   onWalletConnected,
   onWalletConnectFail,
+  onSelectWalletPageLoaded,
 }: ConnectWalletProps): React.ReactElement => {
   const { connectWallet, connectors, isConnecting, pendingConnector } =
     useConnectWallet();
+
+  useEffect(() => {
+    if (onSelectWalletPageLoaded) {
+      onSelectWalletPageLoaded();
+    }
+  }, []);
 
   return (
     <div className='flex flex-col py-5'>

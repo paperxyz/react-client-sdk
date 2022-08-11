@@ -15,7 +15,6 @@ import { ICustomizationOptions } from '../interfaces/Customization';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
-import { TransferSuccessResult } from '../interfaces/TransferSuccessResult';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { resizeIframeToExpandedHeight } from '../lib/utils/resizeIframe';
 import { usePaperSDKContext } from '../Provider';
@@ -27,15 +26,13 @@ interface PayWithCardProps {
   checkoutId: string;
   recipientWalletAddress: string;
   emailAddress: string;
+  onPaymentSuccess: (result: PaymentSuccessResult) => void;
   mintMethod?: WriteMethodCallType;
   eligibilityMethod?: ReadMethodCallType;
   quantity?: number;
   metadata?: Record<string, any>;
   options?: ICustomizationOptions;
-  onPaymentSuccess?: (result: PaymentSuccessResult) => void;
-  onTransferSuccess?: (result: TransferSuccessResult) => void;
   onReview?: (result: ReviewResult) => void;
-  onClose?: () => void;
   onError?: (error: PaperSDKError) => void;
 
   /**
@@ -59,9 +56,7 @@ export const PayWithCard = <T extends ContractType>({
     ...DEFAULT_BRAND_OPTIONS,
   },
   onPaymentSuccess,
-  onTransferSuccess,
   onReview,
-  onClose,
   onError,
   experimentalUseAltDomain,
   ...props
@@ -85,10 +80,6 @@ export const PayWithCard = <T extends ContractType>({
     ) as HTMLIFrameElement;
     postMessageToIframe(payWithCardIframe, 'payWithCardCloseModal', {});
     setIsOpen(false);
-
-    if (onClose) {
-      onClose();
-    }
   };
   const paperDomain = experimentalUseAltDomain
     ? PAPER_APP_URL_ALT
@@ -126,17 +117,6 @@ export const PayWithCard = <T extends ContractType>({
             // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
             onPaymentSuccess({ id: data.id });
           }
-          break;
-
-        case 'transferSuccess':
-          if (onTransferSuccess) {
-            // @ts-ignore
-            onTransferSuccess({
-              id: data.id,
-              // ...
-            });
-          }
-          postMessageToIframe(payWithCardIframe, data.eventType, data);
           break;
 
         case 'reviewComplete':

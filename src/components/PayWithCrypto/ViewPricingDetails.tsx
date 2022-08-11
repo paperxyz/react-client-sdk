@@ -328,7 +328,7 @@ export const ViewPricingDetails = <T extends ContractType>({
       <IFrameWrapper
         ref={iframeRef}
         id='pay-with-crypto-iframe'
-        className=' mx-auto w-full transition-all'
+        className=' mx-auto h-[350px] w-full transition-all'
         src={payWithCryptoUrl.href}
         onLoad={onLoad}
         scrolling='no'

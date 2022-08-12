@@ -37,8 +37,10 @@ export interface PayWithCryptoChildrenProps {
 export interface ViewPricingDetailsProps {
   onSuccess?: ({
     transactionResponse,
+    transactionId,
   }: {
     transactionResponse: ethers.providers.TransactionResponse;
+    transactionId: string;
   }) => void;
   onError?: (error: PaperSDKError) => void;
   suppressErrorToast?: boolean;
@@ -172,7 +174,10 @@ export const ViewPricingDetails = <T extends ContractType>({
               },
             });
             if (onSuccess && result) {
-              onSuccess({ transactionResponse: result });
+              onSuccess({
+                transactionResponse: result,
+                transactionId: data.transactionId,
+              });
             }
             if (iframeRef.current && result) {
               postMessageToIframe(iframeRef.current, 'paymentSuccess', {

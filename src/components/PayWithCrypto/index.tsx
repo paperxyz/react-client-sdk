@@ -11,7 +11,7 @@ import {
   onWalletConnectedType,
   WalletType,
 } from '../../interfaces/WalletTypes';
-import { ConnectWallet } from './ConnectWallet';
+import { ConnectWallet } from '../common/ConnectWallet';
 import {
   ViewPricingDetails,
   ViewPricingDetailsProps,

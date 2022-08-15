@@ -1,6 +1,3 @@
-/**
- * @deprecated - Paper currently doesn't plan to further develop the wallet product.
- */
 export type PaperUser = {
   /**
    * The user's email address.

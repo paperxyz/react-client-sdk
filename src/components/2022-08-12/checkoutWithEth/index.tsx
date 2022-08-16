@@ -1,17 +1,12 @@
 import { Transition } from '@headlessui/react';
 import React, { useEffect, useState } from 'react';
 import { useSigner } from 'wagmi';
-import {
-  ContractType,
-  CustomContractArgWrapper,
-  fetchCustomContractArgsFromProps,
-} from '../../interfaces/CustomContract';
-import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
+import { PayWithCryptoErrorCode } from '../../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
   WalletType,
-} from '../../interfaces/WalletTypes';
-import { ConnectWallet } from '../common/ConnectWallet';
+} from '../../../interfaces/WalletTypes';
+import { ConnectWallet } from '../../common/ConnectWallet';
 import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
@@ -22,26 +17,17 @@ export enum CheckoutWithEthPage {
   PaymentDetails,
 }
 
-type CheckoutWithEthProps<T extends ContractType> = CustomContractArgWrapper<
-  {
-    onWalletConnected?: onWalletConnectedType;
-    onPageChange?: (currentPage: CheckoutWithEthPage) => void;
-  } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
-  T
->;
+type CheckoutWithEthProps = {
+  onWalletConnected?: onWalletConnectedType;
+  onPageChange?: (currentPage: CheckoutWithEthPage) => void;
+} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
-export const CheckoutWithEth = <T extends ContractType>({
-  checkoutId,
-  recipientWalletAddress,
-  emailAddress,
-  quantity,
-  metadata,
-  eligibilityMethod,
-  mintMethod,
+export const CheckoutWithEth = ({
+  checkoutSdkIntent,
+  payingWalletSigner,
+  receivingWalletType,
+  setUpUserPayingWalletSigner,
   suppressErrorToast,
-  signer,
-  setUpSigner,
-  walletType,
   showConnectWalletOptions = true,
   options,
   onError,
@@ -49,15 +35,12 @@ export const CheckoutWithEth = <T extends ContractType>({
   onSuccess,
   onWalletConnected,
   onPageChange,
-  ...contractSpecificArgs
-}: CheckoutWithEthProps<T>): React.ReactElement => {
+}: CheckoutWithEthProps): React.ReactElement => {
   const { data: _signer } = useSigner();
   const [isClientSide, setIsClientSide] = useState(false);
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  const actualSigner = signer || _signer;
+  const actualSigner = payingWalletSigner || _signer;
   const isJsonRpcSignerPresent = !!actualSigner;
-  const customContractArgs =
-    fetchCustomContractArgsFromProps(contractSpecificArgs);
 
   useEffect(() => {
     setIsClientSide(true);
@@ -139,18 +122,10 @@ export const CheckoutWithEth = <T extends ContractType>({
             leaveTo='opacity-0'
           >
             <ViewPricingDetails
-              checkoutId={checkoutId}
-              recipientWalletAddress={recipientWalletAddress}
-              emailAddress={emailAddress}
-              quantity={quantity}
-              metadata={metadata}
-              {...customContractArgs}
-              eligibilityMethod={eligibilityMethod}
-              mintMethod={mintMethod}
-              showConnectWalletOptions={showConnectWalletOptions}
-              signer={signer}
-              setUpSigner={setUpSigner}
-              walletType={walletType}
+              checkoutSdkIntent={checkoutSdkIntent}
+              payingWalletSigner={payingWalletSigner}
+              receivingWalletType={receivingWalletType}
+              setUpUserPayingWalletSigner={setUpUserPayingWalletSigner}
               onError={onError}
               onSuccess={(transactionResponse) => {
                 if (onSuccess) {

@@ -74,6 +74,12 @@ export type PaperCheckoutProps<T extends ContractType> =
     T
   >;
 
+/**
+ * @deprecated
+ * We recommend either creating a static Checkout Link or a Checkout Link Intent and displaying that however you want.
+ * @param param0
+ * @returns
+ */
 export const PaperCheckout = <T extends ContractType>({
   checkoutId,
   display = PaperCheckoutDisplay.POPUP,

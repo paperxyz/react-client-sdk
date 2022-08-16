@@ -7,28 +7,24 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import {
-  ContractType,
-  CustomContractArgWrapper,
-  fetchCustomContractArgsFromProps,
-  ReadMethodCallType,
-  WriteMethodCallType,
-} from '../../interfaces/CustomContract';
-import { ICustomizationOptions } from '../../interfaces/Customization';
+  DEFAULT_BRAND_OPTIONS,
+  PAPER_APP_URL,
+} from '../../../constants/settings';
+import { ICustomizationOptions } from '../../../interfaces/Customization';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
-} from '../../interfaces/PaperSDKError';
-import { WalletType } from '../../interfaces/WalletTypes';
-import { useAccount } from '../../lib/hooks/useAccount';
-import { useSendTransaction } from '../../lib/hooks/useSendTransaction';
-import { useSwitchNetwork } from '../../lib/hooks/useSwitchNetwork';
-import { handlePayWithCryptoError } from '../../lib/utils/handleError';
-import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
-import { usePaperSDKContext } from '../../Provider';
-import { IFrameWrapper } from '../common/IFrameWrapper';
-import { Spinner } from '../common/Spinner';
+} from '../../../interfaces/PaperSDKError';
+import { WalletType } from '../../../interfaces/WalletTypes';
+import { useAccount } from '../../../lib/hooks/useAccount';
+import { useSendTransaction } from '../../../lib/hooks/useSendTransaction';
+import { useSwitchNetwork } from '../../../lib/hooks/useSwitchNetwork';
+import { handlePayWithCryptoError } from '../../../lib/utils/handleError';
+import { postMessageToIframe } from '../../../lib/utils/postMessageToIframe';
+import { usePaperSDKContext } from '../../../Provider';
+import { IFrameWrapper } from '../../common/IFrameWrapper';
+import { Spinner } from '../../common/Spinner';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -44,53 +40,50 @@ export interface ViewPricingDetailsProps {
   }) => void;
   onError?: (error: PaperSDKError) => void;
   suppressErrorToast?: boolean;
-  checkoutId: string;
-  recipientWalletAddress?: string;
-  emailAddress?: string;
-  quantity?: number;
-  metadata?: Record<string, any>;
-  mintMethod?: WriteMethodCallType;
-  eligibilityMethod?: ReadMethodCallType;
+
+  checkoutSdkIntent: string;
+
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
-  setUpSigner?: (args: { chainId: number }) => void | Promise<void>;
-  signer?: ethers.Signer;
-  walletType?: 'WalletConnect' | 'MetaMask' | 'Coinbase Wallet' | string;
+  setUpUserPayingWalletSigner?: (args: {
+    chainId: number;
+  }) => void | Promise<void>;
+  payingWalletSigner?: ethers.Signer;
+  receivingWalletType?:
+    | 'WalletConnect'
+    | 'MetaMask'
+    | 'Coinbase Wallet'
+    | string;
   showConnectWalletOptions?: boolean;
   options?: ICustomizationOptions;
 }
 
-export const ViewPricingDetails = <T extends ContractType>({
-  checkoutId,
+export const ViewPricingDetails = ({
   setIsTryingToChangeWallet,
-  emailAddress,
-  metadata,
-  eligibilityMethod,
-  mintMethod,
+  onSuccess,
   onError,
   suppressErrorToast = false,
   showConnectWalletOptions = true,
-  onSuccess,
-  quantity,
-  setUpSigner,
-  signer,
-  recipientWalletAddress,
-  walletType,
+  payingWalletSigner,
+  receivingWalletType,
+  setUpUserPayingWalletSigner,
+  checkoutSdkIntent,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
-  ...props
-}: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
-  const { contractType, contractArgs } =
-    fetchCustomContractArgsFromProps(props);
+}: ViewPricingDetailsProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
 
-  const { address, connector, chainId } = useAccount({ signer });
-  const { sendTransactionAsync, isSendingTransaction } = useSendTransaction({
-    signer,
+  const { address, connector, chainId } = useAccount({
+    signer: payingWalletSigner,
   });
-  const { switchNetworkAsync } = useSwitchNetwork({ signer });
+  const { sendTransactionAsync, isSendingTransaction } = useSendTransaction({
+    signer: payingWalletSigner,
+  });
+  const { switchNetworkAsync } = useSwitchNetwork({
+    signer: payingWalletSigner,
+  });
 
   const onLoad = useCallback(() => {
     setIsIframeLoading(false);
@@ -108,10 +101,10 @@ export const ViewPricingDetails = <T extends ContractType>({
           break;
         case 'payWithEth': {
           // Allows Dev's to inject any chain switching for their custom signer here.
-          if (signer && setUpSigner) {
+          if (payingWalletSigner && setUpUserPayingWalletSigner) {
             try {
               console.log('setting up signer');
-              await setUpSigner({ chainId: data.chainId });
+              await setUpUserPayingWalletSigner({ chainId: data.chainId });
             } catch (error) {
               console.log('error setting up signer', error);
               handlePayWithCryptoError(
@@ -214,68 +207,39 @@ export const ViewPricingDetails = <T extends ContractType>({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [isSendingTransaction, address, chainId, signer, setUpSigner]);
-
-  const metadataStringified = JSON.stringify(metadata);
-  const mintMethodStringified = JSON.stringify(mintMethod);
-  const eligibilityMethodStringified = JSON.stringify(eligibilityMethod);
-  const contractArgsStringified = JSON.stringify(contractArgs);
+  }, [
+    isSendingTransaction,
+    address,
+    chainId,
+    payingWalletSigner,
+    setUpUserPayingWalletSigner,
+  ]);
 
   const payWithCryptoUrl = useMemo(() => {
-    // const payWithCryptoUrl = new URL('/sdk/v1/pay-with-crypto', PAPER_APP_URL);
     const payWithCryptoUrl = new URL(
-      '/sdk/2022-08-12/pay-with-eth',
+      '/sdk/2022-08-12/checkout-with-eth',
       PAPER_APP_URL,
     );
+    payWithCryptoUrl.searchParams.append(
+      'showConnectWalletOptions',
+      showConnectWalletOptions.toString(),
+    );
     payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
+
     payWithCryptoUrl.searchParams.append(
       'recipientWalletAddress',
-      recipientWalletAddress || address || '',
+      address || '',
+    );
+
+    payWithCryptoUrl.searchParams.append(
+      'checkoutSdkIntent',
+      checkoutSdkIntent,
     );
     payWithCryptoUrl.searchParams.append(
       'walletType',
-      recipientWalletAddress
-        ? walletType || WalletType.Preset
-        : connector?.name || '',
+      receivingWalletType || WalletType.Preset || '',
     );
-    payWithCryptoUrl.searchParams.append('checkoutId', checkoutId);
-    if (mintMethod) {
-      payWithCryptoUrl.searchParams.append(
-        'mintMethod',
-        Buffer.from(mintMethodStringified, 'utf-8').toString('base64'),
-      );
-    }
-    if (eligibilityMethod) {
-      payWithCryptoUrl.searchParams.append(
-        'eligibilityMethod',
-        Buffer.from(eligibilityMethodStringified, 'utf-8').toString('base64'),
-      );
-    }
-    if (!!showConnectWalletOptions) {
-      payWithCryptoUrl.searchParams.append('showConnectWalletOptions', 'true');
-    }
-    if (appName) {
-      payWithCryptoUrl.searchParams.append('appName', appName);
-    }
-    if (emailAddress) {
-      payWithCryptoUrl.searchParams.append('emailAddress', emailAddress);
-    }
-    if (quantity) {
-      payWithCryptoUrl.searchParams.append('quantity', quantity.toString());
-    }
-    if (metadata) {
-      payWithCryptoUrl.searchParams.append('metadata', metadataStringified);
-    }
-    if (contractType) {
-      payWithCryptoUrl.searchParams.append('contractType', contractType);
-    }
-    if (contractArgs) {
-      payWithCryptoUrl.searchParams.append(
-        'contractArgs',
-        // Base 64 encode
-        Buffer.from(contractArgsStringified, 'utf-8').toString('base64'),
-      );
-    }
+
     if (options.colorPrimary) {
       payWithCryptoUrl.searchParams.append(
         'colorPrimary',
@@ -304,16 +268,15 @@ export const ViewPricingDetails = <T extends ContractType>({
     payWithCryptoUrl.searchParams.append('date', Date.now().toString());
     return payWithCryptoUrl;
   }, [
-    recipientWalletAddress,
     address,
-    checkoutId,
     appName,
-    emailAddress,
-    quantity,
-    metadataStringified,
-    mintMethodStringified,
-    eligibilityMethodStringified,
-    contractArgsStringified,
+    checkoutSdkIntent,
+    receivingWalletType,
+    options.colorPrimary,
+    options.colorBackground,
+    options.colorText,
+    options.borderRadius,
+    options.fontFamily,
   ]);
 
   return (

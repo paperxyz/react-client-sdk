@@ -1,6 +1,6 @@
 {
   "name": "@paperxyz/react-client-sdk",
-  "version": "0.5.12",
+  "version": "0.6.0",
   "description": "Paper.xyz React Client SDK",
   "source": "src/index.ts",
   "main": "dist/index.js",

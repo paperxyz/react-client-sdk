@@ -13,9 +13,6 @@ interface CreateWalletProps {
   children?: React.ReactNode;
 }
 
-/**
- * @deprecated - Paper currently doesn't plan to further develop the wallet product.
- */
 export const CreateWallet: React.FC<CreateWalletProps> = ({
   emailAddress,
   onSuccess,

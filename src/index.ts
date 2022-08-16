@@ -1,3 +1,4 @@
+export * from './components/2022-08-12/CheckoutWithCard';
 export { CheckoutWithEth } from './components/2022-08-12/checkoutWithEth/index';
 export * from './components/CreateWallet';
 export * from './components/LoginWithPaper';

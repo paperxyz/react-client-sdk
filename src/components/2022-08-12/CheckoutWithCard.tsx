@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   DEFAULT_BRAND_OPTIONS,
   PAPER_APP_URL,
@@ -15,6 +21,7 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { resizeIframeToExpandedHeight } from '../../lib/utils/resizeIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
+import { Modal } from '../common/Modal';
 import { Spinner } from '../common/Spinner';
 
 interface CheckoutWithCardProps {
@@ -23,7 +30,6 @@ interface CheckoutWithCardProps {
   options?: ICustomizationOptions;
   onReview?: (result: ReviewResult) => void;
   onError?: (error: PaperSDKError) => void;
-
   /**
    * If true, uses the papercheckout.com instead of paper.xyz domain.
    * This setting is useful if your users are unable to access the paper.xyz domain.
@@ -33,7 +39,7 @@ interface CheckoutWithCardProps {
   experimentalUseAltDomain?: boolean;
 }
 
-export const PayWithCard = ({
+export const CheckoutWithCard = ({
   checkoutSdkIntent,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
@@ -51,6 +57,22 @@ export const PayWithCard = ({
     setIsCardDetailIframeLoading(false);
   }, []);
 
+  const CheckoutWithCardIframeRef = useRef<HTMLIFrameElement>(null);
+
+  const [modalUrl, setModalUrl] = useState<string | undefined>();
+  const [isOpen, setIsOpen] = useState(false);
+  const closeModal = () => {
+    if (!CheckoutWithCardIframeRef.current) {
+      return;
+    }
+    postMessageToIframe(
+      CheckoutWithCardIframeRef.current,
+      'checkoutWithCardCloseModal',
+      {},
+    );
+    setIsOpen(false);
+  };
+
   const paperDomain = experimentalUseAltDomain
     ? PAPER_APP_URL_ALT
     : PAPER_APP_URL;
@@ -63,28 +85,35 @@ export const PayWithCard = ({
       }
 
       const data = event.data;
-      const payWithCardIframe = document.getElementById(
-        'payWithCardIframe',
-      ) as HTMLIFrameElement;
+      if (!CheckoutWithCardIframeRef.current) {
+        console.log('undefine CheckoutWithCarfRef');
+        return;
+      }
 
       switch (data.eventType) {
-        case 'payWithCardError':
-          console.error('Error in Paper SDK PayWithCard', data.error);
+        case 'checkoutWithCardError':
+          console.error('Error in Paper SDK CheckoutWithCard', data.error);
           if (onError) {
             onError({
               code: data.code as PaperSDKErrorCode,
               error: data.error,
             });
           }
-          postMessageToIframe(payWithCardIframe, data.eventType, data);
+          postMessageToIframe(
+            CheckoutWithCardIframeRef.current,
+            data.eventType,
+            data,
+          );
           break;
 
         case 'paymentSuccess':
-          postMessageToIframe(payWithCardIframe, data.eventType, data);
+          postMessageToIframe(
+            CheckoutWithCardIframeRef.current,
+            data.eventType,
+            data,
+          );
 
           if (onPaymentSuccess) {
-            console.log('onPaymentSuccess is set.');
-            // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
             onPaymentSuccess({ id: data.id });
           }
           break;
@@ -96,8 +125,27 @@ export const PayWithCard = ({
               cardholderName: data.cardholderName,
             });
           }
-          resizeIframeToExpandedHeight(payWithCardIframe);
+          resizeIframeToExpandedHeight(CheckoutWithCardIframeRef.current);
           break;
+
+        case 'openModalWithUrl':
+          setModalUrl(data.url);
+          setIsOpen(true);
+          break;
+
+        case 'completedSDKModal':
+          closeModal();
+          console.log('data', data);
+
+          if (data.postToIframe) {
+            postMessageToIframe(
+              CheckoutWithCardIframeRef.current,
+              data.eventType,
+              data,
+            );
+          }
+          break;
+
         default:
         // Ignore unrecognized event
       }
@@ -110,38 +158,44 @@ export const PayWithCard = ({
   }, []);
 
   // Build iframe URL with query params.
-  const payWithCardUrl = useMemo(() => {
-    const payWithCardUrl = new URL(
+  const CheckoutWithCardUrl = useMemo(() => {
+    const CheckoutWithCardUrl = new URL(
       '/sdk/2022-08-12/checkout-with-card',
       paperDomain,
     );
 
-    payWithCardUrl.searchParams.append('checkoutSdkIntent', checkoutSdkIntent);
+    CheckoutWithCardUrl.searchParams.append(
+      'checkoutSdkIntent',
+      checkoutSdkIntent,
+    );
     if (appName) {
-      payWithCardUrl.searchParams.append('appName', appName);
+      CheckoutWithCardUrl.searchParams.append('appName', appName);
     }
     if (options.colorPrimary) {
-      payWithCardUrl.searchParams.append('colorPrimary', options.colorPrimary);
+      CheckoutWithCardUrl.searchParams.append(
+        'colorPrimary',
+        options.colorPrimary,
+      );
     }
     if (options.colorBackground) {
-      payWithCardUrl.searchParams.append(
+      CheckoutWithCardUrl.searchParams.append(
         'colorBackground',
         options.colorBackground,
       );
     }
     if (options.colorText) {
-      payWithCardUrl.searchParams.append('colorText', options.colorText);
+      CheckoutWithCardUrl.searchParams.append('colorText', options.colorText);
     }
     if (options.borderRadius !== undefined) {
-      payWithCardUrl.searchParams.append(
+      CheckoutWithCardUrl.searchParams.append(
         'borderRadius',
         options.borderRadius.toString(),
       );
     }
     if (options.fontFamily) {
-      payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
+      CheckoutWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
     }
-    return payWithCardUrl;
+    return CheckoutWithCardUrl;
   }, [
     appName,
     checkoutSdkIntent,
@@ -161,14 +215,28 @@ export const PayWithCard = ({
           </div>
         )}
         <IFrameWrapper
-          id='payWithCardIframe'
-          src={payWithCardUrl.href}
+          ref={CheckoutWithCardIframeRef}
+          id='CheckoutWithCardIframe'
+          src={CheckoutWithCardUrl.href}
           onLoad={onCardDetailLoad}
           width='100%'
           height='100%'
           allowTransparency
         />
       </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={closeModal}
+        bgColor={options.colorBackground || '#ffffff'}
+      >
+        {modalUrl && (
+          <iframe
+            id='review-card-payment-iframe'
+            src={modalUrl}
+            className='h-[700px] max-h-full w-96 max-w-full'
+          />
+        )}
+      </Modal>
     </>
   );
 };

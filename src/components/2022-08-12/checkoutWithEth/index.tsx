@@ -25,8 +25,8 @@ type CheckoutWithEthProps = {
 export const CheckoutWithEth = ({
   checkoutSdkIntent,
   payingWalletSigner,
-  receivingWalletType,
   setUpUserPayingWalletSigner,
+  receivingWalletType,
   suppressErrorToast,
   showConnectWalletOptions = true,
   options,

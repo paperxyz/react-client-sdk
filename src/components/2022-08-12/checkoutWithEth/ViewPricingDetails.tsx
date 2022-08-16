@@ -75,7 +75,7 @@ export const ViewPricingDetails = ({
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
 
-  const { address, connector, chainId } = useAccount({
+  const { address, chainId } = useAccount({
     signer: payingWalletSigner,
   });
   const { sendTransactionAsync, isSendingTransaction } = useSendTransaction({
@@ -215,58 +215,58 @@ export const ViewPricingDetails = ({
     setUpUserPayingWalletSigner,
   ]);
 
-  const payWithCryptoUrl = useMemo(() => {
-    const payWithCryptoUrl = new URL(
+  const checkoutWithEthUrl = useMemo(() => {
+    const checkoutWithEthUrl = new URL(
       '/sdk/2022-08-12/checkout-with-eth',
       PAPER_APP_URL,
     );
-    payWithCryptoUrl.searchParams.append(
+    checkoutWithEthUrl.searchParams.append(
       'showConnectWalletOptions',
       showConnectWalletOptions.toString(),
     );
-    payWithCryptoUrl.searchParams.append('payerWalletAddress', address || '');
+    checkoutWithEthUrl.searchParams.append('payerWalletAddress', address || '');
 
-    payWithCryptoUrl.searchParams.append(
+    checkoutWithEthUrl.searchParams.append(
       'recipientWalletAddress',
       address || '',
     );
 
-    payWithCryptoUrl.searchParams.append(
+    checkoutWithEthUrl.searchParams.append(
       'checkoutSdkIntent',
       checkoutSdkIntent,
     );
-    payWithCryptoUrl.searchParams.append(
+    checkoutWithEthUrl.searchParams.append(
       'walletType',
       receivingWalletType || WalletType.Preset || '',
     );
 
     if (options.colorPrimary) {
-      payWithCryptoUrl.searchParams.append(
+      checkoutWithEthUrl.searchParams.append(
         'colorPrimary',
         options.colorPrimary,
       );
     }
     if (options.colorBackground) {
-      payWithCryptoUrl.searchParams.append(
+      checkoutWithEthUrl.searchParams.append(
         'colorBackground',
         options.colorBackground,
       );
     }
     if (options.colorText) {
-      payWithCryptoUrl.searchParams.append('colorText', options.colorText);
+      checkoutWithEthUrl.searchParams.append('colorText', options.colorText);
     }
     if (options.borderRadius !== undefined) {
-      payWithCryptoUrl.searchParams.append(
+      checkoutWithEthUrl.searchParams.append(
         'borderRadius',
         options.borderRadius.toString(),
       );
     }
     if (options.fontFamily) {
-      payWithCryptoUrl.searchParams.append('fontFamily', options.fontFamily);
+      checkoutWithEthUrl.searchParams.append('fontFamily', options.fontFamily);
     }
     // Add timestamp to prevent loading a cached page.
-    payWithCryptoUrl.searchParams.append('date', Date.now().toString());
-    return payWithCryptoUrl;
+    checkoutWithEthUrl.searchParams.append('date', Date.now().toString());
+    return checkoutWithEthUrl;
   }, [
     address,
     appName,
@@ -300,7 +300,7 @@ export const ViewPricingDetails = ({
         ref={iframeRef}
         id='pay-with-crypto-iframe'
         className=' mx-auto h-[350px] w-full transition-all'
-        src={payWithCryptoUrl.href}
+        src={checkoutWithEthUrl.href}
         onLoad={onLoad}
         scrolling='no'
         allowTransparency

@@ -9,20 +9,17 @@ import {
   DEFAULT_BRAND_OPTIONS,
   PAPER_APP_URL,
   PAPER_APP_URL_ALT,
-} from '../../constants/settings';
-import { ICustomizationOptions } from '../../interfaces/Customization';
-import {
-  PaperSDKError,
-  PaperSDKErrorCode,
-} from '../../interfaces/PaperSDKError';
-import { PaymentSuccessResult } from '../../interfaces/PaymentSuccessResult';
-import { ReviewResult } from '../../interfaces/ReviewResult';
-import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
-import { resizeIframeToExpandedHeight } from '../../lib/utils/resizeIframe';
-import { usePaperSDKContext } from '../../Provider';
-import { IFrameWrapper } from '../common/IFrameWrapper';
-import { Modal } from '../common/Modal';
-import { Spinner } from '../common/Spinner';
+} from '../constants/settings';
+import { ICustomizationOptions } from '../interfaces/Customization';
+import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
+import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
+import { ReviewResult } from '../interfaces/ReviewResult';
+import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
+import { resizeIframeToExpandedHeight } from '../lib/utils/resizeIframe';
+import { usePaperSDKContext } from '../Provider';
+import { IFrameWrapper } from './common/IFrameWrapper';
+import { Modal } from './common/Modal';
+import { Spinner } from './common/Spinner';
 
 interface CheckoutWithCardProps {
   checkoutSdkIntent: string;

@@ -7,24 +7,21 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  DEFAULT_BRAND_OPTIONS,
-  PAPER_APP_URL,
-} from '../../../constants/settings';
-import { ICustomizationOptions } from '../../../interfaces/Customization';
+import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
+import { ICustomizationOptions } from '../../interfaces/Customization';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
-} from '../../../interfaces/PaperSDKError';
-import { WalletType } from '../../../interfaces/WalletTypes';
-import { useAccount } from '../../../lib/hooks/useAccount';
-import { useSendTransaction } from '../../../lib/hooks/useSendTransaction';
-import { useSwitchNetwork } from '../../../lib/hooks/useSwitchNetwork';
-import { handlePayWithCryptoError } from '../../../lib/utils/handleError';
-import { postMessageToIframe } from '../../../lib/utils/postMessageToIframe';
-import { usePaperSDKContext } from '../../../Provider';
-import { IFrameWrapper } from '../../common/IFrameWrapper';
-import { Spinner } from '../../common/Spinner';
+} from '../../interfaces/PaperSDKError';
+import { WalletType } from '../../interfaces/WalletTypes';
+import { useAccount } from '../../lib/hooks/useAccount';
+import { useSendTransaction } from '../../lib/hooks/useSendTransaction';
+import { useSwitchNetwork } from '../../lib/hooks/useSwitchNetwork';
+import { handlePayWithCryptoError } from '../../lib/utils/handleError';
+import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
+import { usePaperSDKContext } from '../../Provider';
+import { IFrameWrapper } from '../common/IFrameWrapper';
+import { Spinner } from '../common/Spinner';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;

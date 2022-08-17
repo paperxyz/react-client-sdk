@@ -1,12 +1,12 @@
 import { Transition } from '@headlessui/react';
 import React, { useEffect, useState } from 'react';
 import { useSigner } from 'wagmi';
-import { PayWithCryptoErrorCode } from '../../../interfaces/PaperSDKError';
+import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
   WalletType,
-} from '../../../interfaces/WalletTypes';
-import { ConnectWallet } from '../../common/ConnectWallet';
+} from '../../interfaces/WalletTypes';
+import { ConnectWallet } from '../common/ConnectWallet';
 import {
   ViewPricingDetails,
   ViewPricingDetailsProps,

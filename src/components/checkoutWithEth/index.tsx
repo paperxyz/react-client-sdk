@@ -1,11 +1,6 @@
 import { Transition } from '@headlessui/react';
 import React, { useEffect, useState } from 'react';
 import { useSigner } from 'wagmi';
-import {
-  ContractType,
-  CustomContractArgWrapper,
-  fetchCustomContractArgsFromProps,
-} from '../../interfaces/CustomContract';
 import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
@@ -17,31 +12,22 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 
-export enum PayWithCryptoPage {
+export enum CheckoutWithEthPage {
   ConnectWallet,
   PaymentDetails,
 }
 
-type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
-  {
-    onWalletConnected?: onWalletConnectedType;
-    onPageChange?: (currentPage: PayWithCryptoPage) => void;
-  } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>,
-  T
->;
+type CheckoutWithEthProps = {
+  onWalletConnected?: onWalletConnectedType;
+  onPageChange?: (currentPage: CheckoutWithEthPage) => void;
+} & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
-export const PayWithCrypto = <T extends ContractType>({
-  checkoutId,
-  recipientWalletAddress,
-  emailAddress,
-  quantity,
-  metadata,
-  eligibilityMethod,
-  mintMethod,
+export const CheckoutWithEth = ({
+  checkoutSdkIntent,
+  payingWalletSigner,
+  setUpUserPayingWalletSigner,
+  receivingWalletType,
   suppressErrorToast,
-  signer,
-  setUpSigner,
-  walletType,
   showConnectWalletOptions = true,
   options,
   onError,
@@ -49,15 +35,12 @@ export const PayWithCrypto = <T extends ContractType>({
   onSuccess,
   onWalletConnected,
   onPageChange,
-  ...contractSpecificArgs
-}: PayWithCryptoProps<T>): React.ReactElement => {
+}: CheckoutWithEthProps): React.ReactElement => {
   const { data: _signer } = useSigner();
   const [isClientSide, setIsClientSide] = useState(false);
   const [isTryingToChangeWallet, setIsTryingToChangeWallet] = useState(false);
-  const actualSigner = signer || _signer;
+  const actualSigner = payingWalletSigner || _signer;
   const isJsonRpcSignerPresent = !!actualSigner;
-  const customContractArgs =
-    fetchCustomContractArgsFromProps(contractSpecificArgs);
 
   useEffect(() => {
     setIsClientSide(true);
@@ -69,12 +52,12 @@ export const PayWithCrypto = <T extends ContractType>({
         (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
         !showConnectWalletOptions
       ) {
-        onPageChange(PayWithCryptoPage.PaymentDetails);
+        onPageChange(CheckoutWithEthPage.PaymentDetails);
       } else if (
         showConnectWalletOptions &&
         (!isJsonRpcSignerPresent || isTryingToChangeWallet)
       ) {
-        onPageChange(PayWithCryptoPage.ConnectWallet);
+        onPageChange(CheckoutWithEthPage.ConnectWallet);
       }
     }
   }, [
@@ -139,18 +122,10 @@ export const PayWithCrypto = <T extends ContractType>({
             leaveTo='opacity-0'
           >
             <ViewPricingDetails
-              checkoutId={checkoutId}
-              recipientWalletAddress={recipientWalletAddress}
-              emailAddress={emailAddress}
-              quantity={quantity}
-              metadata={metadata}
-              {...customContractArgs}
-              eligibilityMethod={eligibilityMethod}
-              mintMethod={mintMethod}
-              showConnectWalletOptions={showConnectWalletOptions}
-              signer={signer}
-              setUpSigner={setUpSigner}
-              walletType={walletType}
+              checkoutSdkIntent={checkoutSdkIntent}
+              payingWalletSigner={payingWalletSigner}
+              receivingWalletType={receivingWalletType}
+              setUpUserPayingWalletSigner={setUpUserPayingWalletSigner}
               onError={onError}
               onSuccess={(transactionResponse) => {
                 if (onSuccess) {

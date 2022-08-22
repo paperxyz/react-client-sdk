@@ -5,7 +5,7 @@ import { IconProps, MetaMaskIcon } from '../../icons/MetaMaskIcon';
 import { WalletConnectIcon } from '../../icons/WalletConnectIcon';
 import { ConnectWalletProps, WalletType } from '../../interfaces/WalletTypes';
 import { useConnectWallet } from '../../lib/hooks/useConnectWallet';
-import { Button } from '../common/Button';
+import { Button } from './Button';
 
 export function WalletIcon({
   walletType,

@@ -23,7 +23,7 @@ type CheckoutWithEthProps = {
 } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
 export const CheckoutWithEth = ({
-  checkoutSdkIntent,
+  sdkClientSecret,
   payingWalletSigner,
   setUpUserPayingWalletSigner,
   receivingWalletType,
@@ -126,7 +126,7 @@ export const CheckoutWithEth = ({
             leaveTo='opacity-0'
           >
             <ViewPricingDetails
-              checkoutSdkIntent={checkoutSdkIntent}
+              sdkClientSecret={sdkClientSecret}
               payingWalletSigner={payingWalletSigner}
               receivingWalletType={receivingWalletType}
               setUpUserPayingWalletSigner={setUpUserPayingWalletSigner}

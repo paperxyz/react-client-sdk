@@ -38,7 +38,7 @@ export interface ViewPricingDetailsProps {
   onError?: (error: PaperSDKError) => void;
   suppressErrorToast?: boolean;
 
-  checkoutSdkIntent: string;
+  sdkClientSecret: string;
 
   setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
   setUpUserPayingWalletSigner?: (args: {
@@ -63,7 +63,7 @@ export const ViewPricingDetails = ({
   payingWalletSigner,
   receivingWalletType,
   setUpUserPayingWalletSigner,
-  checkoutSdkIntent,
+  sdkClientSecret,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -228,10 +228,7 @@ export const ViewPricingDetails = ({
       address || '',
     );
 
-    checkoutWithEthUrl.searchParams.append(
-      'checkoutSdkIntent',
-      checkoutSdkIntent,
-    );
+    checkoutWithEthUrl.searchParams.append('sdkClientSecret', sdkClientSecret);
     checkoutWithEthUrl.searchParams.append(
       'walletType',
       receivingWalletType || WalletType.Preset || '',
@@ -267,7 +264,7 @@ export const ViewPricingDetails = ({
   }, [
     address,
     appName,
-    checkoutSdkIntent,
+    sdkClientSecret,
     receivingWalletType,
     options.colorPrimary,
     options.colorBackground,
@@ -295,7 +292,7 @@ export const ViewPricingDetails = ({
       </Transition>
       <IFrameWrapper
         ref={iframeRef}
-        id='pay-with-crypto-iframe'
+        id='checkout-with-eth-iframe'
         className=' mx-auto h-[350px] w-full transition-all'
         src={checkoutWithEthUrl.href}
         onLoad={onLoad}

@@ -22,7 +22,7 @@ import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
 
 interface CheckoutWithCardProps {
-  checkoutSdkIntent: string;
+  sdkClientSecret: string;
   onPaymentSuccess: (result: PaymentSuccessResult) => void;
   options?: ICustomizationOptions;
   onReview?: (result: ReviewResult) => void;
@@ -37,14 +37,14 @@ interface CheckoutWithCardProps {
 }
 
 export const CheckoutWithCard = ({
-  checkoutSdkIntent,
+  sdkClientSecret,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
   onPaymentSuccess,
   onReview,
   onError,
-  experimentalUseAltDomain,
+  experimentalUseAltDomain = true,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
   const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =
@@ -161,10 +161,7 @@ export const CheckoutWithCard = ({
       paperDomain,
     );
 
-    CheckoutWithCardUrl.searchParams.append(
-      'checkoutSdkIntent',
-      checkoutSdkIntent,
-    );
+    CheckoutWithCardUrl.searchParams.append('sdkClientSecret', sdkClientSecret);
     if (appName) {
       CheckoutWithCardUrl.searchParams.append('appName', appName);
     }
@@ -195,7 +192,7 @@ export const CheckoutWithCard = ({
     return CheckoutWithCardUrl;
   }, [
     appName,
-    checkoutSdkIntent,
+    sdkClientSecret,
     options.colorPrimary,
     options.colorBackground,
     options.colorText,
@@ -213,7 +210,7 @@ export const CheckoutWithCard = ({
         )}
         <IFrameWrapper
           ref={CheckoutWithCardIframeRef}
-          id='CheckoutWithCardIframe'
+          id='checkout-with-card-iframe'
           src={CheckoutWithCardUrl.href}
           onLoad={onCardDetailLoad}
           width='100%'

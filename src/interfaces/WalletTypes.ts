@@ -11,12 +11,12 @@ export interface ConnectWalletProps {
   onWalletConnectFail: onWalletConnectFailType;
 }
 
-export type onWalletConnectFailType = (
-  walletType: WalletType,
-  currentUserWalletType: WalletType,
-  error: Error,
-) => void;
-export type onWalletConnectedType = (
-  userAddress: string,
-  chainId: number,
-) => void;
+export type onWalletConnectFailType = (props: {
+  walletType: WalletType;
+  currentUserWalletType: WalletType;
+  error: Error;
+}) => void;
+export type onWalletConnectedType = (props: {
+  userAddress: string;
+  chainId: number;
+}) => void;

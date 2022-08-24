@@ -142,7 +142,14 @@ export const CheckoutWithCard = ({
             );
           }
           break;
-
+        case 'sizing': {
+          if (CheckoutWithCardIframeRef.current) {
+            CheckoutWithCardIframeRef.current.style.height = data.height + 'px';
+            CheckoutWithCardIframeRef.current.style.maxHeight =
+              data.height + 'px';
+          }
+          break;
+        }
         default:
         // Ignore unrecognized event
       }
@@ -213,8 +220,7 @@ export const CheckoutWithCard = ({
           id='checkout-with-card-iframe'
           src={CheckoutWithCardUrl.href}
           onLoad={onCardDetailLoad}
-          width='100%'
-          height='100%'
+          className='mx-auto h-36 w-full transition-all'
           allowTransparency
         />
       </div>

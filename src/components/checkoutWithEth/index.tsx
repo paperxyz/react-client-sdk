@@ -23,7 +23,7 @@ type CheckoutWithEthProps = {
 } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
 export const CheckoutWithEth = ({
-  checkoutSdkIntent,
+  sdkClientSecret,
   payingWalletSigner,
   setUpUserPayingWalletSigner,
   receivingWalletType,
@@ -83,18 +83,22 @@ export const CheckoutWithEth = ({
               leaveTo='opacity-0'
             >
               <ConnectWallet
-                onWalletConnected={(userAddress, chainId) => {
+                onWalletConnected={({ userAddress, chainId }) => {
                   setIsTryingToChangeWallet(false);
                   if (onWalletConnected) {
-                    onWalletConnected(userAddress, chainId);
+                    onWalletConnected({ userAddress, chainId });
                   }
                 }}
-                onWalletConnectFail={(walletType, userWalletType, error) => {
+                onWalletConnectFail={({
+                  walletType,
+                  currentUserWalletType,
+                  error,
+                }) => {
                   // coinbase will fail if we try to go back and connect again. because we never disconnected.
                   // we'll get the error of "user already connected". We simply ignore it here.
                   if (
                     walletType === WalletType.CoinbaseWallet &&
-                    userWalletType === walletType
+                    currentUserWalletType === walletType
                   ) {
                     setIsTryingToChangeWallet(false);
                     return;
@@ -123,7 +127,7 @@ export const CheckoutWithEth = ({
             leaveTo='opacity-0'
           >
             <ViewPricingDetails
-              checkoutSdkIntent={checkoutSdkIntent}
+              sdkClientSecret={sdkClientSecret}
               payingWalletSigner={payingWalletSigner}
               receivingWalletType={receivingWalletType}
               setUpUserPayingWalletSigner={setUpUserPayingWalletSigner}

@@ -99,18 +99,22 @@ export const PayWithCrypto = <T extends ContractType>({
               leaveTo='opacity-0'
             >
               <ConnectWallet
-                onWalletConnected={(userAddress, chainId) => {
+                onWalletConnected={({ userAddress, chainId }) => {
                   setIsTryingToChangeWallet(false);
                   if (onWalletConnected) {
-                    onWalletConnected(userAddress, chainId);
+                    onWalletConnected({ userAddress, chainId });
                   }
                 }}
-                onWalletConnectFail={(walletType, userWalletType, error) => {
+                onWalletConnectFail={({
+                  walletType,
+                  currentUserWalletType,
+                  error,
+                }) => {
                   // coinbase will fail if we try to go back and connect again. because we never disconnected.
                   // we'll get the error of "user already connected". We simply ignore it here.
                   if (
                     walletType === WalletType.CoinbaseWallet &&
-                    userWalletType === walletType
+                    currentUserWalletType === walletType
                   ) {
                     setIsTryingToChangeWallet(false);
                     return;

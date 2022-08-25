@@ -43,17 +43,17 @@ export function useConnectWallet() {
             params: [{ eth_accounts: {} }],
           });
 
-          onWalletConnected(
-            await userConnector.getAccount(),
-            await userConnector.getChainId(),
-          );
+          onWalletConnected({
+            userAddress: await userConnector.getAccount(),
+            chainId: await userConnector.getChainId(),
+          });
         } catch (e) {
           // user cancel request, don't need to do anything.
-          onWalletConnectFail(
-            WalletType.MetaMask,
-            connector?.id as WalletType,
-            e as Error,
-          );
+          onWalletConnectFail({
+            walletType: WalletType.MetaMask,
+            currentUserWalletType: connector?.id as WalletType,
+            error: e as Error,
+          });
         }
         setIsUpdatingMetaMaskAccount(false);
       } else {
@@ -65,14 +65,17 @@ export function useConnectWallet() {
             await disconnectAsync();
           }
           const connected = await connectAsync({ connector });
-          onWalletConnected(connected.account, connected.chain.id);
+          onWalletConnected({
+            userAddress: connected.account,
+            chainId: connected.chain.id,
+          });
         } catch (e) {
           // user Cancel request, don't need to do anything
-          onWalletConnectFail(
-            connector.id as WalletType,
-            userConnector?.id as WalletType,
-            e as Error,
-          );
+          onWalletConnectFail({
+            currentUserWalletType: connector.id as WalletType,
+            walletType: userConnector?.id as WalletType,
+            error: e as Error,
+          });
         }
       }
     };

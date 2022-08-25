@@ -3,7 +3,10 @@ export const PAPER_APP_URL =
     ? 'https://paper.xyz'
     : 'http://localhost:3000';
 
-export const PAPER_APP_URL_ALT = 'https://papercheckout.com';
+export const PAPER_APP_URL_ALT =
+  process.env.NODE_ENV === 'production'
+    ? 'https://papercheckout.com'
+    : 'http://localhost:3000';
 
 export const DEFAULT_BRAND_OPTIONS = {
   colorPrimary: '#cf3781',

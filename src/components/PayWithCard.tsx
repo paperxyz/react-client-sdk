@@ -157,7 +157,12 @@ export const PayWithCard = <T extends ContractType>({
   const contractArgsStringified = JSON.stringify(contractArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
-    const payWithCardUrl = new URL('/sdk/v2/pay-with-card', paperDomain);
+    // const payWithCardUrl = new URL('/sdk/v2/pay-with-card', paperDomain);
+    // !!!!!!!!!!!!!!!!!!!!!! dont push this
+    const payWithCardUrl = new URL(
+      '/sdk/v2/pay-with-card',
+      'http://localhost:3000',
+    );
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
     payWithCardUrl.searchParams.append(

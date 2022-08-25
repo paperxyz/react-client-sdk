@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import { ICustomizationOptions } from '../../interfaces/Customization';
+import { Locale } from '../../interfaces/Locale';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -20,6 +21,7 @@ import { useSwitchNetwork } from '../../lib/hooks/useSwitchNetwork';
 import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
+import { getLocale } from '../CheckoutWithCard';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
 
@@ -52,6 +54,7 @@ export interface ViewPricingDetailsProps {
     | string;
   showConnectWalletOptions?: boolean;
   options?: ICustomizationOptions;
+  locale?: Locale;
 }
 
 export const ViewPricingDetails = ({
@@ -64,6 +67,7 @@ export const ViewPricingDetails = ({
   receivingWalletType,
   setUpUserPayingWalletSigner,
   checkoutSdkIntent,
+  locale,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
@@ -263,6 +267,10 @@ export const ViewPricingDetails = ({
     }
     // Add timestamp to prevent loading a cached page.
     checkoutWithEthUrl.searchParams.append('date', Date.now().toString());
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    checkoutWithEthUrl.searchParams.append('locale', localeToUse);
+
     return checkoutWithEthUrl;
   }, [
     address,
@@ -274,6 +282,7 @@ export const ViewPricingDetails = ({
     options.colorText,
     options.borderRadius,
     options.fontFamily,
+    navigator,
   ]);
 
   return (

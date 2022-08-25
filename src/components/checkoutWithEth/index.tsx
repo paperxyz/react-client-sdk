@@ -35,6 +35,7 @@ export const CheckoutWithEth = ({
   onSuccess,
   onWalletConnected,
   onPageChange,
+  locale,
 }: CheckoutWithEthProps): React.ReactElement => {
   const { data: _signer } = useSigner();
   const [isClientSide, setIsClientSide] = useState(false);
@@ -135,6 +136,7 @@ export const CheckoutWithEth = ({
               suppressErrorToast={suppressErrorToast}
               options={options}
               setIsTryingToChangeWallet={setIsTryingToChangeWallet}
+              locale={locale}
             />
           </Transition>
         </>

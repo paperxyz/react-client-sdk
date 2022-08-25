@@ -14,6 +14,7 @@ interface VerifyOwnershipWithPaperProps {
   }: {
     onClick: () => void;
   }) => React.ReactNode | React.ReactNode;
+  redirectUrl?: string;
   className?: string;
 }
 
@@ -25,7 +26,14 @@ const enum VERIFY_OWNERSHIP_WITH_PAPER_EVENT_TYPE {
 
 export const VerifyOwnershipWithPaper: React.FC<
   VerifyOwnershipWithPaperProps
-> = ({ onSuccess, onError, onWindowClose, className, children }) => {
+> = ({
+  onSuccess,
+  onError,
+  onWindowClose,
+  className,
+  children,
+  redirectUrl,
+}) => {
   const { chainName, clientId } = usePaperSDKContext();
   const isChildrenFunction = typeof children === 'function';
   useEffect(() => {
@@ -64,6 +72,7 @@ export const VerifyOwnershipWithPaper: React.FC<
   const url = new URL('/sdk/v1/login-with-paper', PAPER_APP_URL);
   url.searchParams.append('chainName', chainName);
   url.searchParams.append('clientId', clientId);
+  url.searchParams.append('redirectUrl', redirectUrl || '');
   const onClick = () => {
     const loginWindow = openCenteredPopup({
       url: url.href,

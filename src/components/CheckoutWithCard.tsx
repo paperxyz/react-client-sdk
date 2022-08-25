@@ -79,8 +79,6 @@ export const CheckoutWithCard = ({
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
-    console.log('languages are', window.navigator.language);
-
     const handleMessage = (event: MessageEvent) => {
       if (!event.origin.startsWith(paperDomain)) {
         return;
@@ -248,11 +246,4 @@ export const CheckoutWithCard = ({
       </Modal>
     </>
   );
-};
-
-export const getLocale = (windowLanguage: string) => {
-  if (windowLanguage === 'fr') {
-    return 'fr';
-  }
-  return 'en';
 };

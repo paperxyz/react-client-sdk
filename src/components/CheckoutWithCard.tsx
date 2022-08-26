@@ -77,7 +77,10 @@ export const CheckoutWithCard = ({
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.startsWith(paperDomain)) {
+      if (
+        !event.origin.startsWith(PAPER_APP_URL_ALT) ||
+        !event.origin.startsWith(PAPER_APP_URL)
+      ) {
         return;
       }
 

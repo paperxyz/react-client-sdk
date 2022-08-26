@@ -80,13 +80,14 @@ export const CheckoutWithCard = ({
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      console.log('event', event);
       if (!event.origin.startsWith(paperDomain)) {
         return;
       }
 
       const data = event.data;
       if (!CheckoutWithCardIframeRef.current) {
-        console.log('undefine CheckoutWithCarfRef');
+        console.log('undefine CheckoutWithCardRef');
         return;
       }
 

@@ -77,7 +77,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
     <>
       <iframe
         ref={iFrameRef}
-        src={`${PAPER_APP_URL}/sdk/v1/verify-email`}
+        src={`${PAPER_APP_URL}/sdk/v2/verify-email`}
         style={{
           width: '0px',
           height: '0px',

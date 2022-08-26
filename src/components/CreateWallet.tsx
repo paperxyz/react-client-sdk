@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PAPER_APP_URL } from '../constants/settings';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
+import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
 
@@ -10,45 +11,59 @@ interface CreateWalletProps {
   onSuccess: (user: PaperUser) => void;
   onEmailVerificationInitiated?: () => void;
   onError?: (error: PaperSDKError) => void;
+  redirectUrl?: string;
   children?: React.ReactNode;
 }
 
 export const CreateWallet: React.FC<CreateWalletProps> = ({
   emailAddress,
+  redirectUrl,
   onSuccess,
   onEmailVerificationInitiated,
   onError,
   children,
 }) => {
-  const [verifyEmailExecuted, setVerifyEmailExecuted] =
-    useState<boolean>(false);
   const { chainName } = usePaperSDKContext();
+  const iFrameRef = useRef<HTMLIFrameElement>(null);
+  const executeVerifyEmail = () => {
+    if (iFrameRef.current) {
+      postMessageToIframe(iFrameRef.current, 'verifyEmail', {
+        email: emailAddress,
+        chainName,
+        redirectUrl,
+      });
+    }
+  };
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // if (event.origin !== PAPER_APP_URL) return;
+      if (event.origin !== PAPER_APP_URL) return;
 
       const data = event.data;
-
-      if (data.eventType === 'verifyEmailEmailVerificationInitiated') {
-        if (onEmailVerificationInitiated) {
-          onEmailVerificationInitiated();
-        } else {
-          // TODO: Default modal if onEmailVerificationInitiated is not set
+      switch (data.eventType) {
+        case 'verifyEmailEmailVerificationInitiated': {
+          if (onEmailVerificationInitiated) {
+            onEmailVerificationInitiated();
+          }
+          break;
         }
-      } else if (data.eventType === 'verifyEmailError') {
-        console.error('Error in Paper SDK VerifyEmail', data.error);
-        if (onError) {
-          onError({
-            code: PaperSDKErrorCode.EmailNotVerified,
-            error: data.error,
+        case 'verifyEmailError': {
+          console.error('Error in Paper SDK VerifyEmail', data.error);
+          if (onError) {
+            onError({
+              code: PaperSDKErrorCode.EmailNotVerified,
+              error: data.error,
+            });
+          }
+          break;
+        }
+        case 'verifyEmailSuccess': {
+          onSuccess({
+            emailAddress: data.emailAddress,
+            walletAddress: data.walletAddress,
           });
+          break;
         }
-      } else if (data.eventType === 'verifyEmailSuccess') {
-        onSuccess({
-          emailAddress: data.emailAddress,
-          walletAddress: data.walletAddress,
-        });
       }
     };
 
@@ -58,26 +73,17 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
     };
   }, []);
 
-  const executeVerifyEmail = () => {
-    setVerifyEmailExecuted(true);
-  };
-
   return (
     <>
-      {emailAddress && verifyEmailExecuted && (
-        <>
-          <iframe
-            src={`${PAPER_APP_URL}/sdk/v1/verify-email?email=${encodeURIComponent(
-              emailAddress,
-            )}&chainName=${chainName}&date=${Date.now().toString()}`}
-            style={{
-              width: '0px',
-              height: '0px',
-              visibility: 'hidden',
-            }}
-          ></iframe>
-        </>
-      )}
+      <iframe
+        ref={iFrameRef}
+        src={`${PAPER_APP_URL}/sdk/v2/verify-email`}
+        style={{
+          width: '0px',
+          height: '0px',
+          visibility: 'hidden',
+        }}
+      />
       {children ? (
         <a onClick={executeVerifyEmail}>{children}</a>
       ) : (

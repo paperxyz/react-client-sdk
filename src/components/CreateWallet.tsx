@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { PAPER_APP_URL } from '../constants/settings';
+import { Locale } from '../interfaces/Locale';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaperUser } from '../interfaces/PaperUser';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
@@ -12,6 +13,7 @@ interface CreateWalletProps {
   onEmailVerificationInitiated?: () => void;
   onError?: (error: PaperSDKError) => void;
   redirectUrl?: string;
+  locale?: Locale;
   children?: React.ReactNode;
 }
 
@@ -21,6 +23,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
   onSuccess,
   onEmailVerificationInitiated,
   onError,
+  locale,
   children,
 }) => {
   const { chainName } = usePaperSDKContext();
@@ -73,11 +76,21 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
     };
   }, []);
 
+  // Build iframe URL with query params.
+  const CreateWalletUrl = useMemo(() => {
+    const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    createWalletUrl.searchParams.append('locale', localeToUse);
+
+    return createWalletUrl;
+  }, []);
+
   return (
     <>
       <iframe
         ref={iFrameRef}
-        src={`${PAPER_APP_URL}/sdk/v2/verify-email`}
+        src={CreateWalletUrl.href}
         style={{
           width: '0px',
           height: '0px',

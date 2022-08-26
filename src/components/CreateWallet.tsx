@@ -78,12 +78,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
 
   // Build iframe URL with query params.
   const CreateWalletUrl = useMemo(() => {
-    // const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
-    const createWalletUrl = new URL(
-      '/sdk/v2/verify-email',
-      'http://localhost:3000',
-    );
-    console.log('create wallet URL', createWalletUrl);
+    const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
 
     const localeToUse = locale === Locale.FR ? 'fr' : 'en';
     createWalletUrl.searchParams.append('locale', localeToUse);

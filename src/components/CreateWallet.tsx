@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PAPER_APP_URL } from '../constants/settings';
 import { Locale } from '../interfaces/Locale';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
@@ -77,20 +77,16 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
   }, []);
 
   // Build iframe URL with query params.
-  const CreateWalletUrl = useMemo(() => {
-    const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
+  const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
 
-    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
-    createWalletUrl.searchParams.append('locale', localeToUse);
-
-    return createWalletUrl;
-  }, []);
+  const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+  createWalletUrl.searchParams.append('locale', localeToUse);
 
   return (
     <>
       <iframe
         ref={iFrameRef}
-        src={CreateWalletUrl.href}
+        src={createWalletUrl.href}
         style={{
           width: '0px',
           height: '0px',

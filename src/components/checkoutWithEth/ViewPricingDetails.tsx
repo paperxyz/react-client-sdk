@@ -278,7 +278,6 @@ export const ViewPricingDetails = ({
     options.colorText,
     options.borderRadius,
     options.fontFamily,
-    navigator,
   ]);
 
   return (

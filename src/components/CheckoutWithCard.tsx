@@ -11,6 +11,7 @@ import {
   PAPER_APP_URL_ALT,
 } from '../constants/settings';
 import { ICustomizationOptions } from '../interfaces/Customization';
+import { Locale } from '../interfaces/Locale';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -34,6 +35,7 @@ interface CheckoutWithCardProps {
    * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
    */
   experimentalUseAltDomain?: boolean;
+  locale?: Locale;
 }
 
 export const CheckoutWithCard = ({
@@ -44,6 +46,7 @@ export const CheckoutWithCard = ({
   onPaymentSuccess,
   onReview,
   onError,
+  locale,
   experimentalUseAltDomain = true,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -196,6 +199,10 @@ export const CheckoutWithCard = ({
     if (options.fontFamily) {
       CheckoutWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
     }
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    CheckoutWithCardUrl.searchParams.append('locale', localeToUse);
+
     return CheckoutWithCardUrl;
   }, [
     appName,

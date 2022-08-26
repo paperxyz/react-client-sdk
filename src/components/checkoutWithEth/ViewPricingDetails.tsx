@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import { ICustomizationOptions } from '../../interfaces/Customization';
+import { Locale } from '../../interfaces/Locale';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -52,6 +53,7 @@ export interface ViewPricingDetailsProps {
     | string;
   showConnectWalletOptions?: boolean;
   options?: ICustomizationOptions;
+  locale?: Locale;
 }
 
 export const ViewPricingDetails = ({
@@ -63,6 +65,7 @@ export const ViewPricingDetails = ({
   payingWalletSigner,
   receivingWalletType,
   setUpUserPayingWalletSigner,
+  locale,
   sdkClientSecret,
   options = {
     ...DEFAULT_BRAND_OPTIONS,
@@ -260,6 +263,10 @@ export const ViewPricingDetails = ({
     }
     // Add timestamp to prevent loading a cached page.
     checkoutWithEthUrl.searchParams.append('date', Date.now().toString());
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    checkoutWithEthUrl.searchParams.append('locale', localeToUse);
+
     return checkoutWithEthUrl;
   }, [
     address,

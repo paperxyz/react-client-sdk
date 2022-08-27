@@ -49,6 +49,7 @@ export const PayWithCrypto = <T extends ContractType>({
   onSuccess,
   onWalletConnected,
   onPageChange,
+  locale,
   ...contractSpecificArgs
 }: PayWithCryptoProps<T>): React.ReactElement => {
   const { data: _signer } = useSigner();
@@ -164,6 +165,7 @@ export const PayWithCrypto = <T extends ContractType>({
               suppressErrorToast={suppressErrorToast}
               options={options}
               setIsTryingToChangeWallet={setIsTryingToChangeWallet}
+              locale={locale}
             />
           </Transition>
         </>

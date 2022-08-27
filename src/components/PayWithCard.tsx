@@ -12,6 +12,7 @@ import {
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
 import { ICustomizationOptions } from '../interfaces/Customization';
+import { Locale } from '../interfaces/Locale';
 import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
@@ -42,6 +43,7 @@ interface PayWithCardProps {
    * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
    */
   experimentalUseAltDomain?: boolean;
+  locale?: Locale;
 }
 
 export const PayWithCard = <T extends ContractType>({
@@ -59,6 +61,7 @@ export const PayWithCard = <T extends ContractType>({
   onReview,
   onError,
   experimentalUseAltDomain,
+  locale,
   ...props
 }: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -218,6 +221,10 @@ export const PayWithCard = <T extends ContractType>({
     if (options.fontFamily) {
       payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
     }
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    payWithCardUrl.searchParams.append('locale', localeToUse);
+
     return payWithCardUrl;
   }, [
     appName,

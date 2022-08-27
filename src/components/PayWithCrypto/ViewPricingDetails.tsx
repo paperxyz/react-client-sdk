@@ -16,6 +16,7 @@ import {
   WriteMethodCallType,
 } from '../../interfaces/CustomContract';
 import { ICustomizationOptions } from '../../interfaces/Customization';
+import { Locale } from '../../interfaces/Locale';
 import {
   PaperSDKError,
   PayWithCryptoErrorCode,
@@ -57,6 +58,7 @@ export interface ViewPricingDetailsProps {
   walletType?: 'WalletConnect' | 'MetaMask' | 'Coinbase Wallet' | string;
   showConnectWalletOptions?: boolean;
   options?: ICustomizationOptions;
+  locale?: Locale;
 }
 
 export const ViewPricingDetails = <T extends ContractType>({
@@ -78,6 +80,7 @@ export const ViewPricingDetails = <T extends ContractType>({
   options = {
     ...DEFAULT_BRAND_OPTIONS,
   },
+  locale,
   ...props
 }: CustomContractArgWrapper<ViewPricingDetailsProps, T>) => {
   const { contractType, contractArgs } =
@@ -299,6 +302,10 @@ export const ViewPricingDetails = <T extends ContractType>({
     }
     // Add timestamp to prevent loading a cached page.
     payWithCryptoUrl.searchParams.append('date', Date.now().toString());
+
+    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
+    payWithCryptoUrl.searchParams.append('locale', localeToUse);
+
     return payWithCryptoUrl;
   }, [
     recipientWalletAddress,

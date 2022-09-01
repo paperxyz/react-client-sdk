@@ -14,7 +14,11 @@ interface CreateWalletProps {
   onError?: (error: PaperSDKError) => void;
   redirectUrl?: string;
   locale?: Locale;
-  children?: React.ReactNode;
+  children?: ({
+    createWallet,
+  }: {
+    createWallet: (email: string) => void;
+  }) => React.ReactNode | React.ReactNode;
 }
 
 export const CreateWallet: React.FC<CreateWalletProps> = ({
@@ -27,11 +31,13 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
   children,
 }) => {
   const { chainName } = usePaperSDKContext();
+  const isChildrenFunction = typeof children === 'function';
+
   const iFrameRef = useRef<HTMLIFrameElement>(null);
-  const executeVerifyEmail = () => {
+  const executeVerifyEmail = (emailAddressOverride?: string) => {
     if (iFrameRef.current) {
       postMessageToIframe(iFrameRef.current, 'verifyEmail', {
-        email: emailAddress,
+        email: !!emailAddressOverride ? emailAddressOverride : emailAddress,
         chainName,
         redirectUrl,
       });
@@ -93,10 +99,24 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
           visibility: 'hidden',
         }}
       />
-      {children ? (
-        <a onClick={executeVerifyEmail}>{children}</a>
+      {children && isChildrenFunction ? (
+        children({ createWallet: executeVerifyEmail })
+      ) : children ? (
+        <a
+          onClick={() => {
+            executeVerifyEmail();
+          }}
+        >
+          {children}
+        </a>
       ) : (
-        <Button onClick={executeVerifyEmail}>Verify Email</Button>
+        <Button
+          onClick={() => {
+            executeVerifyEmail();
+          }}
+        >
+          Create Wallet
+        </Button>
       )}
     </>
   );

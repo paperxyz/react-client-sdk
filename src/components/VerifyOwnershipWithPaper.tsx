@@ -93,7 +93,7 @@ export const VerifyOwnershipWithPaper: React.FC<
       ) : (
         <Button onClick={onClick} className={className}>
           <div className='flex items-center'>
-            <span style={{ marginRight: '10px' }}>Login with Paper</span>
+            <span style={{ marginRight: '8px' }}>Login with</span>{' '}
             <svg
               width='15'
               height='30'
@@ -115,7 +115,8 @@ export const VerifyOwnershipWithPaper: React.FC<
                 d='M11.0924 32.6667L2.77311 24.5V34.4815L11.0924 42.6481V32.6667Z'
                 fill='#39D0FF'
               />
-            </svg>
+            </svg>{' '}
+            <span style={{ marginLeft: '5px' }}> Paper</span>
           </div>
         </Button>
       )}

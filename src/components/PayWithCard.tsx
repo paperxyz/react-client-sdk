@@ -116,7 +116,6 @@ export const PayWithCard = <T extends ContractType>({
           postMessageToIframe(payWithCardIframe, data.eventType, data);
 
           if (onPaymentSuccess) {
-            console.log('onPaymentSuccess is set.');
             // If onPaymentSuccess is defined, close the modal and assume the caller wants to own the buyer experience after payment.
             onPaymentSuccess({ id: data.id });
           }

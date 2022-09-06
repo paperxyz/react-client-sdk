@@ -1,12 +1,12 @@
 export const PAPER_APP_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'https://paper.xyz'
-    : 'http://localhost:3000';
+  process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://paper.xyz';
 
 export const PAPER_APP_URL_ALT =
-  process.env.NODE_ENV === 'production'
-    ? 'https://papercheckout.com'
-    : 'http://localhost:3000';
+  process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://papercheckout.com';
 
 export const DEFAULT_BRAND_OPTIONS = {
   colorPrimary: '#cf3781',

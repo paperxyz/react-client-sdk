@@ -229,6 +229,7 @@ export const CheckoutWithCard = ({
           onLoad={onCardDetailLoad}
           className='mx-auto h-36 w-full transition-all'
           allowTransparency
+          allow='payment'
         />
       </div>
       <Modal

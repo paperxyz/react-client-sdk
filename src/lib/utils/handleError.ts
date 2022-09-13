@@ -71,7 +71,7 @@ export function handlePayWithCryptoError(
       }
       if (postToParent) {
         postToParent({
-          description: `Please refresh and try again. If things persist, reach out to us with the following error message: ${error.message}`,
+          description: `${error.message}`,
           title: PayWithCryptoErrorCode.ErrorSendingTransaction,
         });
       }

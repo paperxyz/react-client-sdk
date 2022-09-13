@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { chainId } from 'wagmi';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import { ICustomizationOptions } from '../../interfaces/Customization';
 import { Locale } from '../../interfaces/Locale';
@@ -100,6 +101,21 @@ export const ViewPricingDetails = ({
           setIsTryingToChangeWallet(true);
           break;
         case 'payWithEth': {
+          if (data.error) {
+            handlePayWithCryptoError(
+              new Error(data.error) as Error,
+              onError,
+              (errorObject) => {
+                if (iframeRef.current) {
+                  postMessageToIframe(iframeRef.current, 'payWithEthError', {
+                    error: errorObject,
+                    suppressErrorToast,
+                  });
+                }
+              },
+            );
+            return;
+          }
           // Allows Dev's to inject any chain switching for their custom signer here.
           if (payingWalletSigner && setUpUserPayingWalletSigner) {
             try {
@@ -208,6 +224,7 @@ export const ViewPricingDetails = ({
       window.removeEventListener('message', handleMessage);
     };
   }, [
+    suppressErrorToast,
     isSendingTransaction,
     address,
     chainId,

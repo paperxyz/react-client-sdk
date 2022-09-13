@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { chainId } from 'wagmi';
 import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import { ICustomizationOptions } from '../../interfaces/Customization';
 import { Locale } from '../../interfaces/Locale';

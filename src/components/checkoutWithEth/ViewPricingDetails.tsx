@@ -1,51 +1,44 @@
 import { Transition } from '@headlessui/react';
-import { createCheckoutWithEthElement } from '@paperxyz/js-client-sdk';
-import { ethers } from 'ethers';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DEFAULT_BRAND_OPTIONS } from '../../constants/settings';
-import { ICustomizationOptions } from '../../interfaces/Customization';
-import { Locale } from '../../interfaces/Locale';
 import {
-  PaperSDKError,
-  PayWithCryptoErrorCode,
-} from '../../interfaces/PaperSDKError';
-import { useResolvedSigner } from '../../lib/hooks/useSigner';
+  CheckoutWithEthLinkArgs,
+  CheckoutWithEthMessageHandlerArgs,
+  PAY_WITH_ETH_ERROR,
+} from '@paperxyz/js-client-sdk';
+import type { ethers } from 'ethers';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { DEFAULT_BRAND_OPTIONS } from '../../constants/settings';
+import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
+import { useAccount } from '../../lib/hooks/useAccount';
+import { useCheckoutWithEthLink } from '../../lib/hooks/useCheckoutWithEthLink';
+import { useSendTransaction } from '../../lib/hooks/useSendTransaction';
 import { useSwitchNetwork } from '../../lib/hooks/useSwitchNetwork';
+import { handlePayWithCryptoError } from '../../lib/utils/handleError';
+import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
+import { IFrameWrapper } from '../common/IFrameWrapper';
 import { Spinner } from '../common/Spinner';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
 }
 
-export interface ViewPricingDetailsProps {
-  onSuccess?: ({
-    transactionResponse,
-    transactionId,
-  }: {
-    transactionResponse: ethers.providers.TransactionResponse;
-    transactionId: string;
-  }) => void;
-  onError?: (error: PaperSDKError) => void;
-  suppressErrorToast?: boolean;
-
-  sdkClientSecret: string;
-
-  setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
-  setUpUserPayingWalletSigner?: (args: {
-    chainId: number;
-    chainName?: string;
-  }) => void | Promise<void>;
-  payingWalletSigner?: ethers.Signer;
-  receivingWalletType?:
-    | 'WalletConnect'
-    | 'MetaMask'
-    | 'Coinbase Wallet'
-    | string;
-  showConnectWalletOptions?: boolean;
-  options?: ICustomizationOptions;
-  locale?: Locale;
-}
+export type ViewPricingDetailsProps = Omit<
+  Omit<CheckoutWithEthLinkArgs, 'appName'>,
+  'payingWalletSigner'
+> &
+  Omit<
+    Omit<CheckoutWithEthMessageHandlerArgs, 'iframe'>,
+    'payingWalletSigner'
+  > & {
+    setIsTryingToChangeWallet: React.Dispatch<React.SetStateAction<boolean>>;
+    payingWalletSigner?: ethers.Signer;
+  };
 
 export const ViewPricingDetails = ({
   setIsTryingToChangeWallet,
@@ -53,38 +46,168 @@ export const ViewPricingDetails = ({
   onError,
   suppressErrorToast = false,
   showConnectWalletOptions = true,
-  payingWalletSigner,
+  payingWalletSigner: signer,
   receivingWalletType,
   setUpUserPayingWalletSigner,
   locale,
   sdkClientSecret,
-  options = {
-    ...DEFAULT_BRAND_OPTIONS,
-  },
+  options: _options,
 }: ViewPricingDetailsProps) => {
-  const iframeContainerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isIframeLoading, setIsIframeLoading] = useState<boolean>(true);
   const { appName } = usePaperSDKContext();
-  const { signer } = useResolvedSigner({ signer: payingWalletSigner });
-
+  const { chainId } = useAccount({
+    signer,
+  });
   const { switchNetworkAsync } = useSwitchNetwork({
-    signer: payingWalletSigner,
+    signer,
+  });
+  const { sendTransactionAsync } = useSendTransaction({
+    signer,
+  });
+  const options = useMemo(() => {
+    return (
+      _options || {
+        ...DEFAULT_BRAND_OPTIONS,
+      }
+    );
+  }, [_options]);
+  const { checkoutWithEthUrl } = useCheckoutWithEthLink({
+    payingWalletSigner: signer,
+    sdkClientSecret,
+    appName,
+    locale,
+    options,
+    receivingWalletType,
+    showConnectWalletOptions,
   });
 
   const onLoad = useCallback(() => {
     setIsIframeLoading(false);
   }, []);
-
   useEffect(() => {
+    if (!iframeRef.current || !signer) {
+      return;
+    }
+    console.log('signer', signer);
+
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.startsWith(PAPER_APP_URL_ALT)) {
-        return;
-      }
-      const data = event.data;
+      console.log('event.data', event.data);
+
+      // additional event listener for react client
+      // This allows us to have the ability to have wallet connection handled by the SDK
+      const { data } = event;
       switch (data.eventType) {
+        case 'payWithEth': {
+          if (data.error) {
+            handlePayWithCryptoError(
+              new Error(data.error) as Error,
+              onError,
+              (errorObject) => {
+                if (iframeRef.current) {
+                  postMessageToIframe(iframeRef.current, PAY_WITH_ETH_ERROR, {
+                    error: errorObject,
+                    suppressErrorToast,
+                  });
+                }
+              },
+            );
+            return;
+          }
+          // Allows Dev's to inject any chain switching for their custom signer here.
+          if (signer && setUpUserPayingWalletSigner) {
+            try {
+              console.log('setting up signer');
+              await setUpUserPayingWalletSigner({ chainId: data.chainId });
+            } catch (error) {
+              console.log('error setting up signer', error);
+              handlePayWithCryptoError(
+                error as Error,
+                onError,
+                (errorObject) => {
+                  if (iframeRef.current) {
+                    postMessageToIframe(iframeRef.current, PAY_WITH_ETH_ERROR, {
+                      error: errorObject,
+                      suppressErrorToast,
+                    });
+                  }
+                },
+              );
+              return;
+            }
+          }
+
+          // try switching network first if needed or supported
+          try {
+            if (switchNetworkAsync) {
+              console.log('switching signer network');
+              await switchNetworkAsync(data.chainId);
+            } else if (chainId !== data.chainId) {
+              throw {
+                isErrorObject: true,
+                title: PayWithCryptoErrorCode.WrongChain,
+                description: `Please change to ${data.chainName} to proceed.`,
+              };
+            }
+          } catch (error) {
+            console.log('error switching network');
+            handlePayWithCryptoError(error as Error, onError, (errorObject) => {
+              if (iframeRef.current) {
+                postMessageToIframe(iframeRef.current, PAY_WITH_ETH_ERROR, {
+                  error: errorObject,
+                  suppressErrorToast,
+                });
+              }
+            });
+            return;
+          }
+
+          // send the transaction
+          try {
+            console.log('sending funds');
+            const result = await sendTransactionAsync?.({
+              chainId: data.chainId,
+              request: {
+                value: data.value,
+                data: data.blob,
+                to: data.paymentAddress,
+              },
+            });
+            if (onSuccess && result) {
+              onSuccess({
+                transactionResponse: result,
+                transactionId: data.transactionId,
+              });
+            }
+            if (iframeRef.current && result) {
+              postMessageToIframe(iframeRef.current, 'paymentSuccess', {
+                suppressErrorToast,
+                transactionHash: result.hash,
+              });
+            }
+          } catch (error) {
+            console.log('error sending funds', error);
+            handlePayWithCryptoError(error as Error, onError, (errorObject) => {
+              if (iframeRef.current) {
+                postMessageToIframe(iframeRef.current, PAY_WITH_ETH_ERROR, {
+                  error: errorObject,
+                  suppressErrorToast,
+                });
+              }
+            });
+          }
+          break;
+        }
         case 'goBackToChoosingWallet':
           setIsTryingToChangeWallet(true);
           break;
+        case 'checkout-with-eth-sizing': {
+          if (iframeRef.current) {
+            iframeRef.current.style.height = data.height + 'px';
+            iframeRef.current.style.maxHeight = data.height + 'px';
+          }
+          break;
+        }
         default:
           break;
       }
@@ -94,63 +217,19 @@ export const ViewPricingDetails = ({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [setIsTryingToChangeWallet]);
-
-  useEffect(() => {
-    if (!signer || !iframeContainerRef.current) {
-      return;
-    }
-    createCheckoutWithEthElement({
-      payingWalletSigner: signer,
-      sdkClientSecret,
-      suppressErrorToast,
-      appName,
-      locale,
-      options,
-      showConnectWalletOptions,
-      elementOrId: iframeContainerRef.current,
-      onLoad,
-      receivingWalletType,
-      onError,
-      onSuccess,
-      async setUpUserPayingWalletSigner({ chainId, chainName }) {
-        console.log('chainId make sure signer is on', chainId);
-        // Allows Dev's to inject any chain switching for their custom signer here.
-        if (payingWalletSigner && setUpUserPayingWalletSigner) {
-          try {
-            console.log('setting up signer');
-            await setUpUserPayingWalletSigner({ chainId, chainName });
-          } catch (error) {
-            console.log('error setting up signer', error);
-            throw error;
-          }
-        }
-
-        // try switching network first if needed or supported
-        try {
-          if (switchNetworkAsync) {
-            console.log('switching signer network');
-            await switchNetworkAsync(chainId);
-          } else if (chainId !== chainId) {
-            throw {
-              isErrorObject: true,
-              title: PayWithCryptoErrorCode.WrongChain,
-              description: `Please change to ${chainName} to proceed.`,
-            };
-          }
-        } catch (error) {
-          console.log('error switching network');
-          throw error;
-        }
-      },
-    });
-  }, [signer]);
+  }, [
+    signer,
+    chainId,
+    setUpUserPayingWalletSigner,
+    iframeRef.current,
+    suppressErrorToast,
+  ]);
 
   return (
     <>
       <Transition
         appear={true}
-        show={isIframeLoading}
+        show={isIframeLoading || !checkoutWithEthUrl}
         as={React.Fragment}
         enter='transition-opacity duration-75'
         enterFrom='opacity-0'
@@ -163,7 +242,17 @@ export const ViewPricingDetails = ({
           <Spinner className='!h-8 !w-8 !text-black' />
         </div>
       </Transition>
-      <div ref={iframeContainerRef} />
+      {!!checkoutWithEthUrl && (
+        <IFrameWrapper
+          ref={iframeRef}
+          id='checkout-with-eth-iframe'
+          className=' mx-auto h-[350px] w-full transition-all'
+          src={checkoutWithEthUrl.href}
+          onLoad={onLoad}
+          scrolling='no'
+          allowTransparency
+        />
+      )}
     </>
   );
 };

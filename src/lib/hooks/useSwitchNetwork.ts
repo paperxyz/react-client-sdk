@@ -11,7 +11,9 @@ export const useSwitchNetwork = ({ signer }: { signer?: ethers.Signer }) => {
 
   const switchNetworkAsync = useCallback(
     async (chainId?: number) => {
-      if (signer) {
+      if (_switchNetworkAsync) {
+        return await _switchNetworkAsync?.(chainId);
+      } else if (signer) {
         const chainToSwitchTo = allChains.find((x) => x.id === chainId);
         console.log('chainToSwitchTo', chainToSwitchTo);
         console.log('await signer.getChainId()', await signer.getChainId());
@@ -22,9 +24,8 @@ export const useSwitchNetwork = ({ signer }: { signer?: ethers.Signer }) => {
           throw SwitchChainNotSupportedError;
         }
         return chainToSwitchTo;
-      } else {
-        return await _switchNetworkAsync?.(chainId);
       }
+      throw SwitchChainNotSupportedError;
     },
     [signer, _switchNetworkAsync],
   );

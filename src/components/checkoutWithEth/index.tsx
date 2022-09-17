@@ -128,7 +128,7 @@ export const CheckoutWithEth = ({
           >
             <ViewPricingDetails
               sdkClientSecret={sdkClientSecret}
-              payingWalletSigner={payingWalletSigner}
+              payingWalletSigner={actualSigner || undefined}
               receivingWalletType={receivingWalletType}
               setUpUserPayingWalletSigner={setUpUserPayingWalletSigner}
               onError={onError}

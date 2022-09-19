@@ -6,7 +6,6 @@ import { Locale } from '../interfaces/Locale';
 import { PaperSDKError } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { ReviewResult } from '../interfaces/ReviewResult';
-import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
@@ -36,7 +35,6 @@ export const CheckoutWithCard = ({
   onReview,
   onError,
   locale,
-  experimentalUseAltDomain = true,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
   const [isCardDetailIframeLoading, setIsCardDetailIframeLoading] =

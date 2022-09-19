@@ -92,8 +92,6 @@ export const ViewPricingDetails = ({
     console.log('signer', signer);
 
     const handleMessage = async (event: MessageEvent) => {
-      console.log('event.data', event.data);
-
       // additional event listener for react client
       // This allows us to have the ability to have wallet connection handled by the SDK
       const { data } = event;

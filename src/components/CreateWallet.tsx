@@ -13,6 +13,7 @@ interface CreateWalletProps {
   onEmailVerificationInitiated?: () => void;
   onError?: (error: PaperSDKError) => void;
   redirectUrl?: string;
+  clientId?: string;
   locale?: Locale;
   children?: ({
     createWallet,
@@ -28,6 +29,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
   onEmailVerificationInitiated,
   onError,
   locale,
+  clientId,
   children,
 }) => {
   const { chainName } = usePaperSDKContext();
@@ -40,6 +42,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
         email: !!emailAddressOverride ? emailAddressOverride : emailAddress,
         chainName,
         redirectUrl,
+        clientId,
       });
     }
   };
@@ -70,6 +73,7 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
           onSuccess({
             emailAddress: data.emailAddress,
             walletAddress: data.walletAddress,
+            accessCode: data.accessCode,
           });
           break;
         }

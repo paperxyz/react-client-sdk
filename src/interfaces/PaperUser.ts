@@ -9,4 +9,9 @@ export type PaperUser = {
    * The Paper Wallet address associated with this user's email address.
    */
   walletAddress: string;
+
+  /**
+   * The user's access code. Will only be set if [clientId] was provided. This can be used to query about the user details.
+   */
+  accessCode?: string;
 };

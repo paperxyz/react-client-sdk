@@ -12,19 +12,19 @@ export const useSendTransaction = ({ signer }: { signer?: ethers.Signer }) => {
   const [isSendingTransaction, setIsSendingTransaction] = useState(false);
   const sendTransactionAsync = useCallback(
     async (args?: SendTransactionArgs) => {
-      if (signer) {
+      if (_sendTransactionAsync) {
+        const response = await _sendTransactionAsync(args);
+        return response;
+      } else {
         setIsSendingTransaction(true);
         try {
-          const response = await signer.sendTransaction(args?.request || {});
+          const response = await signer?.sendTransaction(args?.request || {});
           setIsSendingTransaction(false);
           return response;
         } catch (e) {
           setIsSendingTransaction(false);
           throw e;
         }
-      } else {
-        const response = await _sendTransactionAsync(args);
-        return response;
       }
     },
     [signer],

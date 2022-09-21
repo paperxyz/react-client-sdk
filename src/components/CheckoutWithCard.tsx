@@ -20,9 +20,16 @@ interface CheckoutWithCardProps {
    * If true, uses the papercheckout.com instead of paper.xyz domain.
    * This setting is useful if your users are unable to access the paper.xyz domain.
    *
-   * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
+   * Defaults to true.
    */
   experimentalUseAltDomain?: boolean;
+
+  /**
+   * Sets the locale to a supported language.
+   * NOTE: Localization is in early alpha and many languages are not yet supported.
+   *
+   * Defaults to English.
+   */
   locale?: Locale;
 }
 
@@ -34,6 +41,7 @@ export const CheckoutWithCard = ({
   onPaymentSuccess,
   onReview,
   onError,
+  experimentalUseAltDomain,
   locale,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -75,6 +83,7 @@ export const CheckoutWithCard = ({
       onPaymentSuccess,
       onReview,
       options,
+      useAltDomain: experimentalUseAltDomain,
     });
   }, [CheckoutWithCardIframeContainerRef.current]);
 

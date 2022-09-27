@@ -1,5 +1,5 @@
 export * from './components/CheckoutWithCard';
-export { CheckoutWithEth } from './components/checkoutWithEth/index';
+export * from './components/checkoutWithEth/index';
 export * from './components/CreateWallet';
 export * from './components/LoginWithPaper';
 export * from './components/PaperCheckout';

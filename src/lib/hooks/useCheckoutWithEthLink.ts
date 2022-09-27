@@ -18,7 +18,7 @@ export function useCheckoutWithEthLink({
     null,
   );
   useEffect(() => {
-    if (!payingWalletSigner) {
+    if (!payingWalletSigner || !sdkClientSecret) {
       return;
     }
     createCheckoutWithEthLink({

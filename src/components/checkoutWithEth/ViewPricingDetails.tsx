@@ -89,7 +89,6 @@ export const ViewPricingDetails = ({
     if (!iframeRef.current || !signer) {
       return;
     }
-    console.log('signer', signer);
 
     const handleMessage = async (event: MessageEvent) => {
       // additional event listener for react client
@@ -240,7 +239,7 @@ export const ViewPricingDetails = ({
           <Spinner className='!h-8 !w-8 !text-black' />
         </div>
       </Transition>
-      {!!checkoutWithEthUrl && (
+      {checkoutWithEthUrl && (
         <IFrameWrapper
           ref={iframeRef}
           id='checkout-with-eth-iframe'

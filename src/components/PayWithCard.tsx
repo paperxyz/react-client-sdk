@@ -269,6 +269,7 @@ export const PayWithCard = <T extends ContractType>({
             id='review-card-payment-iframe'
             src={modalUrl}
             className='h-[700px] max-h-full w-96 max-w-full'
+            allow='camera'
           />
         )}
       </Modal>

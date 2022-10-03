@@ -137,6 +137,7 @@ export const CheckoutWithEth = ({
                   onSuccess(transactionResponse);
                 }
               }}
+              showConnectWalletOptions={showConnectWalletOptions}
               suppressErrorToast={suppressErrorToast}
               options={options}
               setIsTryingToChangeWallet={setIsTryingToChangeWallet}

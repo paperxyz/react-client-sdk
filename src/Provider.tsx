@@ -20,7 +20,9 @@ type SupportedChainName =
   | 'Goerli'
   | 'Solana'
   | 'SolanaDevnet'
-  | 'Avalanche';
+  | 'Avalanche'
+  | 'Tezos'
+  | 'Ghostnet';
 
 interface SDKContext {
   chainName: SupportedChainName;

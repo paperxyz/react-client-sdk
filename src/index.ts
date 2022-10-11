@@ -12,4 +12,10 @@ export * from './interfaces/TransferSuccessResult';
 export * from './Provider';
 import './styles/app.css';
 // re-export types
-export type { PaperSDKError, PaperUser, Locale } from '@paperxyz/js-client-sdk';
+export type {
+  PaperSDKError,
+  PaperSDKErrorCode,
+  PayWithCryptoErrorCode,
+  PaperUser,
+  Locale,
+} from '@paperxyz/js-client-sdk';

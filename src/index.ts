@@ -11,11 +11,10 @@ export * from './interfaces/PaymentSuccessResult';
 export * from './interfaces/TransferSuccessResult';
 export * from './Provider';
 import './styles/app.css';
-// re-export types
-export type {
-  PaperSDKError,
+
+// re-export types and enums
+export type { PaperSDKError, PaperUser, Locale } from '@paperxyz/js-client-sdk';
+export {
   PaperSDKErrorCode,
   PayWithCryptoErrorCode,
-  PaperUser,
-  Locale,
 } from '@paperxyz/js-client-sdk';

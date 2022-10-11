@@ -1,6 +1,9 @@
+import {
+  PaperSDKError,
+  PaperSDKErrorCode,
+  PAPER_APP_URL,
+} from '@paperxyz/js-client-sdk';
 import React, { useEffect } from 'react';
-import { PAPER_APP_URL } from '../constants/settings';
-import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';

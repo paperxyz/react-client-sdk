@@ -1,9 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ICustomizationOptions,
+  ReviewResult,
+  PaperSDKError,
+  Locale,
   DEFAULT_BRAND_OPTIONS,
-  PAPER_APP_URL,
   PAPER_APP_URL_ALT,
-} from '../constants/settings';
+  PAPER_APP_URL,
+  PaperSDKErrorCode,
+} from '@paperxyz/js-client-sdk';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import {
   ContractType,
   CustomContractArgWrapper,
@@ -11,11 +17,7 @@ import {
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../interfaces/CustomContract';
-import { ICustomizationOptions } from '../interfaces/Customization';
-import { Locale } from '../interfaces/Locale';
-import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
-import { ReviewResult } from '../interfaces/ReviewResult';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { resizeIframeToExpandedHeight } from '../lib/utils/resizeIframe';
 import { usePaperSDKContext } from '../Provider';

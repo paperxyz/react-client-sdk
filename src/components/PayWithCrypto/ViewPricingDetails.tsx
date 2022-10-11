@@ -1,4 +1,11 @@
 import { Transition } from '@headlessui/react';
+import { PaperSDKError, Locale } from '@paperxyz/js-client-sdk';
+import {
+  ICustomizationOptions,
+  DEFAULT_BRAND_OPTIONS,
+  PAPER_APP_URL,
+  PayWithCryptoErrorCode,
+} from '@paperxyz/js-client-sdk';
 import { ethers } from 'ethers';
 import React, {
   useCallback,
@@ -7,7 +14,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../../constants/settings';
 import {
   ContractType,
   CustomContractArgWrapper,
@@ -15,12 +21,6 @@ import {
   ReadMethodCallType,
   WriteMethodCallType,
 } from '../../interfaces/CustomContract';
-import { ICustomizationOptions } from '../../interfaces/Customization';
-import { Locale } from '../../interfaces/Locale';
-import {
-  PaperSDKError,
-  PayWithCryptoErrorCode,
-} from '../../interfaces/PaperSDKError';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { useSendTransaction } from '../../lib/hooks/useSendTransaction';

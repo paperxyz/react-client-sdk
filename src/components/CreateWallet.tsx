@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { PAPER_APP_URL } from '../constants/settings';
-import { Locale } from '../interfaces/Locale';
-import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
-import { PaperUser } from '../interfaces/PaperUser';
-import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
+import {
+  createWallet,
+  initialiseCreateWallet,
+  PaperSDKError,
+  PaperUser,
+} from '@paperxyz/js-client-sdk';
+import type { Locale } from '@paperxyz/js-client-sdk';
+import React, { useEffect } from 'react';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
 
@@ -35,74 +37,26 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
   const { chainName } = usePaperSDKContext();
   const isChildrenFunction = typeof children === 'function';
 
-  const iFrameRef = useRef<HTMLIFrameElement>(null);
-  const executeVerifyEmail = (emailAddressOverride?: string) => {
-    if (iFrameRef.current) {
-      postMessageToIframe(iFrameRef.current, 'verifyEmail', {
-        email: !!emailAddressOverride ? emailAddressOverride : emailAddress,
-        chainName,
-        redirectUrl,
-        clientId,
-      });
-    }
-  };
-
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== PAPER_APP_URL) return;
-
-      const data = event.data;
-      switch (data.eventType) {
-        case 'verifyEmailEmailVerificationInitiated': {
-          if (onEmailVerificationInitiated) {
-            onEmailVerificationInitiated();
-          }
-          break;
-        }
-        case 'verifyEmailError': {
-          console.error('Error in Paper SDK VerifyEmail', data.error);
-          if (onError) {
-            onError({
-              code: PaperSDKErrorCode.EmailNotVerified,
-              error: data.error,
-            });
-          }
-          break;
-        }
-        case 'verifyEmailSuccess': {
-          onSuccess({
-            emailAddress: data.emailAddress,
-            walletAddress: data.walletAddress,
-            accessCode: data.accessCode,
-          });
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
+    initialiseCreateWallet({
+      onSuccess,
+      onEmailVerificationInitiated,
+      onError,
+      locale,
+    });
   }, []);
 
-  // Build iframe URL with query params.
-  const createWalletUrl = new URL('/sdk/v2/verify-email', PAPER_APP_URL);
-
-  const localeToUse = locale === Locale.FR ? 'fr' : 'en';
-  createWalletUrl.searchParams.append('locale', localeToUse);
+  const executeVerifyEmail = async (emailAddressOverride?: string) => {
+    await createWallet({
+      chainName,
+      emailAddress: emailAddressOverride ? emailAddressOverride : emailAddress,
+      clientId,
+      redirectUrl,
+    });
+  };
 
   return (
     <>
-      <iframe
-        ref={iFrameRef}
-        src={createWalletUrl.href}
-        style={{
-          width: '0px',
-          height: '0px',
-          visibility: 'hidden',
-        }}
-      />
       {children && isChildrenFunction ? (
         children({ createWallet: executeVerifyEmail })
       ) : children ? (

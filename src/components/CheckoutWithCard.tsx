@@ -1,11 +1,15 @@
-import { createCheckoutWithCardElement } from '@paperxyz/js-client-sdk';
+import {
+  createCheckoutWithCardElement,
+  DEFAULT_BRAND_OPTIONS,
+} from '@paperxyz/js-client-sdk';
+import type {
+  ICustomizationOptions,
+  Locale,
+  ReviewResult,
+  PaperSDKError,
+} from '@paperxyz/js-client-sdk';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DEFAULT_BRAND_OPTIONS } from '../constants/settings';
-import { ICustomizationOptions } from '../interfaces/Customization';
-import { Locale } from '../interfaces/Locale';
-import { PaperSDKError } from '../interfaces/PaperSDKError';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
-import { ReviewResult } from '../interfaces/ReviewResult';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';

@@ -1,7 +1,11 @@
 import { Transition } from '@headlessui/react';
-import {
+import type {
   CheckoutWithEthLinkArgs,
   CheckoutWithEthMessageHandlerArgs,
+} from '@paperxyz/js-client-sdk';
+import {
+  DEFAULT_BRAND_OPTIONS,
+  PayWithCryptoErrorCode,
   PAY_WITH_ETH_ERROR,
 } from '@paperxyz/js-client-sdk';
 import type { ethers } from 'ethers';
@@ -12,8 +16,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DEFAULT_BRAND_OPTIONS } from '../../constants/settings';
-import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { useCheckoutWithEthLink } from '../../lib/hooks/useCheckoutWithEthLink';
 import { useSendTransaction } from '../../lib/hooks/useSendTransaction';

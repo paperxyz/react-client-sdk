@@ -1,5 +1,5 @@
+import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '@paperxyz/js-client-sdk';
 import React, { useEffect, useState } from 'react';
-import { DEFAULT_BRAND_OPTIONS, PAPER_APP_URL } from '../constants/settings';
 import {
   ContractType,
   CustomContractArgWrapper,

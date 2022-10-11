@@ -1,8 +1,10 @@
+import type { PaperSDKError, PaperUser } from '@paperxyz/js-client-sdk';
+import {
+  PaperSDKErrorCode,
+  PAPER_APP_URL,
+  Locale,
+} from '@paperxyz/js-client-sdk';
 import React, { useEffect, useRef } from 'react';
-import { PAPER_APP_URL } from '../constants/settings';
-import { Locale } from '../interfaces/Locale';
-import { PaperSDKError, PaperSDKErrorCode } from '../interfaces/PaperSDKError';
-import { PaperUser } from '../interfaces/PaperUser';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';

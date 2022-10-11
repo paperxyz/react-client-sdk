@@ -1,4 +1,5 @@
 import { Transition } from '@headlessui/react';
+import { PayWithCryptoErrorCode } from '@paperxyz/js-client-sdk';
 import React, { useEffect, useState } from 'react';
 import { useSigner } from 'wagmi';
 import {
@@ -6,7 +7,6 @@ import {
   CustomContractArgWrapper,
   fetchCustomContractArgsFromProps,
 } from '../../interfaces/CustomContract';
-import { PayWithCryptoErrorCode } from '../../interfaces/PaperSDKError';
 import {
   onWalletConnectedType,
   WalletType,

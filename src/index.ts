@@ -7,10 +7,9 @@ export * from './components/PayWithCard';
 export * from './components/PayWithCrypto/index';
 export * from './components/VerifyOwnershipWithPaper';
 export * from './interfaces/CustomContract';
-export * from './interfaces/PaperSDKError';
-export * from './interfaces/PaperUser';
 export * from './interfaces/PaymentSuccessResult';
 export * from './interfaces/TransferSuccessResult';
-export * from './interfaces/Locale';
 export * from './Provider';
 import './styles/app.css';
+// re-export types
+export type { PaperSDKError, PaperUser, Locale } from '@paperxyz/js-client-sdk';

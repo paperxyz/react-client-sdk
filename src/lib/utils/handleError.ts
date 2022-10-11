@@ -1,7 +1,5 @@
-import {
-  PaperSDKError,
-  PayWithCryptoErrorCode,
-} from '../../interfaces/PaperSDKError';
+import type { PaperSDKError } from '@paperxyz/js-client-sdk';
+import { PayWithCryptoErrorCode } from '@paperxyz/js-client-sdk';
 
 export interface IErrorObject {
   isErrorObject: boolean;

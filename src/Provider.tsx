@@ -1,3 +1,4 @@
+import type { SupportedChainName } from '@paperxyz/js-client-sdk';
 import React, {
   createContext,
   Dispatch,
@@ -11,18 +12,6 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
-
-type SupportedChainName =
-  | 'Polygon'
-  | 'Mumbai'
-  | 'Ethereum'
-  | 'Rinkeby'
-  | 'Goerli'
-  | 'Solana'
-  | 'SolanaDevnet'
-  | 'Avalanche'
-  | 'Tezos'
-  | 'Ghostnet';
 
 interface SDKContext {
   chainName: SupportedChainName;

@@ -11,7 +11,7 @@ import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
-import { publicProvider } from 'wagmi/providers/public';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 interface SDKContext {
   chainName: SupportedChainName;
@@ -57,10 +57,9 @@ export const PaperSDKProvider = ({
     [chainName_, appName, clientId],
   );
 
-  const providers = [publicProvider()];
   const { chains, provider } = configureChains(
     [chain.mainnet, chain.goerli],
-    providers,
+    [alchemyProvider({ alchemyId: 'k5d8RoDGOyxZmVWy2UPNowQlqFoZM3TX' })],
   );
 
   const client = useMemo(

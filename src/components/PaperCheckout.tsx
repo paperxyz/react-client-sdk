@@ -232,7 +232,7 @@ export const PaperCheckout = <T extends ContractType>({
           h: options.height,
           w: options.width,
           win: window,
-          windowName: 'Paper Checkout',
+          target: '_blank',
         });
 
         if (onOpenCheckout) {

@@ -39,6 +39,7 @@ export const VerifyOwnershipWithPaper: React.FC<
 }) => {
   const { chainName, clientId } = usePaperSDKContext();
   const isChildrenFunction = typeof children === 'function';
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const data = event.data;
@@ -72,6 +73,7 @@ export const VerifyOwnershipWithPaper: React.FC<
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+  
   const url = new URL('/sdk/v1/login-with-paper', PAPER_APP_URL);
   url.searchParams.append('chainName', chainName);
   url.searchParams.append('clientId', clientId);
@@ -79,7 +81,7 @@ export const VerifyOwnershipWithPaper: React.FC<
   const onClick = () => {
     const loginWindow = openCenteredPopup({
       url: url.href,
-      windowName: 'PaperLogin',
+      target: '_blank',
       win: window,
       w: 400,
       h: 600,

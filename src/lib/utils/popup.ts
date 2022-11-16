@@ -5,13 +5,13 @@
  */
 export function openCenteredPopup({
   url,
-  windowName,
+  target,
   win,
   w,
   h,
 }: {
   url: string;
-  windowName: string;
+  target: string;
   win: Window & typeof globalThis;
   w: number;
   h: number;
@@ -24,7 +24,7 @@ export function openCenteredPopup({
   const x = width / 2 + screenX - w / 2;
   return win.open(
     url,
-    windowName,
+    target,
     `toolbar=no,
     location=no,
     status=no,

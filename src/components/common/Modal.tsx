@@ -6,6 +6,7 @@ export const Modal = ({
   onClose,
   escapeToClose = true,
   clickOutsideModalToClose = false,
+  unstyled = false,
   bgColor = '#FAFAFA',
   children,
 }: {
@@ -13,6 +14,7 @@ export const Modal = ({
   onClose: () => void;
   escapeToClose?: boolean;
   clickOutsideModalToClose?: boolean;
+  unstyled?: boolean;
   bgColor?: string;
   children: React.ReactNode;
 }) => {
@@ -63,10 +65,14 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg p-5 text-left align-middle shadow-xl transition-all sm:m-4'
-                style={{ backgroundColor: bgColor }}
+                className={`paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg text-left align-middle ${
+                  !unstyled && 'p-5 shadow-xl sm:m-4'
+                } transition-all`}
+                style={{
+                  backgroundColor: unstyled ? 'transparent' : bgColor,
+                }}
               >
-                <CloseButton onClose={onClose} />
+                {!unstyled && <CloseButton onClose={onClose} />}
                 {children}
               </Dialog.Panel>
             </Transition.Child>

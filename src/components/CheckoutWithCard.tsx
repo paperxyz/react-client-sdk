@@ -59,6 +59,7 @@ export const CheckoutWithCard = ({
   const CheckoutWithCardIframeContainerRef = useRef<HTMLDivElement>(null);
 
   const [modalUrl, setModalUrl] = useState<string | undefined>();
+  const [showUnstyledModal, setShowUnstyledModal] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
@@ -75,6 +76,7 @@ export const CheckoutWithCard = ({
         closeModal();
       },
       onOpenKycModal({ iframeLink }) {
+        setShowUnstyledModal(iframeLink.includes('noStyle'));
         setModalUrl(iframeLink);
         setIsOpen(true);
       },
@@ -106,6 +108,7 @@ export const CheckoutWithCard = ({
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
+        unstyled={showUnstyledModal}
         bgColor={options.colorBackground || '#ffffff'}
       >
         {modalUrl && (

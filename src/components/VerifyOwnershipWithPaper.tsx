@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
+var packageJson = require('./package.json');
 
 interface VerifyOwnershipWithPaperProps {
   onSuccess?: (code: string) => void;
@@ -73,7 +74,7 @@ export const VerifyOwnershipWithPaper: React.FC<
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  
+
   const url = new URL('/sdk/v1/login-with-paper', PAPER_APP_URL);
   url.searchParams.append('chainName', chainName);
   url.searchParams.append('clientId', clientId);
@@ -94,9 +95,18 @@ export const VerifyOwnershipWithPaper: React.FC<
       {children && isChildrenFunction ? (
         children({ onClick })
       ) : children ? (
-        <a onClick={onClick}>{children} </a>
+        <a
+          onClick={onClick}
+          data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
+        >
+          {children}{' '}
+        </a>
       ) : (
-        <Button onClick={onClick} className={className}>
+        <Button
+          onClick={onClick}
+          className={className}
+          data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
+        >
           <div className='flex items-center'>
             <span style={{ marginRight: '8px' }}>Login with</span>{' '}
             <svg

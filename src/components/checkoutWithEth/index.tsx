@@ -11,6 +11,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
+var packageJson = require('./package.json');
 
 export enum CheckoutWithEthPage {
   ConnectWallet,
@@ -68,7 +69,10 @@ export const CheckoutWithEth = ({
   ]);
 
   return (
-    <div className='relative grid w-full'>
+    <div
+      className='relative grid w-full'
+      data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
+    >
       {isClientSide && (
         <>
           {showConnectWalletOptions && (

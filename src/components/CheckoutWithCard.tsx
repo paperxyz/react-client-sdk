@@ -1,18 +1,19 @@
-import {
-  createCheckoutWithCardElement,
-  DEFAULT_BRAND_OPTIONS,
-} from '@paperxyz/js-client-sdk';
 import type {
   ICustomizationOptions,
   Locale,
-  ReviewResult,
   PaperSDKError,
+  ReviewResult,
+} from '@paperxyz/js-client-sdk';
+import {
+  createCheckoutWithCardElement,
+  DEFAULT_BRAND_OPTIONS,
 } from '@paperxyz/js-client-sdk';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
+var packageJson = require('./package.json');
 
 interface CheckoutWithCardProps {
   sdkClientSecret: string;
@@ -96,6 +97,8 @@ export const CheckoutWithCard = ({
       <div
         className='relative h-full w-full'
         ref={CheckoutWithCardIframeContainerRef}
+        // Label the package version.
+        data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
       >
         {isCardDetailIframeLoading && (
           <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>

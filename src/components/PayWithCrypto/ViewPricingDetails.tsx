@@ -1,10 +1,7 @@
 import { Transition } from '@headlessui/react';
-import { PaperSDKError, Locale } from '@paperxyz/js-client-sdk';
 import {
-  ICustomizationOptions,
-  DEFAULT_BRAND_OPTIONS,
-  PAPER_APP_URL,
-  PayWithCryptoErrorCode,
+  DEFAULT_BRAND_OPTIONS, ICustomizationOptions, Locale, PaperSDKError, PAPER_APP_URL,
+  PayWithCryptoErrorCode
 } from '@paperxyz/js-client-sdk';
 import { ethers } from 'ethers';
 import React, {
@@ -12,14 +9,14 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
 import {
   ContractType,
   CustomContractArgWrapper,
   fetchCustomContractArgsFromProps,
   ReadMethodCallType,
-  WriteMethodCallType,
+  WriteMethodCallType
 } from '../../interfaces/CustomContract';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { useAccount } from '../../lib/hooks/useAccount';
@@ -175,6 +172,7 @@ export const ViewPricingDetails = <T extends ContractType>({
                 data: data.blob,
                 to: data.paymentAddress,
               },
+              mode: 'recklesslyUnprepared'
             });
             if (onSuccess && result) {
               onSuccess({

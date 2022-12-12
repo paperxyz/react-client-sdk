@@ -30,6 +30,11 @@ type PayWithCryptoProps<T extends ContractType> = CustomContractArgWrapper<
   T
 >;
 
+/**
+ * @deprecated see {@link CheckoutWithEth} instead
+ * @param param0
+ * @returns
+ */
 export const PayWithCrypto = <T extends ContractType>({
   checkoutId,
   recipientWalletAddress,

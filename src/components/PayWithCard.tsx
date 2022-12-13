@@ -1,12 +1,11 @@
 import {
-  ICustomizationOptions,
-  ReviewResult,
-  PaperSDKError,
-  Locale,
   DEFAULT_BRAND_OPTIONS,
-  PAPER_APP_URL_ALT,
-  PAPER_APP_URL,
+  ICustomizationOptions,
+  Locale,
+  PaperSDKError,
   PaperSDKErrorCode,
+  PAPER_APP_URL,
+  ReviewResult,
 } from '@paperxyz/js-client-sdk';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -39,10 +38,7 @@ interface PayWithCardProps {
   onError?: (error: PaperSDKError) => void;
 
   /**
-   * If true, uses the papercheckout.com instead of paper.xyz domain.
-   * This setting is useful if your users are unable to access the paper.xyz domain.
-   *
-   * Note: This setting is not meant for long term use. It may be removed at a future time in a minor version update.
+   * @deprecated No longer used.
    */
   experimentalUseAltDomain?: boolean;
   locale?: Locale;
@@ -62,7 +58,6 @@ export const PayWithCard = <T extends ContractType>({
   onPaymentSuccess,
   onReview,
   onError,
-  experimentalUseAltDomain,
   locale,
   ...props
 }: CustomContractArgWrapper<PayWithCardProps, T>): React.ReactElement => {
@@ -86,14 +81,11 @@ export const PayWithCard = <T extends ContractType>({
     postMessageToIframe(payWithCardIframe, 'payWithCardCloseModal', {});
     setIsOpen(false);
   };
-  const paperDomain = experimentalUseAltDomain
-    ? PAPER_APP_URL_ALT
-    : PAPER_APP_URL;
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.startsWith(paperDomain)) {
+      if (!event.origin.startsWith(PAPER_APP_URL)) {
         return;
       }
 
@@ -161,7 +153,7 @@ export const PayWithCard = <T extends ContractType>({
   const contractArgsStringified = JSON.stringify(contractArgs);
   // Build iframe URL with query params.
   const payWithCardUrl = useMemo(() => {
-    const payWithCardUrl = new URL('/sdk/v2/pay-with-card', paperDomain);
+    const payWithCardUrl = new URL('/sdk/v2/pay-with-card', PAPER_APP_URL);
 
     payWithCardUrl.searchParams.append('checkoutId', checkoutId);
     payWithCardUrl.searchParams.append(

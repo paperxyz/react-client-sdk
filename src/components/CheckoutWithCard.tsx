@@ -21,11 +21,9 @@ interface CheckoutWithCardProps {
   options?: ICustomizationOptions;
   onReview?: (result: ReviewResult) => void;
   onError?: (error: PaperSDKError) => void;
+
   /**
-   * If true, uses the papercheckout.com instead of paper.xyz domain.
-   * This setting is useful if your users are unable to access the paper.xyz domain.
-   *
-   * Defaults to true.
+   * @deprecated No longer used.
    */
   experimentalUseAltDomain?: boolean;
 
@@ -46,7 +44,6 @@ export const CheckoutWithCard = ({
   onPaymentSuccess,
   onReview,
   onError,
-  experimentalUseAltDomain,
   locale,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -88,7 +85,6 @@ export const CheckoutWithCard = ({
       onPaymentSuccess,
       onReview,
       options,
-      useAltDomain: experimentalUseAltDomain,
     });
   }, [CheckoutWithCardIframeContainerRef.current]);
 

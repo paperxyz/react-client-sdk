@@ -11,7 +11,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
-var packageJson = require('./package.json');
+var packageJson = require('../../../package.json');
 
 export enum CheckoutWithEthPage {
   ConnectWallet,

@@ -13,7 +13,7 @@ import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
-var packageJson = require('./package.json');
+var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
   sdkClientSecret: string;

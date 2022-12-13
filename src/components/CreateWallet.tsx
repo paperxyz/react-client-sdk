@@ -8,7 +8,7 @@ import {
 import React, { useEffect } from 'react';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
-var packageJson = require('./package.json');
+var packageJson = require('../../package.json');
 
 interface CreateWalletProps {
   emailAddress: string;

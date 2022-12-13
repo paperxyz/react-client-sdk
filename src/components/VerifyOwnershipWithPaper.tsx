@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
-var packageJson = require('./package.json');
+var packageJson = require('../../package.json');
 
 interface VerifyOwnershipWithPaperProps {
   onSuccess?: (code: string) => void;
@@ -99,7 +99,7 @@ export const VerifyOwnershipWithPaper: React.FC<
           onClick={onClick}
           data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
         >
-          {children}{' '}
+          {children}
         </a>
       ) : (
         <Button

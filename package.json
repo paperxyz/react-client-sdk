@@ -1,7 +1,7 @@
 {
   "name": "@paperxyz/react-client-sdk",
   "version": "0.7.39",
-  "description": "Paper.xyz React Client SDK",
+  "description": "Paper React Client SDK",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,12 +26,12 @@
     "type": "git",
     "url": "git+https://github.com/paperxyz/react-client-sdk.git"
   },
-  "author": "Paper.xyz",
+  "author": "withpaper.com",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/paperxyz/react-client-sdk/issues"
   },
-  "homepage": "https://docs.paper.xyz",
+  "homepage": "https://docs.withpaper.com",
   "peerDependencies": {
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"

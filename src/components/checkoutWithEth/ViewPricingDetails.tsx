@@ -1,12 +1,12 @@
 import { Transition } from '@headlessui/react';
 import type {
   CheckoutWithEthLinkArgs,
-  CheckoutWithEthMessageHandlerArgs,
+  CheckoutWithEthMessageHandlerArgs
 } from '@paperxyz/js-client-sdk';
 import {
   DEFAULT_BRAND_OPTIONS,
   PayWithCryptoErrorCode,
-  PAY_WITH_ETH_ERROR,
+  PAY_WITH_ETH_ERROR
 } from '@paperxyz/js-client-sdk';
 import type { ethers } from 'ethers';
 import React, {
@@ -14,7 +14,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { useCheckoutWithEthLink } from '../../lib/hooks/useCheckoutWithEthLink';
@@ -138,7 +138,7 @@ export const ViewPricingDetails = ({
 
           // try switching network first if needed or supported
           try {
-            if (switchNetworkAsync) {
+            if (chainId !== data.chainId && switchNetworkAsync) {
               console.log('switching signer network');
               await switchNetworkAsync(data.chainId);
             } else if (chainId !== data.chainId) {
@@ -171,6 +171,7 @@ export const ViewPricingDetails = ({
                 data: data.blob,
                 to: data.paymentAddress,
               },
+              mode:'recklesslyUnprepared'
             });
             if (onSuccess && result) {
               onSuccess({

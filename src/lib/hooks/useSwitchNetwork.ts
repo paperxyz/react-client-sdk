@@ -1,22 +1,22 @@
 import { ethers } from 'ethers';
 import { useCallback } from 'react';
+ 
 import {
   allChains,
   SwitchChainNotSupportedError,
-  useSwitchNetwork as useSwitchNetworkWagmi,
+  useSwitchNetwork as useSwitchNetworkWagmi
 } from 'wagmi';
 
 export const useSwitchNetwork = ({ signer }: { signer?: ethers.Signer }) => {
   const { switchNetworkAsync: _switchNetworkAsync } = useSwitchNetworkWagmi();
 
   const switchNetworkAsync = useCallback(
-    async (chainId?: number) => {
+    async (chainId: number) => {
+     
       if (_switchNetworkAsync) {
         return await _switchNetworkAsync?.(chainId);
       } else if (signer) {
         const chainToSwitchTo = allChains.find((x) => x.id === chainId);
-        console.log('chainToSwitchTo', chainToSwitchTo);
-        console.log('await signer.getChainId()', await signer.getChainId());
         if (!chainToSwitchTo) {
           throw SwitchChainNotSupportedError;
         }

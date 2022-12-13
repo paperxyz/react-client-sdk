@@ -1,17 +1,17 @@
-import { SendTransactionArgs } from '@wagmi/core';
+import type { SendTransactionUnpreparedRequest } from '@wagmi/core';
+import { getProvider, prepareSendTransaction, sendTransaction } from '@wagmi/core';
+
 import { ethers } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
-import { useSendTransaction as useSendTransactionWagmi } from 'wagmi';
+import { useCallback, useState } from 'react';
 
 export const useSendTransaction = ({ signer }: { signer?: ethers.Signer }) => {
-  const {
-    sendTransactionAsync: _sendTransactionAsync,
-    isLoading: _isSendingTransaction,
-  } = useSendTransactionWagmi();
-
   const [isSendingTransaction, setIsSendingTransaction] = useState(false);
   const sendTransactionAsync = useCallback(
-    async (args?: SendTransactionArgs) => {
+    async (args?: SendTransactionUnpreparedRequest & {chainId: number}) => {
+      if (!args || !args.request.to) {
+        console.log('no argument for transaction, returning')
+        return
+      }
       if (signer) {
         setIsSendingTransaction(true);
         try {
@@ -23,16 +23,19 @@ export const useSendTransaction = ({ signer }: { signer?: ethers.Signer }) => {
           throw e;
         }
       } else {
-        const response = await _sendTransactionAsync(args);
-        return response;
+        setIsSendingTransaction(true);
+        const config = await prepareSendTransaction({ chainId: args.chainId, request: { to: args.request.to, ...args.request } });
+        const responsePartial = await sendTransaction(config)
+        const provider = getProvider({
+          chainId: args.chainId,
+        })
+        const response = await provider.getTransaction(responsePartial.hash)
+        setIsSendingTransaction(false);
+        return response
       }
     },
     [signer],
   );
-
-  useEffect(() => {
-    setIsSendingTransaction(_isSendingTransaction);
-  }, [_isSendingTransaction]);
 
   return { sendTransactionAsync, isSendingTransaction };
 };

@@ -7,6 +7,8 @@ export const Modal = ({
   escapeToClose = true,
   clickOutsideModalToClose = false,
   bgColor = '#FAFAFA',
+  isFullScreen,
+  hasCloseButton = true,
   children,
 }: {
   isOpen: boolean;
@@ -14,6 +16,8 @@ export const Modal = ({
   escapeToClose?: boolean;
   clickOutsideModalToClose?: boolean;
   bgColor?: string;
+  isFullScreen?: boolean;
+  hasCloseButton?: boolean;
   children: React.ReactNode;
 }) => {
   useEffect(() => {
@@ -30,6 +34,9 @@ export const Modal = ({
       document.removeEventListener('keydown', keyDownHandler);
     };
   }, []);
+
+  const dialogPanelClasses = isFullScreen ? '' : 'sm:m-4 p-5';
+  const dialogPanelBg = isFullScreen ? 'transparent' : bgColor;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -63,10 +70,10 @@ export const Modal = ({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className='paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg p-5 text-left align-middle shadow-xl transition-all sm:m-4'
-                style={{ backgroundColor: bgColor }}
+                className={`paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg text-left align-middle shadow-xl transition-all ${dialogPanelClasses}`}
+                style={{ backgroundColor: dialogPanelBg }}
               >
-                <CloseButton onClose={onClose} />
+                {hasCloseButton && <CloseButton onClose={onClose} />}
                 {children}
               </Dialog.Panel>
             </Transition.Child>

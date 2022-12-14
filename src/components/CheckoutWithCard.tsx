@@ -1,12 +1,12 @@
-import {
-  createCheckoutWithCardElement,
-  DEFAULT_BRAND_OPTIONS,
-} from '@paperxyz/js-client-sdk';
 import type {
   ICustomizationOptions,
   Locale,
-  ReviewResult,
   PaperSDKError,
+  ReviewResult,
+} from '@paperxyz/js-client-sdk';
+import {
+  createCheckoutWithCardElement,
+  DEFAULT_BRAND_OPTIONS,
 } from '@paperxyz/js-client-sdk';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
@@ -14,6 +14,7 @@ import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
 import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
+var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
   sdkClientSecret: string;
@@ -21,11 +22,9 @@ interface CheckoutWithCardProps {
   options?: ICustomizationOptions;
   onReview?: (result: ReviewResult) => void;
   onError?: (error: PaperSDKError) => void;
+
   /**
-   * If true, uses the papercheckout.com instead of paper.xyz domain.
-   * This setting is useful if your users are unable to access the paper.xyz domain.
-   *
-   * Defaults to true.
+   * @deprecated No longer used.
    */
   experimentalUseAltDomain?: boolean;
 
@@ -46,7 +45,6 @@ export const CheckoutWithCard = ({
   onPaymentSuccess,
   onReview,
   onError,
-  experimentalUseAltDomain,
   locale,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -88,7 +86,6 @@ export const CheckoutWithCard = ({
       onPaymentSuccess,
       onReview,
       options,
-      useAltDomain: experimentalUseAltDomain,
     });
   }, [CheckoutWithCardIframeContainerRef.current]);
 
@@ -97,6 +94,8 @@ export const CheckoutWithCard = ({
       <div
         className='relative h-full w-full'
         ref={CheckoutWithCardIframeContainerRef}
+        // Label the package version.
+        data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
       >
         {isCardDetailIframeLoading && (
           <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>

@@ -1,4 +1,3 @@
-import { Transition } from '@headlessui/react';
 import type {
   CheckoutWithEthLinkArgs,
   CheckoutWithEthMessageHandlerArgs,
@@ -228,19 +227,7 @@ export const ViewPricingDetails = ({
 
   return (
     <>
-      <Transition
-        appear={true}
-        show={isIframeLoading || !checkoutWithEthUrl}
-        as={React.Fragment}
-        enter='transition-opacity duration-75'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='transition-opacity duration-150'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
-      >
-        <SpinnerWrapper />
-      </Transition>
+      {isIframeLoading || (!checkoutWithEthUrl && <SpinnerWrapper />)}
       {checkoutWithEthUrl && (
         <IFrameWrapper
           ref={iframeRef}

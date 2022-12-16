@@ -2,16 +2,7 @@ import { css, cx } from '@emotion/css';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect } from 'react';
 
-export const Modal = ({
-  isOpen,
-  onClose,
-  escapeToClose = true,
-  clickOutsideModalToClose = false,
-  bgColor = '#FAFAFA',
-  isFullScreen,
-  hasCloseButton = true,
-  children,
-}: {
+export const Modal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   escapeToClose?: boolean;
@@ -20,6 +11,15 @@ export const Modal = ({
   isFullScreen?: boolean;
   hasCloseButton?: boolean;
   children: React.ReactNode;
+}> = ({
+  isOpen,
+  onClose,
+  escapeToClose = true,
+  clickOutsideModalToClose = false,
+  bgColor = '#FAFAFA',
+  isFullScreen,
+  hasCloseButton = true,
+  children,
 }) => {
   useEffect(() => {
     const keyDownHandler = (event: KeyboardEvent) => {
@@ -123,7 +123,7 @@ export const Modal = ({
   );
 };
 
-const CloseButton = ({ onClose }: { onClose: () => void }) => {
+const CloseButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <button
       aria-label='close modal'

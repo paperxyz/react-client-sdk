@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { openCenteredPopup } from '../lib/utils/popup';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
+import { css } from '@emotion/css';
 var packageJson = require('../../package.json');
 
 interface VerifyOwnershipWithPaperProps {
@@ -107,7 +108,12 @@ export const VerifyOwnershipWithPaper: React.FC<
           className={className}
           data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
         >
-          <div className='flex items-center'>
+          <div
+            className={css`
+              display: flex;
+              align-items: center;
+            `}
+          >
             <span style={{ marginRight: '8px' }}>Login with</span>{' '}
             <svg
               width='15'

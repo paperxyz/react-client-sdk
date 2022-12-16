@@ -25,7 +25,8 @@ import {
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
-import { Spinner } from './common/Spinner';
+import { SpinnerWrapper } from './common/SpinnerWrapper';
+import { css } from '@emotion/css';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -241,12 +242,14 @@ export const PayWithCard = <T extends ContractType>({
 
   return (
     <>
-      <div className='relative h-full w-full'>
-        {isCardDetailIframeLoading && (
-          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-            <Spinner className='!h-8 !w-8 !text-black' />
-          </div>
-        )}
+      <div
+        className={css`
+          position: relative;
+          width: 100%;
+          height: 100%;
+        `}
+      >
+        {isCardDetailIframeLoading && <SpinnerWrapper />}
         <IFrameWrapper
           id='payWithCardIframe'
           src={payWithCardUrl.href}

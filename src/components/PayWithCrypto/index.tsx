@@ -16,6 +16,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
+import { css } from '@emotion/css';
 
 export enum PayWithCryptoPage {
   ConnectWallet,
@@ -90,19 +91,43 @@ export const PayWithCrypto = <T extends ContractType>({
   ]);
 
   return (
-    <div className='relative grid w-full'>
+    <div
+      className={css`
+        display: grid;
+        position: relative;
+        width: 100%;
+      `}
+    >
       {isClientSide && (
         <>
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className='col-start-1 row-start-1'
-              enter='transition-opacity duration-75 delay-150'
-              enterFrom='opacity-0'
-              enterTo='opacity-100'
-              leave='transition-opacity duration-150'
-              leaveFrom='opacity-100'
-              leaveTo='opacity-0'
+              className={css`
+                grid-column-start: 1;
+                grid-row-start: 1;
+              `}
+              enter={css`
+                transition-delay: 150ms;
+                transition-property: opacity;
+                transition-duration: 75ms;
+              `}
+              enterFrom={css`
+                opacity: 0;
+              `}
+              enterTo={css`
+                opacity: 1;
+              `}
+              leave={css`
+                transition-property: opacity;
+                transition-duration: 150ms;
+              `}
+              leaveFrom={css`
+                opacity: 1;
+              `}
+              leaveTo={css`
+                opacity: 0;
+              `}
             >
               <ConnectWallet
                 onWalletConnected={({ userAddress, chainId }) => {
@@ -140,13 +165,32 @@ export const PayWithCrypto = <T extends ContractType>({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className='bg-transparent/* */ col-start-1  row-start-1'
-            enter='transition-opacity duration-75 delay-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='transition-opacity duration-150'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
+            className={css`
+              background-color: transparent;
+              grid-column-start: 1;
+              grid-row-start: 1;
+            `}
+            enter={css`
+              transition-delay: 150ms;
+              transition-property: opacity;
+              transition-duration: 75ms;
+            `}
+            enterFrom={css`
+              opacity: 0;
+            `}
+            enterTo={css`
+              opacity: 1;
+            `}
+            leave={css`
+              transition-property: opacity;
+              transition-duration: 150ms;
+            `}
+            leaveFrom={css`
+              opacity: 1;
+            `}
+            leaveTo={css`
+              opacity: 0;
+            `}
           >
             <ViewPricingDetails
               checkoutId={checkoutId}

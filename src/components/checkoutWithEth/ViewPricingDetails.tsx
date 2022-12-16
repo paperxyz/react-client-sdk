@@ -1,12 +1,12 @@
 import { Transition } from '@headlessui/react';
 import type {
   CheckoutWithEthLinkArgs,
-  CheckoutWithEthMessageHandlerArgs
+  CheckoutWithEthMessageHandlerArgs,
 } from '@paperxyz/js-client-sdk';
 import {
   DEFAULT_BRAND_OPTIONS,
   PayWithCryptoErrorCode,
-  PAY_WITH_ETH_ERROR
+  PAY_WITH_ETH_ERROR,
 } from '@paperxyz/js-client-sdk';
 import type { ethers } from 'ethers';
 import React, {
@@ -14,7 +14,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { useCheckoutWithEthLink } from '../../lib/hooks/useCheckoutWithEthLink';
@@ -24,7 +24,8 @@ import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
-import { Spinner } from '../common/Spinner';
+import { SpinnerWrapper } from '../common/SpinnerWrapper';
+import { css } from '@emotion/css';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -171,7 +172,7 @@ export const ViewPricingDetails = ({
                 data: data.blob,
                 to: data.paymentAddress,
               },
-              mode:'recklesslyUnprepared'
+              mode: 'recklesslyUnprepared',
             });
             if (onSuccess && result) {
               onSuccess({
@@ -238,15 +239,19 @@ export const ViewPricingDetails = ({
         leaveFrom='opacity-100'
         leaveTo='opacity-0'
       >
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <Spinner className='!h-8 !w-8 !text-black' />
-        </div>
+        <SpinnerWrapper />
       </Transition>
       {checkoutWithEthUrl && (
         <IFrameWrapper
           ref={iframeRef}
           id='checkout-with-eth-iframe'
-          className=' mx-auto h-[350px] w-full transition-all'
+          className={css`
+            margin-left: auto;
+            margin-right: auto;
+            transition-property: all;
+            width: 100%;
+            height: 350px;
+          `}
           src={checkoutWithEthUrl.href}
           onLoad={onLoad}
           scrolling='no'

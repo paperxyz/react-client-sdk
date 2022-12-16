@@ -10,7 +10,6 @@ export * from './interfaces/CustomContract';
 export * from './interfaces/PaymentSuccessResult';
 export * from './interfaces/TransferSuccessResult';
 export * from './Provider';
-import './styles/app.css';
 
 // re-export types and enums
 export type { PaperSDKError, PaperUser, Locale } from '@paperxyz/js-client-sdk';

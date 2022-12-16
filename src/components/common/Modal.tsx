@@ -1,3 +1,4 @@
+import { css, cx } from '@emotion/css';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect } from 'react';
 
@@ -35,42 +36,80 @@ export const Modal = ({
     };
   }, []);
 
-  const dialogPanelClasses = isFullScreen ? '' : 'sm:m-4 p-5';
+  const additionalDialogClasses = isFullScreen ? '' : dialogContainedClasses;
   const dialogPanelBg = isFullScreen ? 'transparent' : bgColor;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
         as='div'
-        className='paper-modal relative z-[1000]'
+        className={cx(
+          'paper-modal',
+          css`
+            position: relative;
+            z-index: 1000;
+          `,
+        )}
         onClose={clickOutsideModalToClose ? onClose : () => {}}
       >
         {/* Overlay */}
         <Transition.Child
           as={Fragment}
-          enter='ease-out duration-300'
-          enterFrom='opacity-0'
-          enterTo='opacity-100'
-          leave='ease-in duration-200'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
+          enter={enterClasses}
+          enterFrom={opacity0}
+          enterTo={opacity1}
+          leave={leaveClasses}
+          leaveFrom={opacity1}
+          leaveTo={opacity0}
         >
-          <div className='paper-modal-overlay fixed inset-0 bg-black bg-opacity-50' />
+          <div
+            className={cx(
+              'paper-modal-overlay',
+              css`
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+              `,
+            )}
+          />
         </Transition.Child>
 
-        <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex min-h-full items-center justify-center'>
+        <div
+          className={css`
+            overflow-y: auto;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+          `}
+        >
+          <div
+            className={css`
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100%;
+            `}
+          >
             <Transition.Child
               as={Fragment}
-              enter='ease-out duration-300'
-              enterFrom='opacity-0 scale-95'
-              enterTo='opacity-100 scale-100'
-              leave='ease-in duration-200'
-              leaveFrom='opacity-100 scale-100'
-              leaveTo='opacity-0 scale-95'
+              enter={enterClasses}
+              enterFrom={cx(opacity0, scale95)}
+              enterTo={cx(opacity1, scale100)}
+              leave={leaveClasses}
+              leaveFrom={cx(opacity1, scale100)}
+              leaveTo={cx(opacity0, scale95)}
             >
               <Dialog.Panel
-                className={`paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg text-left align-middle shadow-xl transition-all ${dialogPanelClasses}`}
+                className={cx(
+                  'paper-modal-content',
+                  dialogClasses,
+                  additionalDialogClasses,
+                )}
                 style={{ backgroundColor: dialogPanelBg }}
               >
                 {hasCloseButton && <CloseButton onClose={onClose} />}
@@ -88,10 +127,27 @@ const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
     <button
       aria-label='close modal'
-      className='z-100 absolute right-2 top-2 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+      className={css`
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 9999px;
+        cursor: pointer;
+        &:hover {
+          background-color: rgba(160, 174, 192, 0.1);
+        }
+
+        &:active {
+          background-color: rgba(160, 174, 192, 0.2);
+        }
+      `}
     >
       <svg
-        className='h-5 w-5'
+        className={css`
+          width: 1.25rem;
+          height: 1.25rem;
+        `}
         onClick={onClose}
         fill='none'
         stroke='currentColor'
@@ -108,3 +164,51 @@ const CloseButton = ({ onClose }: { onClose: () => void }) => {
     </button>
   );
 };
+
+const enterClasses = css`
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+`;
+
+const leaveClasses = css`
+  transition-duration: 200ms;
+  transition-timing-function: ease-in;
+`;
+
+const opacity0 = css`
+  opacity: 0;
+`;
+
+const opacity1 = css`
+  opacity: 1;
+`;
+
+const scale95 = css`
+  transform: scale(0.95);
+`;
+
+const scale100 = css`
+  transform: scale(1);
+`;
+
+const dialogClasses = css`
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  transition-property: all;
+  text-align: left;
+  vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+`;
+
+const dialogContainedClasses = css`
+  padding: 1.25rem;
+
+  @media (min-width: 640px) {
+    margin: 1rem;
+  }
+`;

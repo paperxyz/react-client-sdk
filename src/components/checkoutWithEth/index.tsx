@@ -11,6 +11,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
+import { css } from '@emotion/css';
 var packageJson = require('../../../package.json');
 
 export enum CheckoutWithEthPage {
@@ -70,7 +71,11 @@ export const CheckoutWithEth = ({
 
   return (
     <div
-      className='relative grid w-full'
+      className={css`
+        display: grid;
+        position: relative;
+        width: 100%;
+      `}
       data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
     >
       {isClientSide && (
@@ -78,7 +83,10 @@ export const CheckoutWithEth = ({
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className='col-start-1 row-start-1'
+              className={css`
+                grid-column-start: 1;
+                grid-row-start: 1;
+              `}
               enter='transition-opacity duration-75 delay-150'
               enterFrom='opacity-0'
               enterTo='opacity-100'
@@ -122,7 +130,11 @@ export const CheckoutWithEth = ({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className='bg-transparent/* */ col-start-1  row-start-1'
+            className={css`
+              background-color: transparent;
+              grid-column-start: 1;
+              grid-row-start: 1;
+            `}
             enter='transition-opacity duration-75 delay-150'
             enterFrom='opacity-0'
             enterTo='opacity-100'

@@ -6,3 +6,5 @@ export function resizeIframeToExpandedHeight(frame: HTMLIFrameElement) {
     frame.height = IFRAME_EXPANDED_HEIGHT + 'px';
   }
 }
+
+export const FULL_SCREEN_IFRAME_STYLE = { width: '100vw', height: '100vh' };

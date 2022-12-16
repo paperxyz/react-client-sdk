@@ -1,6 +1,6 @@
 {
   "name": "@paperxyz/react-client-sdk",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Paper.xyz React Client SDK",
   "source": "src/index.ts",
   "main": "./dist/index.js",
@@ -19,7 +19,8 @@
     "dev": "concurrently \"yarn dev:css\" \"yarn dev:lib\" \"yarn dev:types\"",
     "build:types": "yarn tsc",
     "build:lib": "yarn compile:lib --env.NODE_ENV production --minify",
-    "build": "yarn build:lib && yarn build:types"
+    "build": "yarn build:lib && yarn build:types",
+    "release": "yarn build && npm publish"
   },
   "repository": {
     "type": "git",
@@ -54,7 +55,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.6.6",
-    "@paperxyz/js-client-sdk": "^0.0.34",
+    "@paperxyz/js-client-sdk": "0.0.35",
     "ethers": ">=5",
     "wagmi": "^0.7.15"
   }

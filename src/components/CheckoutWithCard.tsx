@@ -13,6 +13,7 @@ import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { Spinner } from './common/Spinner';
+import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
 var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
@@ -106,12 +107,14 @@ export const CheckoutWithCard = ({
         isOpen={isOpen}
         onClose={closeModal}
         bgColor={options.colorBackground || '#ffffff'}
+        isFullScreen
+        hasCloseButton={false}
       >
         {modalUrl && (
           <iframe
             id='review-card-payment-iframe'
             src={modalUrl}
-            className='h-[700px] max-h-full w-96 max-w-full'
+            style={FULL_SCREEN_IFRAME_STYLE}
             allow='camera'
           />
         )}

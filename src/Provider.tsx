@@ -6,7 +6,7 @@ import React, {
   SetStateAction,
   useContext,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
@@ -58,13 +58,14 @@ export const PaperSDKProvider = ({
     [chainName_, appName, clientId],
   );
 
-  const { chains, provider,  } = configureChains(
+  const { chains, provider } = configureChains(
     [chain.mainnet, chain.goerli],
-    [alchemyProvider({
-      apiKey: 'k5d8RoDGOyxZmVWy2UPNowQlqFoZM3TX' 
-    })],
-  )
- 
+    [
+      alchemyProvider({
+        apiKey: 'k5d8RoDGOyxZmVWy2UPNowQlqFoZM3TX',
+      }),
+    ],
+  );
 
   const client = useMemo(
     () =>
@@ -121,7 +122,7 @@ export const PaperSDKProvider = ({
       }),
     ],
     provider,
-  })
+  });
 
   return (
     <WagmiConfig client={client}>

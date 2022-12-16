@@ -18,7 +18,10 @@ import {
 } from '../interfaces/CustomContract';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { postMessageToIframe } from '../lib/utils/postMessageToIframe';
-import { resizeIframeToExpandedHeight } from '../lib/utils/resizeIframe';
+import {
+  FULL_SCREEN_IFRAME_STYLE,
+  resizeIframeToExpandedHeight,
+} from '../lib/utils/resizeIframe';
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
@@ -257,12 +260,14 @@ export const PayWithCard = <T extends ContractType>({
         isOpen={isOpen}
         onClose={closeModal}
         bgColor={options.colorBackground || '#ffffff'}
+        isFullScreen
+        hasCloseButton={false}
       >
         {modalUrl && (
           <iframe
             id='review-card-payment-iframe'
             src={modalUrl}
-            className='h-[700px] max-h-full w-96 max-w-full'
+            style={FULL_SCREEN_IFRAME_STYLE}
             allow='camera'
           />
         )}

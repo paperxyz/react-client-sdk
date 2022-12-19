@@ -32,6 +32,7 @@ import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { SpinnerWrapper } from '../common/SpinnerWrapper';
 import { css } from '@emotion/css';
+import { commonTransitionProps } from '../../lib/utils/styles';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -329,12 +330,7 @@ export const ViewPricingDetails = <T extends ContractType>({
         appear={true}
         show={isIframeLoading}
         as={React.Fragment}
-        enter='transition-opacity duration-75'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='transition-opacity duration-150'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
+        {...commonTransitionProps}
       >
         <SpinnerWrapper />
       </Transition>

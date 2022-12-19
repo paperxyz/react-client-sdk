@@ -17,6 +17,7 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 import { css } from '@emotion/css';
+import { commonTransitionProps } from '../../lib/utils/styles';
 
 export enum PayWithCryptoPage {
   ConnectWallet,
@@ -103,31 +104,7 @@ export const PayWithCrypto = <T extends ContractType>({
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className={css`
-                grid-column-start: 1;
-                grid-row-start: 1;
-              `}
-              enter={css`
-                transition-delay: 150ms;
-                transition-property: opacity;
-                transition-duration: 75ms;
-              `}
-              enterFrom={css`
-                opacity: 0;
-              `}
-              enterTo={css`
-                opacity: 1;
-              `}
-              leave={css`
-                transition-property: opacity;
-                transition-duration: 150ms;
-              `}
-              leaveFrom={css`
-                opacity: 1;
-              `}
-              leaveTo={css`
-                opacity: 0;
-              `}
+              {...commonTransitionProps}
             >
               <ConnectWallet
                 onWalletConnected={({ userAddress, chainId }) => {
@@ -165,32 +142,7 @@ export const PayWithCrypto = <T extends ContractType>({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className={css`
-              background-color: transparent;
-              grid-column-start: 1;
-              grid-row-start: 1;
-            `}
-            enter={css`
-              transition-delay: 150ms;
-              transition-property: opacity;
-              transition-duration: 75ms;
-            `}
-            enterFrom={css`
-              opacity: 0;
-            `}
-            enterTo={css`
-              opacity: 1;
-            `}
-            leave={css`
-              transition-property: opacity;
-              transition-duration: 150ms;
-            `}
-            leaveFrom={css`
-              opacity: 1;
-            `}
-            leaveTo={css`
-              opacity: 0;
-            `}
+            {...commonTransitionProps}
           >
             <ViewPricingDetails
               checkoutId={checkoutId}

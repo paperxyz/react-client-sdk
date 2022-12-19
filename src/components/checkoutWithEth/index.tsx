@@ -12,6 +12,7 @@ import {
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
 import { css } from '@emotion/css';
+import { commonTransitionProps } from '../../lib/utils/styles';
 var packageJson = require('../../../package.json');
 
 export enum CheckoutWithEthPage {
@@ -83,16 +84,7 @@ export const CheckoutWithEth = ({
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className={css`
-                grid-column-start: 1;
-                grid-row-start: 1;
-              `}
-              enter='transition-opacity duration-75 delay-150'
-              enterFrom='opacity-0'
-              enterTo='opacity-100'
-              leave='transition-opacity duration-150'
-              leaveFrom='opacity-100'
-              leaveTo='opacity-0'
+              {...commonTransitionProps}
             >
               <ConnectWallet
                 onWalletConnected={({ userAddress, chainId }) => {
@@ -130,17 +122,7 @@ export const CheckoutWithEth = ({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className={css`
-              background-color: transparent;
-              grid-column-start: 1;
-              grid-row-start: 1;
-            `}
-            enter='transition-opacity duration-75 delay-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='transition-opacity duration-150'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
+            {...commonTransitionProps}
           >
             <ViewPricingDetails
               sdkClientSecret={sdkClientSecret}

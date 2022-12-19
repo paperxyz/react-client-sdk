@@ -7,3 +7,5 @@ temp/
 *.log
 .DS_Store
 .yarn
+
+link.config.json

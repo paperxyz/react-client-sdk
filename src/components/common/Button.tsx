@@ -59,4 +59,5 @@ const buttonClass = pcss`
   align-items: center;
   border-radius: 0.5rem;
   border: none;
+  cursor: pointer;
 `;

@@ -31,8 +31,7 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { SpinnerWrapper } from '../common/SpinnerWrapper';
-import { css } from '@emotion/css';
-import { commonTransitionProps } from '../../lib/utils/styles';
+import { commonTransitionProps, pcss } from '../../lib/utils/styles';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -337,7 +336,7 @@ export const ViewPricingDetails = <T extends ContractType>({
       <IFrameWrapper
         ref={iframeRef}
         id='pay-with-crypto-iframe'
-        className={css`
+        className={pcss`
           margin-left: auto;
           margin-right: auto;
           transition-property: all;

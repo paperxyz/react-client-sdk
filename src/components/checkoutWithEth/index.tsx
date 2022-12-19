@@ -11,8 +11,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
-import { css } from '@emotion/css';
-import { commonTransitionProps } from '../../lib/utils/styles';
+import { commonTransitionProps, pcss } from '../../lib/utils/styles';
 var packageJson = require('../../../package.json');
 
 export enum CheckoutWithEthPage {
@@ -72,7 +71,7 @@ export const CheckoutWithEth = ({
 
   return (
     <div
-      className={css`
+      className={pcss`
         display: grid;
         position: relative;
         width: 100%;

@@ -26,7 +26,7 @@ import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
-import { css } from '@emotion/css';
+import { pcss } from '../lib/utils/styles';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -243,7 +243,7 @@ export const PayWithCard = <T extends ContractType>({
   return (
     <>
       <div
-        className={css`
+        className={pcss`
           position: relative;
           width: 100%;
           height: 100%;

@@ -6,7 +6,7 @@ import { WalletConnectIcon } from '../../icons/WalletConnectIcon';
 import { ConnectWalletProps, WalletType } from '../../interfaces/WalletTypes';
 import { useConnectWallet } from '../../lib/hooks/useConnectWallet';
 import { Button } from './Button';
-import { css } from '@emotion/css';
+import { pcss } from '../../lib/utils/styles';
 
 export function WalletIcon({
   walletType,
@@ -49,7 +49,7 @@ export const ConnectWallet = ({
 
   return (
     <div
-      className={css`
+      className={pcss`
         display: flex;
         padding-top: 1.25rem;
         padding-bottom: 1.25rem;
@@ -59,7 +59,7 @@ export const ConnectWallet = ({
       {connectors.map((connector) => {
         return connector.ready ? (
           <Button
-            className={css`
+            className={pcss`
               display: flex;
               margin-right: 0.5rem;
               margin-bottom: 1rem;
@@ -77,7 +77,7 @@ export const ConnectWallet = ({
             {
               <WalletIcon
                 walletType={connector.id}
-                className={css`
+                className={pcss`
                   margin-right: 0.5rem;
                 `}
               />

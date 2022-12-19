@@ -14,7 +14,7 @@ import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
-import { css } from '@emotion/css';
+import { pcss } from '../lib/utils/styles';
 var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
@@ -93,7 +93,7 @@ export const CheckoutWithCard = ({
   return (
     <>
       <div
-        className={css`
+        className={pcss`
           position: relative;
           width: 100%;
           height: 100%;

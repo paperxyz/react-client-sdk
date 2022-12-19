@@ -1,6 +1,7 @@
-import { css, cx } from '@emotion/css';
+import { cx } from '@emotion/css';
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect } from 'react';
+import { opacity0, opacity1, pcss } from '../../lib/utils/styles';
 
 export const Modal: React.FC<{
   isOpen: boolean;
@@ -45,7 +46,7 @@ export const Modal: React.FC<{
         as='div'
         className={cx(
           'paper-modal',
-          css`
+          pcss`
             position: relative;
             z-index: 1000;
           `,
@@ -65,7 +66,7 @@ export const Modal: React.FC<{
           <div
             className={cx(
               'paper-modal-overlay',
-              css`
+              pcss`
                 position: fixed;
                 top: 0;
                 right: 0;
@@ -78,7 +79,7 @@ export const Modal: React.FC<{
         </Transition.Child>
 
         <div
-          className={css`
+          className={pcss`
             overflow-y: auto;
             position: fixed;
             top: 0;
@@ -88,7 +89,7 @@ export const Modal: React.FC<{
           `}
         >
           <div
-            className={css`
+            className={pcss`
               display: flex;
               justify-content: center;
               align-items: center;
@@ -127,7 +128,7 @@ const CloseButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <button
       aria-label='close modal'
-      className={css`
+      className={pcss`
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
@@ -144,7 +145,7 @@ const CloseButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       `}
     >
       <svg
-        className={css`
+        className={pcss`
           width: 1.25rem;
           height: 1.25rem;
         `}
@@ -165,33 +166,25 @@ const CloseButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
-const enterClasses = css`
+const enterClasses = pcss`
   transition-duration: 300ms;
   transition-timing-function: ease-out;
 `;
 
-const leaveClasses = css`
+const leaveClasses = pcss`
   transition-duration: 200ms;
   transition-timing-function: ease-in;
 `;
 
-const opacity0 = css`
-  opacity: 0;
-`;
-
-const opacity1 = css`
-  opacity: 1;
-`;
-
-const scale95 = css`
+const scale95 = pcss`
   transform: scale(0.95);
 `;
 
-const scale100 = css`
+const scale100 = pcss`
   transform: scale(1);
 `;
 
-const dialogClasses = css`
+const dialogClasses = pcss`
   overflow-x: auto;
   overflow-y: hidden;
   position: relative;
@@ -205,7 +198,7 @@ const dialogClasses = css`
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
 `;
 
-const dialogContainedClasses = css`
+const dialogContainedClasses = pcss`
   padding: 1.25rem;
 
   @media (min-width: 640px) {

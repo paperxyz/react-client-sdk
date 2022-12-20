@@ -1,12 +1,12 @@
 import { Transition } from '@headlessui/react';
 import type {
   CheckoutWithEthLinkArgs,
-  CheckoutWithEthMessageHandlerArgs
+  CheckoutWithEthMessageHandlerArgs,
 } from '@paperxyz/js-client-sdk';
 import {
   DEFAULT_BRAND_OPTIONS,
   PayWithCryptoErrorCode,
-  PAY_WITH_ETH_ERROR
+  PAY_WITH_ETH_ERROR,
 } from '@paperxyz/js-client-sdk';
 import type { ethers } from 'ethers';
 import React, {
@@ -14,7 +14,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { useCheckoutWithEthLink } from '../../lib/hooks/useCheckoutWithEthLink';
@@ -171,7 +171,7 @@ export const ViewPricingDetails = ({
                 data: data.blob,
                 to: data.paymentAddress,
               },
-              mode:'recklesslyUnprepared'
+              mode: 'recklesslyUnprepared',
             });
             if (onSuccess && result) {
               onSuccess({
@@ -231,22 +231,22 @@ export const ViewPricingDetails = ({
         appear={true}
         show={isIframeLoading || !checkoutWithEthUrl}
         as={React.Fragment}
-        enter='transition-opacity duration-75'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='transition-opacity duration-150'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
+        enter='paper-transition-opacity duration-75'
+        enterFrom='paper-opacity-0'
+        enterTo='paper-opacity-100'
+        leave='paper-transition-opacity paper-duration-150'
+        leaveFrom='paper-opacity-100'
+        leaveTo='paper-opacity-0'
       >
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <Spinner className='!h-8 !w-8 !text-black' />
+        <div className='paper-absolute paper-top-1/2 paper-left-1/2 -paper-translate-x-1/2 -paper-translate-y-1/2'>
+          <Spinner className='!paper-h-8 !paper-w-8 !paper-text-black' />
         </div>
       </Transition>
       {checkoutWithEthUrl && (
         <IFrameWrapper
           ref={iframeRef}
           id='checkout-with-eth-iframe'
-          className=' mx-auto h-[350px] w-full transition-all'
+          className='paper-mx-auto paper-h-[350px] paper-w-full paper-transition-all'
           src={checkoutWithEthUrl.href}
           onLoad={onLoad}
           scrolling='no'

@@ -42,35 +42,35 @@ export const Modal = ({
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
         as='div'
-        className='paper-modal relative z-[1000]'
+        className='paper-modal paper-relative paper-z-[1000]'
         onClose={clickOutsideModalToClose ? onClose : () => {}}
       >
         {/* Overlay */}
         <Transition.Child
           as={Fragment}
-          enter='ease-out duration-300'
-          enterFrom='opacity-0'
-          enterTo='opacity-100'
-          leave='ease-in duration-200'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
+          enter='paper-ease-out paper-duration-300'
+          enterFrom='paper-opacity-0'
+          enterTo='paper-opacity-100'
+          leave='paper-ease-in paper-duration-200'
+          leaveFrom='paper-opacity-100'
+          leaveTo='paper-opacity-0'
         >
-          <div className='paper-modal-overlay fixed inset-0 bg-black bg-opacity-50' />
+          <div className='paper-modal-overlay paper-fixed paper-inset-0 paper-bg-black paper-bg-opacity-50' />
         </Transition.Child>
 
-        <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex min-h-full items-center justify-center'>
+        <div className='paper-fixed paper-inset-0 paper-overflow-y-auto'>
+          <div className='paper-flex paper-min-h-full paper-items-center paper-justify-center'>
             <Transition.Child
               as={Fragment}
-              enter='ease-out duration-300'
-              enterFrom='opacity-0 scale-95'
-              enterTo='opacity-100 scale-100'
-              leave='ease-in duration-200'
-              leaveFrom='opacity-100 scale-100'
-              leaveTo='opacity-0 scale-95'
+              enter='paper-ease-out paper-duration-300'
+              enterFrom='paper-opacity-0 paper-scale-95'
+              enterTo='paper-opacity-100 paper-scale-100'
+              leave='paper-ease-in paper-duration-200'
+              leaveFrom='paper-opacity-100 paper-scale-100'
+              leaveTo='paper-opacity-0 paper-scale-95'
             >
               <Dialog.Panel
-                className={`paper-modal-content relative max-h-full max-w-full transform overflow-x-auto overflow-y-hidden rounded-lg text-left align-middle shadow-xl transition-all ${dialogPanelClasses}`}
+                className={`paper-modal-content paper-relative paper-max-h-full paper-max-w-full paper-transform paper-overflow-x-auto paper-overflow-y-hidden paper-rounded-lg paper-text-left paper-align-middle paper-shadow-xl paper-transition-all ${dialogPanelClasses}`}
                 style={{ backgroundColor: dialogPanelBg }}
               >
                 {hasCloseButton && <CloseButton onClose={onClose} />}
@@ -88,10 +88,10 @@ const CloseButton = ({ onClose }: { onClose: () => void }) => {
   return (
     <button
       aria-label='close modal'
-      className='z-100 absolute right-2 top-2 rounded-full p-2 hover:cursor-pointer hover:bg-gray-500/10 active:bg-gray-500/20'
+      className='paper-z-100 paper-absolute paper-right-2 paper-top-2 paper-rounded-full paper-p-2 hover:paper-cursor-pointer hover:paper-bg-gray-500/10 active:paper-bg-gray-500/20'
     >
       <svg
-        className='h-5 w-5'
+        className='paper-h-5 paper-w-5'
         onClick={onClose}
         fill='none'
         stroke='currentColor'

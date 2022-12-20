@@ -14,11 +14,11 @@ export const Button = ({
       {...props}
       type={props.type as 'button' | 'submit' | 'reset' | undefined}
       disabled={isLoading || props.disabled}
-      className={`items-center justify-start rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-4 focus:ring-gray-300 hover:enabled:bg-gray-900 ${props.className}`}
+      className={`paper-items-center paper-justify-start paper-rounded-lg paper-bg-gray-800 paper-px-5 paper-py-2.5 paper-text-sm paper-font-semibold paper-text-white focus:paper-outline-none focus:paper-ring-4 focus:paper-ring-gray-300 hover:paper-enabled:paper-bg-gray-900 ${props.className}`}
     >
       {isLoading ? (
-        <div className='flex w-full items-center justify-center'>
-          <Spinner className={loadingText ? 'mr-2' : ''} />
+        <div className='paper-flex paper-w-full paper-items-center paper-justify-center'>
+          <Spinner className={loadingText ? 'paper-mr-2' : ''} />
           {loadingText}
         </div>
       ) : (

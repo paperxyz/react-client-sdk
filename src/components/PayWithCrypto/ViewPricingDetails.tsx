@@ -1,7 +1,11 @@
 import { Transition } from '@headlessui/react';
 import {
-  DEFAULT_BRAND_OPTIONS, ICustomizationOptions, Locale, PaperSDKError, PAPER_APP_URL,
-  PayWithCryptoErrorCode
+  DEFAULT_BRAND_OPTIONS,
+  ICustomizationOptions,
+  Locale,
+  PaperSDKError,
+  PAPER_APP_URL,
+  PayWithCryptoErrorCode,
 } from '@paperxyz/js-client-sdk';
 import { ethers } from 'ethers';
 import React, {
@@ -9,14 +13,14 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import {
   ContractType,
   CustomContractArgWrapper,
   fetchCustomContractArgsFromProps,
   ReadMethodCallType,
-  WriteMethodCallType
+  WriteMethodCallType,
 } from '../../interfaces/CustomContract';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { useAccount } from '../../lib/hooks/useAccount';
@@ -172,7 +176,7 @@ export const ViewPricingDetails = <T extends ContractType>({
                 data: data.blob,
                 to: data.paymentAddress,
               },
-              mode: 'recklesslyUnprepared'
+              mode: 'recklesslyUnprepared',
             });
             if (onSuccess && result) {
               onSuccess({
@@ -331,14 +335,14 @@ export const ViewPricingDetails = <T extends ContractType>({
         leaveFrom='opacity-100'
         leaveTo='opacity-0'
       >
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <Spinner className='!h-8 !w-8 !text-black' />
+        <div className='paper-absolute paper-top-1/2 paper-left-1/2 -paper-translate-x-1/2 -paper-translate-y-1/2'>
+          <Spinner className='!paper-h-8 !paper-w-8 !paper-text-black' />
         </div>
       </Transition>
       <IFrameWrapper
         ref={iframeRef}
         id='pay-with-crypto-iframe'
-        className=' mx-auto h-[350px] w-full transition-all'
+        className='paper-mx-auto paper-h-[350px] paper-w-full paper-transition-all'
         src={payWithCryptoUrl.href}
         onLoad={onLoad}
         scrolling='no'

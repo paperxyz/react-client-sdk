@@ -8,7 +8,7 @@ export const Spinner = ({
     <svg
       id='loader'
       role='status'
-      className={`inline h-4 w-4 animate-spin text-white ${className}`}
+      className={`paper-inline paper-h-4 paper-w-4 paper-animate-spin paper-text-white ${className}`}
       viewBox='0 0 100 101'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

@@ -92,14 +92,14 @@ export const CheckoutWithCard = ({
   return (
     <>
       <div
-        className='relative h-full w-full'
+        className='paper-relative paper-h-full paper-w-full'
         ref={CheckoutWithCardIframeContainerRef}
         // Label the package version.
         data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
       >
         {isCardDetailIframeLoading && (
-          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-            <Spinner className='!h-8 !w-8 !text-black' />
+          <div className='paper-absolute paper-top-1/2 paper-left-1/2 -paper-translate-x-1/2 -paper-translate-y-1/2'>
+            <Spinner className='!paper-h-8 !paper-w-8 !paper-text-black' />
           </div>
         )}
       </div>

@@ -90,19 +90,19 @@ export const PayWithCrypto = <T extends ContractType>({
   ]);
 
   return (
-    <div className='relative grid w-full'>
+    <div className='paper-relative paper-grid paper-w-full'>
       {isClientSide && (
         <>
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className='col-start-1 row-start-1'
-              enter='transition-opacity duration-75 delay-150'
-              enterFrom='opacity-0'
-              enterTo='opacity-100'
-              leave='transition-opacity duration-150'
-              leaveFrom='opacity-100'
-              leaveTo='opacity-0'
+              className='paper-col-start-1 paper-row-start-1'
+              enter='paper-transition-opacity paper-duration-75 paper-delay-150'
+              enterFrom='paper-opacity-0'
+              enterTo='paper-opacity-100'
+              leave='paper-transition-opacity duration-150'
+              leaveFrom='paper-opacity-100'
+              leaveTo='paper-opacity-0'
             >
               <ConnectWallet
                 onWalletConnected={({ userAddress, chainId }) => {
@@ -140,13 +140,13 @@ export const PayWithCrypto = <T extends ContractType>({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className='bg-transparent/* */ col-start-1  row-start-1'
-            enter='transition-opacity duration-75 delay-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='transition-opacity duration-150'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
+            className='paper-bg-transparent/* */ paper-col-start-1 paper-row-start-1'
+            enter='paper-transition-opacity paper-duration-75 paper-delay-150'
+            enterFrom='paper-opacity-0'
+            enterTo='paper-opacity-100'
+            leave='paper-transition-opacity paper-duration-150'
+            leaveFrom='paper-opacity-100'
+            leaveTo='paper-opacity-0'
           >
             <ViewPricingDetails
               checkoutId={checkoutId}

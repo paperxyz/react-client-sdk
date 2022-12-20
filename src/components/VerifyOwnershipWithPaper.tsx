@@ -107,7 +107,7 @@ export const VerifyOwnershipWithPaper: React.FC<
           className={className}
           data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
         >
-          <div className='flex items-center'>
+          <div className='paper-flex paper-items-center'>
             <span style={{ marginRight: '8px' }}>Login with</span>{' '}
             <svg
               width='15'

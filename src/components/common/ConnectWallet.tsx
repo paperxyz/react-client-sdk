@@ -47,11 +47,11 @@ export const ConnectWallet = ({
     useConnectWallet();
 
   return (
-    <div className='flex flex-col py-5'>
+    <div className='paper-flex paper-flex-col paper-py-5'>
       {connectors.map((connector) => {
         return connector.ready ? (
           <Button
-            className='mb-4 mr-2 flex '
+            className='paper-mb-4 paper-mr-2 paper-flex '
             disabled={isConnecting}
             isLoading={isConnecting && connector.id === pendingConnector?.id}
             loadingText='Connecting'
@@ -62,7 +62,7 @@ export const ConnectWallet = ({
               onWalletConnectFail,
             )}
           >
-            {<WalletIcon walletType={connector.id} className='mr-2' />}
+            {<WalletIcon walletType={connector.id} className='paper-mr-2' />}
             {connector.name}
           </Button>
         ) : (

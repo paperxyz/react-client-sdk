@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spinner } from './Spinner';
 import { cx } from '@emotion/css';
-import { pcss } from '../../lib/utils/styles';
+import { css } from '@emotion/css';
 
 export const Button = ({
   isLoading = false,
@@ -20,7 +20,7 @@ export const Button = ({
     >
       {isLoading ? (
         <div
-          className={pcss`
+          className={css`
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,7 +30,7 @@ export const Button = ({
           <Spinner
             className={
               loadingText
-                ? pcss`
+                ? css`
                     margin-right: 0.5rem;
                   `
                 : ''
@@ -45,7 +45,7 @@ export const Button = ({
   );
 };
 
-const buttonClass = pcss`
+const buttonClass = css`
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
   padding-left: 1.25rem;

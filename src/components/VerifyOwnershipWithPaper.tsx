@@ -5,7 +5,7 @@ import {
 } from '@paperxyz/js-client-sdk';
 import React, { useEffect } from 'react';
 import { openCenteredPopup } from '../lib/utils/popup';
-import { pcss } from '../lib/utils/styles';
+import { css } from '@emotion/css';
 import { usePaperSDKContext } from '../Provider';
 import { Button } from './common/Button';
 var packageJson = require('../../package.json');
@@ -109,7 +109,7 @@ export const VerifyOwnershipWithPaper: React.FC<
           data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
         >
           <div
-            className={pcss`
+            className={css`
               display: flex;
               align-items: center;
             `}

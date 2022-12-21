@@ -24,7 +24,7 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { SpinnerWrapper } from '../common/SpinnerWrapper';
-import { pcss } from '../../lib/utils/styles';
+import { css } from '@emotion/css';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -232,7 +232,7 @@ export const ViewPricingDetails = ({
         <IFrameWrapper
           ref={iframeRef}
           id='checkout-with-eth-iframe'
-          className={pcss`
+          className={css`
             margin-left: auto;
             margin-right: auto;
             transition-property: all;

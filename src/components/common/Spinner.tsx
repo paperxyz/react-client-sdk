@@ -1,6 +1,6 @@
 import React from 'react';
 import { cx, keyframes } from '@emotion/css';
-import { pcss } from '../../lib/utils/styles';
+import { css } from '@emotion/css';
 
 export const Spinner = ({
   className,
@@ -38,8 +38,9 @@ const Spin = keyframes`
     transform: rotate(360deg);
   }
 `;
+console.log('ok', Spin);
 
-const spinnerStyle = pcss`
+const spinnerStyle = css`
   display: inline;
   color: #ffffff;
   width: 1rem;

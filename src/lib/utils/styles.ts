@@ -1,33 +1,25 @@
-import { css, CSSInterpolation } from '@emotion/css';
+import { css } from '@emotion/css';
 
-export const pcss = (
-  template: TemplateStringsArray,
-  ...args: Array<CSSInterpolation>
-) => {
-  const copy = [...template, 'label: paper'];
-  return css(copy, args);
-};
-
-export const opacity0 = pcss`
+export const opacity0 = css`
   opacity: 0;
 `;
 
-export const opacity1 = pcss`
+export const opacity1 = css`
   opacity: 1;
 `;
 
-const enterTransition = pcss`
+const enterTransition = css`
   transition-delay: 150ms;
   transition-property: opacity;
   transition-duration: 75ms;
 `;
 
-const leaveTransition = pcss`
+const leaveTransition = css`
   transition-property: opacity;
   transition-duration: 150ms;
 `;
 
-const transitionDefaultClasses = pcss`
+const transitionDefaultClasses = css`
   background-color: transparent;
   grid-column-start: 1;
   grid-row-start: 1;

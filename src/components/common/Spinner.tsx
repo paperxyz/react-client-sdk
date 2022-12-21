@@ -38,7 +38,6 @@ const Spin = keyframes`
     transform: rotate(360deg);
   }
 `;
-console.log('ok', Spin);
 
 const spinnerStyle = css`
   display: inline;

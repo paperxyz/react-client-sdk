@@ -11,8 +11,6 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
-import { Modal } from './common/Modal';
-import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
 import { iframeContainer } from '../lib/utils/styles';
 var packageJson = require('../../package.json');
@@ -54,15 +52,7 @@ export const CheckoutWithCard = ({
   const onCardDetailLoad = useCallback(() => {
     setIsCardDetailIframeLoading(false);
   }, []);
-
-  // const CheckoutWithCardIframeRef = useRef<HTMLIFrameElement>(null);
   const CheckoutWithCardIframeContainerRef = useRef<HTMLDivElement>(null);
-
-  const [modalUrl, setModalUrl] = useState<string | undefined>();
-  const [isOpen, setIsOpen] = useState(false);
-  const closeModal = () => {
-    setIsOpen(false);
-  };
 
   // Handle message events from the popup. Pass along the message to the iframe as well
   useEffect(() => {
@@ -72,11 +62,9 @@ export const CheckoutWithCard = ({
     createCheckoutWithCardElement({
       onCloseKycModal() {
         console.log('called close modal');
-        closeModal();
       },
-      onOpenKycModal({ iframeLink }) {
-        setModalUrl(iframeLink);
-        setIsOpen(true);
+      onOpenKycModal() {
+        console.log('opening kyc modal');
       },
       sdkClientSecret,
       appName,
@@ -100,22 +88,6 @@ export const CheckoutWithCard = ({
       >
         {isCardDetailIframeLoading && <SpinnerWrapper />}
       </div>
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        bgColor={options.colorBackground || '#ffffff'}
-        isFullScreen
-        hasCloseButton={false}
-      >
-        {modalUrl && (
-          <iframe
-            id='review-card-payment-iframe'
-            src={modalUrl}
-            style={FULL_SCREEN_IFRAME_STYLE}
-            allow='camera'
-          />
-        )}
-      </Modal>
     </>
   );
 };

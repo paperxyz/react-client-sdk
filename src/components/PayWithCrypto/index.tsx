@@ -16,7 +16,10 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
-import { commonTransitionProps } from '../../lib/utils/styles';
+import {
+  commonTransitionProps,
+  transitionContainer,
+} from '../../lib/utils/styles';
 import { css } from '@emotion/css';
 
 export enum PayWithCryptoPage {
@@ -92,13 +95,7 @@ export const PayWithCrypto = <T extends ContractType>({
   ]);
 
   return (
-    <div
-      className={css`
-        display: grid;
-        position: relative;
-        width: 100%;
-      `}
-    >
+    <div className={transitionContainer}>
       {isClientSide && (
         <>
           {showConnectWalletOptions && (

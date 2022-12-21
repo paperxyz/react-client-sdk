@@ -11,7 +11,10 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
-import { commonTransitionProps } from '../../lib/utils/styles';
+import {
+  commonTransitionProps,
+  transitionContainer,
+} from '../../lib/utils/styles';
 import { css } from '@emotion/css';
 
 var packageJson = require('../../../package.json');
@@ -73,11 +76,7 @@ export const CheckoutWithEth = ({
 
   return (
     <div
-      className={css`
-        display: grid;
-        position: relative;
-        width: 100%;
-      `}
+      className={transitionContainer}
       data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
     >
       {isClientSide && (

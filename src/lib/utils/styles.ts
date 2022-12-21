@@ -8,6 +8,18 @@ export const opacity1 = css`
   opacity: 1;
 `;
 
+export const iframeContainer = css`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+export const transitionContainer = css`
+  display: grid;
+  position: relative;
+  width: 100%;
+`;
+
 const enterTransition = css`
   transition-delay: 150ms;
   transition-property: opacity;

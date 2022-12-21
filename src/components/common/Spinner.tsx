@@ -1,4 +1,7 @@
 import React from 'react';
+import { cx, keyframes } from '@emotion/css';
+import { css } from '@emotion/css';
+
 export const Spinner = ({
   className,
 }: {
@@ -8,7 +11,7 @@ export const Spinner = ({
     <svg
       id='loader'
       role='status'
-      className={`inline h-4 w-4 animate-spin text-white ${className}`}
+      className={cx(spinnerStyle, className)}
       viewBox='0 0 100 101'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
@@ -26,3 +29,21 @@ export const Spinner = ({
     </svg>
   );
 };
+
+const Spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+console.log('ok', Spin);
+
+const spinnerStyle = css`
+  display: inline;
+  color: #ffffff;
+  width: 1rem;
+  height: 1rem;
+  animation: 1s ${Spin} linear infinite;
+`;

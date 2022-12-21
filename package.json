@@ -1,6 +1,6 @@
 {
   "name": "@paperxyz/react-client-sdk",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Paper.xyz React Client SDK",
   "source": "src/index.ts",
   "main": "./dist/index.js",
@@ -15,8 +15,7 @@
     "compile:lib": "tsup --format esm,cjs",
     "dev:lib": "yarn compile:lib --env.NODE_ENV development --watch",
     "dev:types": "yarn build:types -w",
-    "dev:css": "tailwindcss -w -i ./styles/app.css -o src/styles/app.css",
-    "dev": "concurrently \"yarn dev:css\" \"yarn dev:lib\" \"yarn dev:types\"",
+    "dev": "concurrently \"yarn dev:lib\" \"yarn dev:types\"",
     "build:types": "yarn tsc",
     "build:lib": "yarn compile:lib --env.NODE_ENV production --minify",
     "build": "yarn build:lib && yarn build:types",
@@ -39,24 +38,21 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@types/react": ">=17.0.0",
-    "autoprefixer": "^10.4.7",
-    "concurrently": "^7.1.0",
-    "eslint": "^8.21.0",
-    "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.14",
-    "prettier": "^2.7.1",
-    "prettier-plugin-tailwindcss": "^0.1.11",
+    "concurrently": "7.1.0",
+    "eslint": "8.21.0",
+    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "prettier": "2.7.1",
     "react": ">=17.0.2",
     "react-dom": ">=17.0.2",
-    "tailwindcss": "^3.1.4",
-    "tsup": "^6.1.2",
-    "typescript": "^4.6.3"
+    "tsup": "6.1.2",
+    "typescript": "4.6.3"
   },
   "dependencies": {
-    "@headlessui/react": "^1.6.6",
+    "@emotion/css": "11.10.5",
+    "@headlessui/react": "1.7.6",
     "@paperxyz/js-client-sdk": "0.0.35",
     "ethers": ">=5",
-    "wagmi": "^0.7.15"
+    "wagmi": "0.7.15"
   }
 }

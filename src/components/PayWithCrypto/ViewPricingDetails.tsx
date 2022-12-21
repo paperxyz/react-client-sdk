@@ -1,7 +1,11 @@
 import { Transition } from '@headlessui/react';
 import {
-  DEFAULT_BRAND_OPTIONS, ICustomizationOptions, Locale, PaperSDKError, PAPER_APP_URL,
-  PayWithCryptoErrorCode
+  DEFAULT_BRAND_OPTIONS,
+  ICustomizationOptions,
+  Locale,
+  PaperSDKError,
+  PAPER_APP_URL,
+  PayWithCryptoErrorCode,
 } from '@paperxyz/js-client-sdk';
 import { ethers } from 'ethers';
 import React, {
@@ -9,14 +13,14 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import {
   ContractType,
   CustomContractArgWrapper,
   fetchCustomContractArgsFromProps,
   ReadMethodCallType,
-  WriteMethodCallType
+  WriteMethodCallType,
 } from '../../interfaces/CustomContract';
 import { WalletType } from '../../interfaces/WalletTypes';
 import { useAccount } from '../../lib/hooks/useAccount';
@@ -26,7 +30,9 @@ import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
-import { Spinner } from '../common/Spinner';
+import { SpinnerWrapper } from '../common/SpinnerWrapper';
+import { commonTransitionProps } from '../../lib/utils/styles';
+import { css } from '@emotion/css';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -172,7 +178,7 @@ export const ViewPricingDetails = <T extends ContractType>({
                 data: data.blob,
                 to: data.paymentAddress,
               },
-              mode: 'recklesslyUnprepared'
+              mode: 'recklesslyUnprepared',
             });
             if (onSuccess && result) {
               onSuccess({
@@ -324,21 +330,20 @@ export const ViewPricingDetails = <T extends ContractType>({
         appear={true}
         show={isIframeLoading}
         as={React.Fragment}
-        enter='transition-opacity duration-75'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='transition-opacity duration-150'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
+        {...commonTransitionProps}
       >
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <Spinner className='!h-8 !w-8 !text-black' />
-        </div>
+        <SpinnerWrapper />
       </Transition>
       <IFrameWrapper
         ref={iframeRef}
         id='pay-with-crypto-iframe'
-        className=' mx-auto h-[350px] w-full transition-all'
+        className={css`
+          margin-left: auto;
+          margin-right: auto;
+          transition-property: all;
+          width: 100%;
+          height: 350px;
+        `}
         src={payWithCryptoUrl.href}
         onLoad={onLoad}
         scrolling='no'

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Spinner } from './Spinner';
+import { cx } from '@emotion/css';
+import { css } from '@emotion/css';
 
 export const Button = ({
   isLoading = false,
@@ -14,11 +16,26 @@ export const Button = ({
       {...props}
       type={props.type as 'button' | 'submit' | 'reset' | undefined}
       disabled={isLoading || props.disabled}
-      className={`items-center justify-start rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-4 focus:ring-gray-300 hover:enabled:bg-gray-900 ${props.className}`}
+      className={cx(buttonClass, props.className)}
     >
       {isLoading ? (
-        <div className='flex w-full items-center justify-center'>
-          <Spinner className={loadingText ? 'mr-2' : ''} />
+        <div
+          className={css`
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+          `}
+        >
+          <Spinner
+            className={
+              loadingText
+                ? css`
+                    margin-right: 0.5rem;
+                  `
+                : ''
+            }
+          />
           {loadingText}
         </div>
       ) : (
@@ -27,3 +44,20 @@ export const Button = ({
     </button>
   );
 };
+
+const buttonClass = css`
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  background-color: #1f2937;
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+`;

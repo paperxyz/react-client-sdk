@@ -12,8 +12,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
 import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
-import { Spinner } from './common/Spinner';
 import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
+import { SpinnerWrapper } from './common/SpinnerWrapper';
+import { iframeContainer } from '../lib/utils/styles';
 var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
@@ -92,16 +93,12 @@ export const CheckoutWithCard = ({
   return (
     <>
       <div
-        className='relative h-full w-full'
+        className={iframeContainer}
         ref={CheckoutWithCardIframeContainerRef}
         // Label the package version.
         data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
       >
-        {isCardDetailIframeLoading && (
-          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-            <Spinner className='!h-8 !w-8 !text-black' />
-          </div>
-        )}
+        {isCardDetailIframeLoading && <SpinnerWrapper />}
       </div>
       <Modal
         isOpen={isOpen}

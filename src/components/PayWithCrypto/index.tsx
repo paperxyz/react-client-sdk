@@ -16,6 +16,10 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
+import {
+  commonTransitionProps,
+  transitionContainer,
+} from '../../lib/utils/styles';
 
 export enum PayWithCryptoPage {
   ConnectWallet,
@@ -90,19 +94,13 @@ export const PayWithCrypto = <T extends ContractType>({
   ]);
 
   return (
-    <div className='relative grid w-full'>
+    <div className={transitionContainer}>
       {isClientSide && (
         <>
           {showConnectWalletOptions && (
             <Transition
               show={!isJsonRpcSignerPresent || isTryingToChangeWallet}
-              className='col-start-1 row-start-1'
-              enter='transition-opacity duration-75 delay-150'
-              enterFrom='opacity-0'
-              enterTo='opacity-100'
-              leave='transition-opacity duration-150'
-              leaveFrom='opacity-100'
-              leaveTo='opacity-0'
+              {...commonTransitionProps}
             >
               <ConnectWallet
                 onWalletConnected={({ userAddress, chainId }) => {
@@ -140,13 +138,7 @@ export const PayWithCrypto = <T extends ContractType>({
               (isJsonRpcSignerPresent && !isTryingToChangeWallet) ||
               !showConnectWalletOptions
             }
-            className='bg-transparent/* */ col-start-1  row-start-1'
-            enter='transition-opacity duration-75 delay-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='transition-opacity duration-150'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
+            {...commonTransitionProps}
           >
             <ViewPricingDetails
               checkoutId={checkoutId}

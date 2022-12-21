@@ -15,7 +15,6 @@ import {
   commonTransitionProps,
   transitionContainer,
 } from '../../lib/utils/styles';
-import { css } from '@emotion/css';
 
 var packageJson = require('../../../package.json');
 

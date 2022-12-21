@@ -14,7 +14,6 @@ import { usePaperSDKContext } from '../Provider';
 import { Modal } from './common/Modal';
 import { FULL_SCREEN_IFRAME_STYLE } from '../lib/utils/resizeIframe';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
-import { css } from '@emotion/css';
 import { iframeContainer } from '../lib/utils/styles';
 var packageJson = require('../../package.json');
 

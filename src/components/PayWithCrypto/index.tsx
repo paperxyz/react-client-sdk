@@ -20,7 +20,6 @@ import {
   commonTransitionProps,
   transitionContainer,
 } from '../../lib/utils/styles';
-import { css } from '@emotion/css';
 
 export enum PayWithCryptoPage {
   ConnectWallet,

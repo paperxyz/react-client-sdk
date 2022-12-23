@@ -1,6 +1,6 @@
 {
   "name": "@paperxyz/react-client-sdk",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Paper.xyz React Client SDK",
   "source": "src/index.ts",
   "main": "./dist/index.js",
@@ -51,7 +51,7 @@
   "dependencies": {
     "@emotion/css": "11.10.5",
     "@headlessui/react": "1.7.6",
-    "@paperxyz/js-client-sdk": "0.0.36",
+    "@paperxyz/js-client-sdk": "0.0.39",
     "ethers": ">=5",
     "wagmi": "0.7.15"
   }

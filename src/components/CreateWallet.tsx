@@ -1,4 +1,4 @@
-import type { Locale } from '@paperxyz/js-client-sdk';
+import type { Locale, } from '@paperxyz/js-client-sdk';
 import {
   createWallet,
   initialiseCreateWallet,
@@ -61,14 +61,14 @@ export const CreateWallet: React.FC<CreateWalletProps> = ({
       {children && isChildrenFunction ? (
         children({ createWallet: executeVerifyEmail })
       ) : children ? (
-        <a
+        <div
           onClick={() => {
             executeVerifyEmail();
           }}
           data-paper-sdk-version={`@paperxyz/react-client-sdk@${packageJson.version}`}
         >
           {children}
-        </a>
+        </div>
       ) : (
         <Button
           onClick={() => {

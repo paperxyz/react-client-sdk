@@ -19,7 +19,8 @@
     "build:types": "yarn tsc",
     "build:lib": "yarn compile:lib --env.NODE_ENV production --minify",
     "build": "yarn build:lib && yarn build:types",
-    "release": "yarn build && npm publish"
+    "release": "yarn build && npm publish",
+    "prepublish": "yarn build"
   },
   "repository": {
     "type": "git",

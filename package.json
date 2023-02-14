@@ -1,6 +1,6 @@
 {
   "name": "@paperxyz/react-client-sdk",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "description": "Paper.xyz React Client SDK",
   "source": "src/index.ts",
   "main": "./dist/index.js",
@@ -53,7 +53,7 @@
     "@emotion/css": "11.10.5",
     "@headlessui/react": "1.7.6",
     "@paperxyz/js-client-sdk": "^0.0.46",
-    "ethers": ">=5",
+    "ethers": "^5",
     "wagmi": "0.7.15"
   }
 }

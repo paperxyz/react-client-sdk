@@ -10,9 +10,9 @@ import {
 } from '@paperxyz/js-client-sdk';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PaymentSuccessResult } from '../interfaces/PaymentSuccessResult';
+import { iframeContainer } from '../lib/utils/styles';
 import { usePaperSDKContext } from '../Provider';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
-import { iframeContainer } from '../lib/utils/styles';
 var packageJson = require('../../package.json');
 
 interface CheckoutWithCardProps {
@@ -60,12 +60,6 @@ export const CheckoutWithCard = ({
       return;
     }
     createCheckoutWithCardElement({
-      onCloseKycModal() {
-        console.log('called close modal');
-      },
-      onOpenKycModal() {
-        console.log('opening kyc modal');
-      },
       sdkClientSecret,
       appName,
       elementOrId: CheckoutWithCardIframeContainerRef.current,

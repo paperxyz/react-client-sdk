@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import type {
   CheckoutWithEthLinkArgs,
   CheckoutWithEthMessageHandlerArgs,
@@ -24,7 +25,6 @@ import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { SpinnerWrapper } from '../common/SpinnerWrapper';
-import { css } from '@emotion/css';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -238,6 +238,7 @@ export const ViewPricingDetails = ({
             transition-property: all;
             width: 100%;
             height: 350px;
+            color-scheme: light;
           `}
           src={checkoutWithEthUrl.href}
           onLoad={onLoad}

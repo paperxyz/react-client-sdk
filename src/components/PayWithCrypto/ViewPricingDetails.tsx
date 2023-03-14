@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import { Transition } from '@headlessui/react';
 import {
   DEFAULT_BRAND_OPTIONS,
@@ -28,11 +29,10 @@ import { useSendTransaction } from '../../lib/hooks/useSendTransaction';
 import { useSwitchNetwork } from '../../lib/hooks/useSwitchNetwork';
 import { handlePayWithCryptoError } from '../../lib/utils/handleError';
 import { postMessageToIframe } from '../../lib/utils/postMessageToIframe';
+import { commonTransitionProps } from '../../lib/utils/styles';
 import { usePaperSDKContext } from '../../Provider';
 import { IFrameWrapper } from '../common/IFrameWrapper';
 import { SpinnerWrapper } from '../common/SpinnerWrapper';
-import { commonTransitionProps } from '../../lib/utils/styles';
-import { css } from '@emotion/css';
 
 export interface PayWithCryptoChildrenProps {
   openModal: () => void;
@@ -304,11 +304,11 @@ export const ViewPricingDetails = <T extends ContractType>({
     if (options.fontFamily) {
       payWithCryptoUrl.searchParams.append('fontFamily', options.fontFamily);
     }
+    if (locale) {
+      payWithCryptoUrl.searchParams.append('locale', locale);
+    }
     // Add timestamp to prevent loading a cached page.
     payWithCryptoUrl.searchParams.append('date', Date.now().toString());
-
-    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
-    payWithCryptoUrl.searchParams.append('locale', localeToUse);
 
     return payWithCryptoUrl;
   }, [

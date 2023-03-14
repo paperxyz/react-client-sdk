@@ -22,11 +22,11 @@ import {
   FULL_SCREEN_IFRAME_STYLE,
   resizeIframeToExpandedHeight,
 } from '../lib/utils/resizeIframe';
+import { iframeContainer } from '../lib/utils/styles';
 import { usePaperSDKContext } from '../Provider';
 import { IFrameWrapper } from './common/IFrameWrapper';
 import { Modal } from './common/Modal';
 import { SpinnerWrapper } from './common/SpinnerWrapper';
-import { iframeContainer } from '../lib/utils/styles';
 
 interface PayWithCardProps {
   checkoutId: string;
@@ -218,9 +218,9 @@ export const PayWithCard = <T extends ContractType>({
     if (options.fontFamily) {
       payWithCardUrl.searchParams.append('fontFamily', options.fontFamily);
     }
-
-    const localeToUse = locale === Locale.FR ? 'fr' : 'en';
-    payWithCardUrl.searchParams.append('locale', localeToUse);
+    if (locale) {
+      payWithCardUrl.searchParams.append('locale', locale);
+    }
 
     return payWithCardUrl;
   }, [

@@ -831,10 +831,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@paperxyz/js-client-sdk@^0.0.46":
-  version "0.0.46"
-  resolved "https://registry.yarnpkg.com/@paperxyz/js-client-sdk/-/js-client-sdk-0.0.46.tgz#f2877d74bfa0df381ca2920712cea055dd7cac46"
-  integrity sha512-mOZ6WB/M/kHWFbBpuclIqCyhqCa+G6Qbnp272a1eQCqXbmyKpmWMkoUXirFFLb0OZo9AkpbJ/kfTv960yJi0Mg==
+"@paperxyz/js-client-sdk@^0.0.51":
+  version "0.0.51"
+  resolved "https://registry.yarnpkg.com/@paperxyz/js-client-sdk/-/js-client-sdk-0.0.51.tgz#e966a4ba2a6991b0f58fb57ac5a376b1a42b2173"
+  integrity sha512-YMUbco0SMpfzEyw89S81taiqKOc/AfNqH3AaodbBVKbkseOyvDhZwliGvVdF4p5sef48OL0TsWmCusYmVvgCZg==
   dependencies:
     ethers "^5.7.2"
 

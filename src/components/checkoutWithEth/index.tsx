@@ -6,15 +6,15 @@ import {
   onWalletConnectedType,
   WalletType,
 } from '../../interfaces/WalletTypes';
+import {
+  commonTransitionProps,
+  transitionContainer,
+} from '../../lib/utils/styles';
 import { ConnectWallet } from '../common/ConnectWallet';
 import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
-import {
-  commonTransitionProps,
-  transitionContainer,
-} from '../../lib/utils/styles';
 
 var packageJson = require('../../../package.json');
 

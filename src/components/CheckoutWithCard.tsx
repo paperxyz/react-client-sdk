@@ -21,6 +21,7 @@ interface CheckoutWithCardProps {
   options?: ICustomizationOptions;
   onReview?: (result: ReviewResult) => void;
   onError?: (error: PaperSDKError) => void;
+  onBeforeModalOpen?: (props: { url: string }) => void;
 
   /**
    * @deprecated No longer used.
@@ -44,6 +45,7 @@ export const CheckoutWithCard = ({
   onPaymentSuccess,
   onReview,
   onError,
+  onBeforeModalOpen,
   locale,
 }: CheckoutWithCardProps): React.ReactElement => {
   const { appName } = usePaperSDKContext();
@@ -68,6 +70,7 @@ export const CheckoutWithCard = ({
       onLoad: onCardDetailLoad,
       onPaymentSuccess,
       onReview,
+      onBeforeModalOpen,
       options,
     });
   }, [CheckoutWithCardIframeContainerRef.current]);

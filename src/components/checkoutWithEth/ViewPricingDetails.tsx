@@ -173,17 +173,17 @@ export const ViewPricingDetails = ({
               },
               mode: 'recklesslyUnprepared',
             });
-            if (onSuccess) {
+            if (onSuccess && result) {
               onSuccess({
                 // @ts-ignore
                 transactionResponse: result,
                 transactionId: data.transactionId,
               });
             }
-            if (iframeRef.current) {
+            if (iframeRef.current && result) {
               postMessageToIframe(iframeRef.current, 'paymentSuccess', {
                 suppressErrorToast,
-                transactionHash: result?.hash || '',
+                transactionHash: result.hash,
               });
             }
           } catch (error) {

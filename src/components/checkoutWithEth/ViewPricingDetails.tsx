@@ -175,6 +175,7 @@ export const ViewPricingDetails = ({
             });
             if (onSuccess && result) {
               onSuccess({
+                // @ts-ignore
                 transactionResponse: result,
                 transactionId: data.transactionId,
               });

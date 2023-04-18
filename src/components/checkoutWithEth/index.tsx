@@ -1,7 +1,18 @@
 import { Transition } from '@headlessui/react';
 import { PayWithCryptoErrorCode } from '@paperxyz/js-client-sdk';
-import React, { useEffect, useState } from 'react';
-import { useSigner } from 'wagmi';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createClient as createClientCore } from '@wagmi/core';
+import {
+  chain,
+  configureChains,
+  createClient,
+  useSigner,
+  WagmiConfig,
+} from 'wagmi';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 import {
   onWalletConnectedType,
   WalletType,
@@ -15,6 +26,7 @@ import {
   ViewPricingDetails,
   ViewPricingDetailsProps,
 } from './ViewPricingDetails';
+import { usePaperSDKContext } from '../../Provider';
 
 var packageJson = require('../../../package.json');
 
@@ -28,7 +40,7 @@ type CheckoutWithEthProps = {
   onPageChange?: (currentPage: CheckoutWithEthPage) => void;
 } & Omit<ViewPricingDetailsProps, 'setIsTryingToChangeWallet'>;
 
-export const CheckoutWithEth = ({
+export const CheckoutWithEthInternal = ({
   sdkClientSecret,
   payingWalletSigner,
   setUpUserPayingWalletSigner,
@@ -144,5 +156,81 @@ export const CheckoutWithEth = ({
         </>
       )}
     </div>
+  );
+};
+
+export const CheckoutWithEth = (
+  props: CheckoutWithEthProps,
+): React.ReactElement => {
+  const { chains, provider } = configureChains(
+    [chain.mainnet, chain.goerli],
+    [
+      alchemyProvider({
+        apiKey: 'k5d8RoDGOyxZmVWy2UPNowQlqFoZM3TX',
+      }),
+    ],
+  );
+  const { appName } = usePaperSDKContext();
+  const client = useMemo(
+    () =>
+      createClient({
+        autoConnect: true,
+        connectors: [
+          new MetaMaskConnector({
+            chains,
+            options: {
+              shimChainChangedDisconnect: true,
+              shimDisconnect: true,
+              UNSTABLE_shimOnConnectSelectAccount: true,
+            },
+          }),
+          new WalletConnectConnector({
+            chains,
+            options: {
+              qrcode: true,
+            },
+          }),
+          new CoinbaseWalletConnector({
+            chains,
+            options: {
+              appName: appName || 'Paper.xyz',
+            },
+          }),
+        ],
+        provider,
+      }),
+    [appName],
+  );
+  createClientCore({
+    autoConnect: true,
+    connectors: [
+      new MetaMaskConnector({
+        chains,
+        options: {
+          shimChainChangedDisconnect: true,
+          shimDisconnect: true,
+          UNSTABLE_shimOnConnectSelectAccount: true,
+        },
+      }),
+      new WalletConnectConnector({
+        chains,
+        options: {
+          qrcode: true,
+        },
+      }),
+      new CoinbaseWalletConnector({
+        chains,
+        options: {
+          appName: appName || 'Paper.xyz',
+        },
+      }),
+    ],
+    provider,
+  });
+
+  return (
+    <WagmiConfig client={client}>
+      <CheckoutWithEthInternal {...props} />
+    </WagmiConfig>
   );
 };

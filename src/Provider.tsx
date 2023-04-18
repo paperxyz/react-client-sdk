@@ -1,5 +1,4 @@
 import type { SupportedChainName } from '@paperxyz/js-client-sdk';
-import { createClient as createClientCore } from '@wagmi/core';
 import React, {
   createContext,
   Dispatch,
@@ -8,11 +7,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 interface SDKContext {
   chainName: SupportedChainName;
@@ -58,78 +52,10 @@ export const PaperSDKProvider = ({
     [chainName_, appName, clientId],
   );
 
-  const { chains, provider } = configureChains(
-    [chain.mainnet, chain.goerli],
-    [
-      alchemyProvider({
-        apiKey: 'k5d8RoDGOyxZmVWy2UPNowQlqFoZM3TX',
-      }),
-    ],
-  );
-
-  const client = useMemo(
-    () =>
-      createClient({
-        autoConnect: true,
-        connectors: [
-          new MetaMaskConnector({
-            chains,
-            options: {
-              shimChainChangedDisconnect: true,
-              shimDisconnect: true,
-              UNSTABLE_shimOnConnectSelectAccount: true,
-            },
-          }),
-          new WalletConnectConnector({
-            chains,
-            options: {
-              qrcode: true,
-            },
-          }),
-          new CoinbaseWalletConnector({
-            chains,
-            options: {
-              appName: appName || 'Paper.xyz',
-            },
-          }),
-        ],
-        provider,
-      }),
-    [appName],
-  );
-  createClientCore({
-    autoConnect: true,
-    connectors: [
-      new MetaMaskConnector({
-        chains,
-        options: {
-          shimChainChangedDisconnect: true,
-          shimDisconnect: true,
-          UNSTABLE_shimOnConnectSelectAccount: true,
-        },
-      }),
-      new WalletConnectConnector({
-        chains,
-        options: {
-          qrcode: true,
-        },
-      }),
-      new CoinbaseWalletConnector({
-        chains,
-        options: {
-          appName: appName || 'Paper.xyz',
-        },
-      }),
-    ],
-    provider,
-  });
-
   return (
-    <WagmiConfig client={client}>
-      <PaperSDKContext.Provider value={contextValue}>
-        {children}
-      </PaperSDKContext.Provider>
-    </WagmiConfig>
+    <PaperSDKContext.Provider value={contextValue}>
+      {children}
+    </PaperSDKContext.Provider>
   );
 };
 
